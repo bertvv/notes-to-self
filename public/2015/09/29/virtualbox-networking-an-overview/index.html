@@ -105,9 +105,9 @@
     <h1 class="title" itemprop="name">VirtualBox Networking: an overview</h1>
 	<div class="entry-content" itemprop="articleBody">
 
-<p>In our system administration courses, we use VirtualBox to allow students to set up their own Linux machines without having to resort to dual booting. VirtualBox is certainly not the &ldquo;best&rdquo; virtualization platform, but it is supported on the three common desktop platforms and works similarly on all of them.</p>
-
 <p>One of the greatest pitfalls when working with VirtualBox VMs is a good understanding of how networking works. In this post, we&rsquo;ll discuss the most important differences between them, and their limitations when you use VirtualBox to experiment with setting up network services on a VM.</p>
+
+<p>In our system administration courses, we use VirtualBox to allow students to set up their own Linux machines without having to resort to dual booting. VirtualBox is certainly not the &ldquo;best&rdquo; virtualization platform, but it is supported on the three common desktop platforms and works similarly on all of them.</p>
 
 <h1 id="overview:fc5e5586f11d39e89379de40fcf44f1e">Overview</h1>
 
@@ -145,7 +145,7 @@
 
 <tbody>
 <tr>
-<td align="left">VM &lt;-&gt; Host</td>
+<td align="left">VM ↔ Host</td>
 <td align="center">-</td>
 <td align="center">V</td>
 <td align="center">V</td>
@@ -153,7 +153,7 @@
 </tr>
 
 <tr>
-<td align="left">VM &lt;-&gt; VM</td>
+<td align="left">VM ↔ VM</td>
 <td align="center">-</td>
 <td align="center">V</td>
 <td align="center">V</td>
@@ -161,7 +161,7 @@
 </tr>
 
 <tr>
-<td align="left">VM &lt;-&gt; LAN</td>
+<td align="left">VM ↔ LAN</td>
 <td align="center">-</td>
 <td align="center">-</td>
 <td align="center">V</td>
@@ -169,7 +169,7 @@
 </tr>
 
 <tr>
-<td align="left">VM -&gt; Internet</td>
+<td align="left">VM → Internet</td>
 <td align="center">V</td>
 <td align="center">-</td>
 <td align="center">V</td>
