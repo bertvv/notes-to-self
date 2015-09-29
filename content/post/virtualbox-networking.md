@@ -46,11 +46,13 @@ In the sections below, each adapter type is discussed in more detail, including 
 The VirtualBox [NAT adapter](http://www.virtualbox.org/manual/ch06.html#network_nat)
 is the default way of allowing your VM to access the Internet. However, it is normally not possible to access your VM from the host system over the network.
 
+![The NAT interface: most reliable way to give your VM internet access](/img/vbnat.png)
+
 The network settings of your VM are predictable. Any VM with a NAT interface has:
 
-- IP Address: 10.0.2.15/24
-- Default gateway: 10.0.2.2/24
-- Name server: 10.0.2.3/24 (potentially supplemented with the name servers assigned to your host system)
+- IP Address: 10.0.2.15 / 24
+- Default gateway: 10.0.2.2 / 24
+- Name server: 10.0.2.3 / 24 (potentially supplemented with the name servers assigned to your host system)
 
 You can ping the gateway and name server from the VM, but pinging 10.0.2.15 from your host system will *never* work.
 
@@ -59,6 +61,8 @@ The NAT adapter is the most reliable to give your VM Internet access. If your ho
 # The Host-only interface
 
 The VirtualBox [host-only adapter](http://www.virtualbox.org/manual/ch06.html#network_hostonly) allows network traffic between your host system and a VM. A virtual Ethernet interface is created that is also visible on your host system. You can create multiple host-only adapters and configure network settings from the main window by opening File > Preferences > Network > Host-only Networks.
+
+![The Host-only interface: a virtual network between host and VMs](/img/vbho.png)
 
 A host-only interface is named:
 
@@ -85,6 +89,8 @@ I strongly suggest to leave the default host-only interface as is, and create ne
 # The Bridged interface
 
 As mentioned before, the [bridged](https://www.virtualbox.org/manual/ch06.html#network_bridged) interface gives the VM access to the physical network on which the host system is attached. Other hosts on the LAN can likewise communicate with the VM.
+
+![The bridged interface: the VMs get immediate access to the physical network](/img/vbbridged.png)
 
 At first sight, this is the ideal setting for setting up a network service on a VM. However, there are big limitations:
 
