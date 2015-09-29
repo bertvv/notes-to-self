@@ -3,6 +3,7 @@ languageCode = "en-us"
 title = "Notes to self"
 copyright = "© 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back."
 theme = "greyshade"
+canonifyurls = "true"
 
 [permalinks]
     post = "/:year/:month/:day/:slug"
@@ -13,7 +14,7 @@ theme = "greyshade"
 
 [indexes]
     tag = "tags"
-    topic = "topics"
+    category = "categories"
 
 [params]
     description = "Linux system administration, config management, and stuff"
