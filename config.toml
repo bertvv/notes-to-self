@@ -1,12 +1,30 @@
 baseurl = "http://bertvv.github.io/notes-to-self/"
 languageCode = "en-us"
 title = "Notes to self"
-disqusShortname = "notes-to-self-bertvv"
-copyright = "© 2015 Bert Van Vreckem. Some rights reserved. Please attribute properly and link back."
+copyright = "© 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back."
+theme = "greyshade"
+
+[permalinks]
+    post = "/:year/:month/:day/:slug"
 
 [author]
     name = "Bert Van Vreckem"
+    email = "bert.vanvreckem@gmail.com"
 
 [indexes]
     tag = "tags"
     topic = "topics"
+
+[params]
+    description = "Linux system administration, config management, and stuff"
+    twitter_user = "bertvanvreckem"
+    github_user = "bertvv"
+    linkedin_user = "bertvanvreckem"
+
+    subscribe_rss = "/index.xml"
+
+    disqus_short_name = "notes-to-self-bertvv"
+
+    facebook_like = true
+    twitter_tweet_button = true
+    google_plus_one = "true"
