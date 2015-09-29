@@ -3,7 +3,7 @@
   <channel>
       <title>Linux on Notes to self </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://localhost:1313/notes-to-self/tags/linux/</link>
+    <link>https://bertvv.github.io/notes-to-self/tags/linux/</link>
     <language>en-us</language>
     <author>Bert Van Vreckem</author>
     <copyright>© 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back.</copyright>
@@ -11,10 +11,10 @@
     
     <item>
       <title>VirtualBox Networking: an overview</title>
-      <link>http://localhost:1313/notes-to-self/2015/09/29/virtualbox-networking-an-overview</link>
+      <link>https://bertvv.github.io/notes-to-self/2015/09/29/virtualbox-networking-an-overview</link>
       <pubDate>Tue, 29 Sep 2015 20:58:28 CEST</pubDate>
       <author>Bert Van Vreckem</author>
-      <guid>http://localhost:1313/notes-to-self/2015/09/29/virtualbox-networking-an-overview</guid>
+      <guid>https://bertvv.github.io/notes-to-self/2015/09/29/virtualbox-networking-an-overview</guid>
       <description>
 
 &lt;p&gt;In our system administration courses, we use VirtualBox to allow students to set up their own Linux machines without having to resort to dual booting. VirtualBox is certainly not the &amp;ldquo;best&amp;rdquo; virtualization platform, but it is supported on the three common desktop platforms and works similarly on all of them.&lt;/p&gt;
@@ -99,7 +99,7 @@
 &lt;p&gt;The VirtualBox &lt;a href=&#34;http://www.virtualbox.org/manual/ch06.html#network_nat&#34;&gt;NAT adapter&lt;/a&gt;
 is the default way of allowing your VM to access the Internet. However, it is normally not possible to access your VM from the host system over the network.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://localhost:1313/notes-to-self/img/vbnat.png&#34; alt=&#34;The NAT interface: most reliable way to give your VM internet access&#34; /&gt;
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vbnat.png&#34; alt=&#34;The NAT interface: most reliable way to give your VM internet access&#34; /&gt;
 &lt;/p&gt;
 
 &lt;p&gt;The network settings of your VM are predictable. Any VM with a NAT interface has:&lt;/p&gt;
@@ -118,7 +118,7 @@ is the default way of allowing your VM to access the Internet. However, it is no
 
 &lt;p&gt;The VirtualBox &lt;a href=&#34;http://www.virtualbox.org/manual/ch06.html#network_hostonly&#34;&gt;host-only adapter&lt;/a&gt; allows network traffic between your host system and a VM. A virtual Ethernet interface is created that is also visible on your host system. You can create multiple host-only adapters and configure network settings from the main window by opening File &amp;gt; Preferences &amp;gt; Network &amp;gt; Host-only Networks.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://localhost:1313/notes-to-self/img/vbho.png&#34; alt=&#34;The Host-only interface: a virtual network between host and VMs&#34; /&gt;
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vbho.png&#34; alt=&#34;The Host-only interface: a virtual network between host and VMs&#34; /&gt;
 &lt;/p&gt;
 
 &lt;p&gt;A host-only interface is named:&lt;/p&gt;
@@ -157,7 +157,7 @@ is the default way of allowing your VM to access the Internet. However, it is no
 
 &lt;p&gt;As mentioned before, the &lt;a href=&#34;https://www.virtualbox.org/manual/ch06.html#network_bridged&#34;&gt;bridged&lt;/a&gt; interface gives the VM access to the physical network on which the host system is attached. Other hosts on the LAN can likewise communicate with the VM.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://localhost:1313/notes-to-self/img/vbbridged.png&#34; alt=&#34;The bridged interface: the VMs get immediate access to the physical network&#34; /&gt;
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vbbridged.png&#34; alt=&#34;The bridged interface: the VMs get immediate access to the physical network&#34; /&gt;
 &lt;/p&gt;
 
 &lt;p&gt;At first sight, this is the ideal setting for setting up a network service on a VM. However, there are big limitations:&lt;/p&gt;
