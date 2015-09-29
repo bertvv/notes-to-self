@@ -17,12 +17,12 @@
 	<meta name="MobileOptimized" content="320">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
     
-	<link href='https://bertvv.github.io/notes-to-self/index.xml' rel="alternate" title="Notes to self" type="application/atom+xml">
+	<link href='http://localhost:1313/notes-to-self/index.xml' rel="alternate" title="Notes to self" type="application/atom+xml">
 	
-	<link rel="canonical" href="https://bertvv.github.io/notes-to-self/2015/09/29/virtualbox-networking-an-overview">
-	<link href="https://bertvv.github.io/notes-to-self/favicon.png" rel="shortcut icon">
-	<link href="https://bertvv.github.io/notes-to-self/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="https://bertvv.github.io/notes-to-self/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="http://localhost:1313/notes-to-self/2015/09/29/virtualbox-networking-an-overview">
+	<link href="http://localhost:1313/notes-to-self//favicon.png" rel="shortcut icon">
+	<link href="http://localhost:1313/notes-to-self//css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://localhost:1313/notes-to-self//css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href="https://fonts.googleapis.com/css?family=Nunito:400,300,700" rel="stylesheet" type="text/css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -39,7 +39,7 @@
 			<header id="header" class="inner"><div class="profilepic">
 	
 	
-	<script src="https://bertvv.github.io/notes-to-self/js/md5.js"></script>
+	<script src="http://localhost:1313/notes-to-self//js/md5.js"></script>
 	<script type="text/javascript">
 		$(function(){
 			$('.profilepic').append("<img src='https://www.gravatar.com/avatar/" + MD5('bert.vanvreckem@gmail.com') + "?s=160' alt='Profile Picture' style='width: 160px;' />");
@@ -50,9 +50,9 @@
 </div>
 
 <nav id="main-nav"><ul class="main">
-    <li><a href="https://bertvv.github.io/notes-to-self/">Blog</a></li>
-    <li><a href="https://bertvv.github.io/notes-to-self/about/">About</a></li>
-    <li><a href="https://bertvv.github.io/notes-to-self/post/">Archives</a></li>
+    <li><a href="http://localhost:1313/notes-to-self//">Blog</a></li>
+    <li><a href="http://localhost:1313/notes-to-self//about/">About</a></li>
+    <li><a href="http://localhost:1313/notes-to-self//post/">Archives</a></li>
 </ul>
 
 
@@ -89,7 +89,7 @@
 		
     	
     	
-			<a class="rss" href='https://bertvv.github.io/notes-to-self/index.xml' title="RSS">RSS</a>
+			<a class="rss" href='http://localhost:1313/notes-to-self/index.xml' title="RSS">RSS</a>
 		
 	</div>
 </nav>
@@ -187,12 +187,15 @@
 <p>The VirtualBox <a href="http://www.virtualbox.org/manual/ch06.html#network_nat">NAT adapter</a>
 is the default way of allowing your VM to access the Internet. However, it is normally not possible to access your VM from the host system over the network.</p>
 
+<p><img src="http://localhost:1313/notes-to-self/img/vbnat.png" alt="The NAT interface: most reliable way to give your VM internet access" />
+</p>
+
 <p>The network settings of your VM are predictable. Any VM with a NAT interface has:</p>
 
 <ul>
-<li>IP Address: 10.0.2.<sup>15</sup>&frasl;<sub>24</sub></li>
-<li>Default gateway: 10.0.2.<sup>2</sup>&frasl;<sub>24</sub></li>
-<li>Name server: 10.0.2.<sup>3</sup>&frasl;<sub>24</sub> (potentially supplemented with the name servers assigned to your host system)</li>
+<li>IP Address: 10.0.2.15 / 24</li>
+<li>Default gateway: 10.0.2.2 / 24</li>
+<li>Name server: 10.0.2.3 / 24 (potentially supplemented with the name servers assigned to your host system)</li>
 </ul>
 
 <p>You can ping the gateway and name server from the VM, but pinging 10.0.2.15 from your host system will <em>never</em> work.</p>
@@ -202,6 +205,9 @@ is the default way of allowing your VM to access the Internet. However, it is no
 <h1 id="the-host-only-interface:fc5e5586f11d39e89379de40fcf44f1e">The Host-only interface</h1>
 
 <p>The VirtualBox <a href="http://www.virtualbox.org/manual/ch06.html#network_hostonly">host-only adapter</a> allows network traffic between your host system and a VM. A virtual Ethernet interface is created that is also visible on your host system. You can create multiple host-only adapters and configure network settings from the main window by opening File &gt; Preferences &gt; Network &gt; Host-only Networks.</p>
+
+<p><img src="http://localhost:1313/notes-to-self/img/vbho.png" alt="The Host-only interface: a virtual network between host and VMs" />
+</p>
 
 <p>A host-only interface is named:</p>
 
@@ -238,6 +244,9 @@ is the default way of allowing your VM to access the Internet. However, it is no
 <h1 id="the-bridged-interface:fc5e5586f11d39e89379de40fcf44f1e">The Bridged interface</h1>
 
 <p>As mentioned before, the <a href="https://www.virtualbox.org/manual/ch06.html#network_bridged">bridged</a> interface gives the VM access to the physical network on which the host system is attached. Other hosts on the LAN can likewise communicate with the VM.</p>
+
+<p><img src="http://localhost:1313/notes-to-self/img/vbbridged.png" alt="The bridged interface: the VMs get immediate access to the physical network" />
+</p>
 
 <p>At first sight, this is the ideal setting for setting up a network service on a VM. However, there are big limitations:</p>
 
@@ -326,8 +335,8 @@ is the default way of allowing your VM to access the Internet. However, it is no
     Bert Van Vreckem
 
 Design credit: <a href="https://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="https://bertvv.github.io/notes-to-self/js/slash.js"></script>
-<script src="https://bertvv.github.io/notes-to-self/js/jquery.fancybox.pack.js"></script>
+<script src="http://localhost:1313/notes-to-self//js/slash.js"></script>
+<script src="http://localhost:1313/notes-to-self//js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();
@@ -337,5 +346,8 @@ Design credit: <a href="https://shashankmehta.in/archive/2012/greyshade.html">Sh
 		</div>
 	</div>
 	
-</body>
+<script data-no-instant>document.write('<script src="http://'
+        + (location.host || 'localhost').split(':')[0]
+		+ ':1313/livereload.js?mindelay=10"></'
+        + 'script>')</script></body>
 </html>
