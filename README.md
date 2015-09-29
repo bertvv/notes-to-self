@@ -25,7 +25,13 @@ $ hugo server --buildDrafts --watch
 
 ## Publish on Github Pages
 
+`hugo shell` should not be running when you do this:
 
+```ShellSession
+$ hugo
+$ git add . && git commit -m "blah" && git push
+$ git subtree push --prefix=public git@github.com:bertvv/notes-to-self.git gh-pages
+```
 
 See <https://gohugo.io/tutorials/github-pages-blog/>
 
