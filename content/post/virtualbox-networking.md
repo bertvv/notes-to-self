@@ -7,9 +7,9 @@ topics = ["System administration", "Networking"]
 
 +++
 
-In our system administration courses, we use VirtualBox to allow students to set up their own Linux machines without having to resort to dual booting. VirtualBox is certainly not the "best" virtualization platform, but it is supported on the three common desktop platforms and works similarly on all of them.
-
 One of the greatest pitfalls when working with VirtualBox VMs is a good understanding of how networking works. In this post, we'll discuss the most important differences between them, and their limitations when you use VirtualBox to experiment with setting up network services on a VM.
+
+In our system administration courses, we use VirtualBox to allow students to set up their own Linux machines without having to resort to dual booting. VirtualBox is certainly not the "best" virtualization platform, but it is supported on the three common desktop platforms and works similarly on all of them.
 
 # Overview
 
@@ -30,12 +30,12 @@ You can choose the type of adapter between:
 
 The table below gives an overview of the consequences of each adapter on network routing between the VM and the rest of the world.
 
-| Route          | NAT   | HO    | Br    | Int   |
-| :---           | :---: | :---: | :---: | :---: |
-| VM <-> Host    | -     | V     | V     | -     |
-| VM <-> VM      | -     | V     | V     | V     |
-| VM <-> LAN     | -     | -     | V     | -     |
-| VM -> Internet | V     | -     | V     | -     |
+| Route         | NAT   | HO    | Br    | Int   |
+| :---          | :---: | :---: | :---: | :---: |
+| VM ↔ Host     | -     | V     | V     | -     |
+| VM ↔ VM       | -     | V     | V     | V     |
+| VM ↔ LAN      | -     | -     | V     | -     |
+| VM → Internet | V     | -     | V     | -     |
 
 At first sight, the *Bridged adapter* appears to be the most suitable for setting up a network service in a VM, but this is not the case. Read on to find out why!
 
