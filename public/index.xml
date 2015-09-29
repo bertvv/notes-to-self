@@ -3,7 +3,7 @@
   <channel>
       <title> on Notes to self </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://bertvv.github.io/notes-to-self/</link>
+    <link>https://bertvv.github.io/notes-to-self/</link>
     <language>en-us</language>
     <author>Bert Van Vreckem</author>
     <copyright>© 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back.</copyright>
@@ -11,10 +11,10 @@
     
     <item>
       <title>VirtualBox Networking: an overview</title>
-      <link>http://bertvv.github.io/notes-to-self/2015/09/29/virtualbox-networking-an-overview</link>
+      <link>https://bertvv.github.io/notes-to-self/2015/09/29/virtualbox-networking-an-overview</link>
       <pubDate>Tue, 29 Sep 2015 20:58:28 CEST</pubDate>
       <author>Bert Van Vreckem</author>
-      <guid>http://bertvv.github.io/notes-to-self/2015/09/29/virtualbox-networking-an-overview</guid>
+      <guid>https://bertvv.github.io/notes-to-self/2015/09/29/virtualbox-networking-an-overview</guid>
       <description>
 
 &lt;p&gt;In our system administration courses, we use VirtualBox to allow students to set up their own Linux machines without having to resort to dual booting. VirtualBox is certainly not the &amp;ldquo;best&amp;rdquo; virtualization platform, but it is supported on the three common desktop platforms and works similarly on all of them.&lt;/p&gt;

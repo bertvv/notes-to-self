@@ -1,4 +1,4 @@
-baseurl = "http://bertvv.github.io/notes-to-self"
+baseurl = "https://bertvv.github.io/notes-to-self"
 languageCode = "en-us"
 title = "Notes to self"
 copyright = "© 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back."
