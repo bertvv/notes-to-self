@@ -34,14 +34,3 @@ $ git subtree push --prefix=public git@github.com:bertvv/notes-to-self.git gh-pa
 ```
 
 See <https://gohugo.io/tutorials/github-pages-blog/>
-
-# Themes
-
-<https://github.com/spf13/hugoThemes/>
-
-- herring-cove (disqus werkt meteen)
-- liquorice - wit, zwarte titelbar
-- pixyll - wit, witte titelbar
-- hurock - zwarte sidebar
-- persona - zwarte sidebar die je kan wegklikken, vrij veel mogelijkheden daar
-- material-design - grote titel, menu klapt links weg, artikels in een grid (3 cols)
