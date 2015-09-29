@@ -17,12 +17,12 @@
 	<meta name="MobileOptimized" content="320">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
     
-	<link href='https://bertvv.github.io/notes-to-self/index.xml' rel="alternate" title="Notes to self" type="application/atom+xml">
+	<link href='http://localhost:1313/notes-to-self/index.xml' rel="alternate" title="Notes to self" type="application/atom+xml">
 	
-	<link rel="canonical" href="https://bertvv.github.io/notes-to-self/about/">
-	<link href="https://bertvv.github.io/notes-to-self/favicon.png" rel="shortcut icon">
-	<link href="https://bertvv.github.io/notes-to-self/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="https://bertvv.github.io/notes-to-self/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="http://localhost:1313/notes-to-self/about/">
+	<link href="http://localhost:1313/notes-to-self//favicon.png" rel="shortcut icon">
+	<link href="http://localhost:1313/notes-to-self//css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://localhost:1313/notes-to-self//css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href="https://fonts.googleapis.com/css?family=Nunito:400,300,700" rel="stylesheet" type="text/css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -39,7 +39,7 @@
 			<header id="header" class="inner"><div class="profilepic">
 	
 	
-	<script src="https://bertvv.github.io/notes-to-self/js/md5.js"></script>
+	<script src="http://localhost:1313/notes-to-self//js/md5.js"></script>
 	<script type="text/javascript">
 		$(function(){
 			$('.profilepic').append("<img src='https://www.gravatar.com/avatar/" + MD5('bert.vanvreckem@gmail.com') + "?s=160' alt='Profile Picture' style='width: 160px;' />");
@@ -50,9 +50,9 @@
 </div>
 
 <nav id="main-nav"><ul class="main">
-    <li><a href="https://bertvv.github.io/notes-to-self/">Blog</a></li>
-    <li><a href="https://bertvv.github.io/notes-to-self/about/">About</a></li>
-    <li><a href="https://bertvv.github.io/notes-to-self/post/">Archives</a></li>
+    <li><a href="http://localhost:1313/notes-to-self//">Blog</a></li>
+    <li><a href="http://localhost:1313/notes-to-self//about/">About</a></li>
+    <li><a href="http://localhost:1313/notes-to-self//post/">Archives</a></li>
 </ul>
 
 
@@ -89,7 +89,7 @@
 		
     	
     	
-			<a class="rss" href='https://bertvv.github.io/notes-to-self/index.xml' title="RSS">RSS</a>
+			<a class="rss" href='http://localhost:1313/notes-to-self/index.xml' title="RSS">RSS</a>
 		
 	</div>
 </nav>
@@ -107,7 +107,17 @@
 
 <p>In this blog, I write about stuff that I learn, about solutions for problems that I encounter, answer great questions from my students (or from you!), etc. Topics include basic system administration (especially everything related to RHEL/CentOS 7 and systemd), shell scripting, configuration management with Ansible, etc.</p>
 
-<p>This site is powered by <a href="https://gohugo.io/">Hugo</a>, a static site generator, and hosted by <a href="https://pages.github.com/">Github Pages</a>.</p>
+<p>I can offer workshops and talks (in Dutch or English) about the subjects below. Contact me if you&rsquo;re interested.</p>
+
+<ul>
+<li>Ansible</li>
+<li>Git</li>
+<li>Linux system administration</li>
+<li>Vagrant</li>
+<li>Vim</li>
+</ul>
+
+<p>This site is powered by <a href="https://gohugo.io/">Hugo</a>, a static site generator, and hosted by <a href="https://pages.github.com/">Github Pages</a>. The theme is <a href="https://shashankmehta.in/archive/2012/greyshade.html">greyshade</a> by Shashank Mehta.</p>
 
 <p>The content of this blog is subject to the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution License</a>. Please attribute properly and link back.</p>
 
@@ -168,8 +178,8 @@
     Bert Van Vreckem
 
 Design credit: <a href="https://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="https://bertvv.github.io/notes-to-self/js/slash.js"></script>
-<script src="https://bertvv.github.io/notes-to-self/js/jquery.fancybox.pack.js"></script>
+<script src="http://localhost:1313/notes-to-self//js/slash.js"></script>
+<script src="http://localhost:1313/notes-to-self//js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();
@@ -179,5 +189,8 @@ Design credit: <a href="https://shashankmehta.in/archive/2012/greyshade.html">Sh
 		</div>
 	</div>
 	
-</body>
+<script data-no-instant>document.write('<script src="http://'
+        + (location.host || 'localhost').split(':')[0]
+		+ ':1313/livereload.js?mindelay=10"></'
+        + 'script>')</script></body>
 </html>
