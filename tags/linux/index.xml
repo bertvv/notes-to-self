@@ -17,9 +17,9 @@
       <guid>https://bertvv.github.io/notes-to-self/2015/09/29/virtualbox-networking-an-overview</guid>
       <description>
 
-&lt;p&gt;In our system administration courses, we use VirtualBox to allow students to set up their own Linux machines without having to resort to dual booting. VirtualBox is certainly not the &amp;ldquo;best&amp;rdquo; virtualization platform, but it is supported on the three common desktop platforms and works similarly on all of them.&lt;/p&gt;
-
 &lt;p&gt;One of the greatest pitfalls when working with VirtualBox VMs is a good understanding of how networking works. In this post, we&amp;rsquo;ll discuss the most important differences between them, and their limitations when you use VirtualBox to experiment with setting up network services on a VM.&lt;/p&gt;
+
+&lt;p&gt;In our system administration courses, we use VirtualBox to allow students to set up their own Linux machines without having to resort to dual booting. VirtualBox is certainly not the &amp;ldquo;best&amp;rdquo; virtualization platform, but it is supported on the three common desktop platforms and works similarly on all of them.&lt;/p&gt;
 
 &lt;h1 id=&#34;overview:fc5e5586f11d39e89379de40fcf44f1e&#34;&gt;Overview&lt;/h1&gt;
 
@@ -57,7 +57,7 @@
 
 &lt;tbody&gt;
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;VM &amp;lt;-&amp;gt; Host&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;VM ↔ Host&lt;/td&gt;
 &lt;td align=&#34;center&#34;&gt;-&lt;/td&gt;
 &lt;td align=&#34;center&#34;&gt;V&lt;/td&gt;
 &lt;td align=&#34;center&#34;&gt;V&lt;/td&gt;
@@ -65,7 +65,7 @@
 &lt;/tr&gt;
 
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;VM &amp;lt;-&amp;gt; VM&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;VM ↔ VM&lt;/td&gt;
 &lt;td align=&#34;center&#34;&gt;-&lt;/td&gt;
 &lt;td align=&#34;center&#34;&gt;V&lt;/td&gt;
 &lt;td align=&#34;center&#34;&gt;V&lt;/td&gt;
@@ -73,7 +73,7 @@
 &lt;/tr&gt;
 
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;VM &amp;lt;-&amp;gt; LAN&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;VM ↔ LAN&lt;/td&gt;
 &lt;td align=&#34;center&#34;&gt;-&lt;/td&gt;
 &lt;td align=&#34;center&#34;&gt;-&lt;/td&gt;
 &lt;td align=&#34;center&#34;&gt;V&lt;/td&gt;
@@ -81,7 +81,7 @@
 &lt;/tr&gt;
 
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;VM -&amp;gt; Internet&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;VM → Internet&lt;/td&gt;
 &lt;td align=&#34;center&#34;&gt;V&lt;/td&gt;
 &lt;td align=&#34;center&#34;&gt;-&lt;/td&gt;
 &lt;td align=&#34;center&#34;&gt;V&lt;/td&gt;
