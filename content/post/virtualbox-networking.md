@@ -3,7 +3,7 @@ date = "2015-09-29T20:58:28+02:00"
 description = "An overview of the network interface types in Virtualbox"
 tags = ["linux", "virtualbox", "networking"]
 title = "VirtualBox Networking: an overview"
-topics = ["System administration", "Networking"]
+categories = ["System administration", "Networking"]
 
 +++
 
