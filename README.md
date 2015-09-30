@@ -34,3 +34,16 @@ $ git subtree push --prefix=public git@github.com:bertvv/notes-to-self.git gh-pa
 ```
 
 See <https://gohugo.io/tutorials/github-pages-blog/>
+
+# Tricks
+
+## Source code
+
+```
+{{< highlight LANGUAGE>}}
+source code
+{{< /highlight >}}
+```
+
+For a list of supported languages, see <http://pygments.org/languages/>
+
