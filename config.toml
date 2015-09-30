@@ -3,7 +3,9 @@ languageCode = "en-us"
 title = "Notes to self"
 copyright = "© 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back."
 theme = "greyshade"
-canonifyurls = "true"
+canonifyurls = true
+pygmentsUseClasses = false
+pygmentsStyle = "monokai"
 
 [permalinks]
     post = "/:year/:month/:day/:slug"
