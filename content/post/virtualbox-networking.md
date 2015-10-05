@@ -11,6 +11,8 @@ One of the greatest pitfalls when working with VirtualBox VMs is a good understa
 
 In our system administration courses, we use VirtualBox to allow students to set up their own Linux machines without having to resort to dual booting. VirtualBox is certainly not the "best" virtualization platform, but it is supported on the three common desktop platforms and works similarly on all of them.
 
+<!--more-->
+
 # Overview
 
 A VirtualBox VM can be assigned 4 network adapters from the GUI (Machine > Settings > Network), and even more from the command line. In a VirtualBox VM with EL7, the network interfaces are usually named as follows:
