@@ -59,3 +59,5 @@ Now, students that boot into Windows get the choice:
 
 ![Windows boot menu with options Hyper-V and VirtualBox](/img/bootmenu-hyperv-vbox.jpg)
 
+
+Quite remarkable that I didn't learn about this type of stuff from my colleagues that have been teaching Windows Server for years... ;-)
