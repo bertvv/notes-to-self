@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Easily switch between Hyper-V and VirtualBox - Notes to self</title>
-	<meta name="author" content="map[email:bert.vanvreckem@gmail.com name:Bert Van Vreckem]">
+	<meta name="author" content="map[name:Bert Van Vreckem email:bert.vanvreckem@gmail.com]">
 
 	
 	
@@ -82,6 +82,9 @@
 			<a class="linkedin" href='https://www.linkedin.com/in/bertvanvreckem' title="LinkedIn">LinkedIn</a>
 		
 		
+			<a class="youtube" href='https://youtube.com/bertvvrhogent' title="Youtube">Youtube</a>
+		
+		
 		
 		
 		
@@ -103,22 +106,57 @@
 					<div itemscope itemtype="https://schema.org/Blog">
 					<article class="post" itemscope itemtype="https://schema.org/BlogPosting">
     <h1 class="title" itemprop="name">Easily switch between Hyper-V and VirtualBox</h1>
-	<div class="entry-content" itemprop="articleBody"><p>I manage two classrooms with 40 dual boot Windows Server and Linux (Fedora) computers. In our Windows Server course, the idea is to teach students to work with Hyper-V, but other courses taught in the same classroom usually use VirtualBox. Unfortunately, Hyper-V and VirtualBox (or any other virtualization platform for that matter) don&rsquo;t coexist. The easy solution was not to install VirtualBox. It&rsquo;s unconvenient, but students that need VirtualBox could boot into Fedora.</p>
+	<div class="entry-content" itemprop="articleBody"><p>Hyper-V and VirtualBox are two virtualization platforms that we both use in our system administration courses. Unfortunately, once Hyper-V is active, it won&rsquo;t coexist with other virtualization platforms. In this post, I discuss a method to work around this problem by setting up a custom boot entry for each platform.</p>
+
+<p>I manage two classrooms with 40 dual boot Windows Server and Linux (Fedora) computers. In our Windows Server course, the idea is to teach students to work with Hyper-V, but other courses taught in the same classroom usually use VirtualBox. Because I thought I couldn&rsquo;t install both, the easy solution was not to install VirtualBox. It&rsquo;s unconvenient, but students that need VirtualBox could boot into Fedora.</p>
 
 <p>However, a few weeks ago, one of my students ran into a similar problem: he has Hyper-V installed on his laptop and also wanted to use VirtualBox for my Linux course. He then let me know that he solved the problem by disabling Hyper-V, something I didn&rsquo;t realize was possible. That made me wonder if there wasn&rsquo;t a solution that I could automate and deploy on all classroom computers.</p>
 
 <p>Once I knew where to look, I found a few blog posts (a.o. <a href="http://blogs.msdn.com/b/virtual_pc_guy/archive/2008/04/14/creating-a-no-hypervisor-boot-entry.aspx">this one by Ben Armstrong</a>) with instructions to create a new entry in the Windows Boot Manager. All good and well, but I&rsquo;m not going to do this manually on 40 machines&hellip;</p>
 
-<p>So I went a little further and wrote a PowerShell script that duplicates the boot entry, assigns suitable names to each, turns off Hyper-V in the copy, and made the copy the default one. Now, students that boot into Windows get the choice:</p>
+<p>So I went a little further and wrote a PowerShell script that duplicates the current (single) boot entry, assigns suitable names to each, turns off Hyper-V in the copy, and made the copy the default one. This is the resulting script:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic"># AddBootOptionNoHyperV.ps1</span>
+<span style="color: #0099FF; font-style: italic"># Create a boot option with Hyper-V turned off</span>
+
+<span style="color: #0099FF; font-style: italic"># Variables</span>
+<span style="color: #003333">$description</span> = <span style="color: #CC3300">&quot;Windows Server 2012 R2 -&quot;</span>
+
+<span style="color: #0099FF; font-style: italic"># Before doing anything, check if the boot option already exists</span>
+<span style="color: #003333">$already_added</span> = bcdedit /enum | <span style="color: #336666">Select-String</span> <span style="color: #CC3300">&quot;VirtualBox&quot;</span>
+
+<span style="color: #006699; font-weight: bold">If</span>(<span style="color: #CC3300">&quot;$already_added&quot;</span> <span style="color: #555555">-ne</span> <span style="color: #CC3300">&quot;&quot;</span>) {
+    <span style="color: #336666">Write-Host</span> <span style="color: #CC3300">&quot;VirtualBox boot entry already added -- bailing out&quot;</span>
+    Exit
+}
+
+<span style="color: #0099FF; font-style: italic"># First, rename the current boot option to &quot;[...] - Hyper V&quot;</span>
+bcdedit /set <span style="color: #CC3300">&quot;{current}&quot;</span> description <span style="color: #CC3300">&quot;$description Hyper-V&quot;</span>
+
+<span style="color: #0099FF; font-style: italic"># Create a copy of the current boot option</span>
+bcdedit /copy <span style="color: #CC3300">&quot;{current}&quot;</span> /d <span style="color: #CC3300">&quot;$description VirtualBox&quot;</span>
+
+<span style="color: #0099FF; font-style: italic"># Get the name of the new boot option (assumed to be the last one</span>
+<span style="color: #0099FF; font-style: italic"># listed by `bcdedit /enum`)</span>
+<span style="color: #003333">$vboxboot_guid</span> = bcdedit /enum `
+    | <span style="color: #336666">Select-String</span> <span style="color: #CC3300">&quot;description&quot;</span> -Context 3,0 `
+    | % { <span style="color: #003333">$_</span>.Context.PreContext[0] <span style="color: #555555">-replace</span> <span style="color: #CC3300">&#39;^identifier +&#39;</span>} `
+    | Select -Last 1
+
+<span style="color: #0099FF; font-style: italic"># Turn off the hypervisor for the new boot entry</span>
+bcdedit /set <span style="color: #CC3300">&quot;$vboxboot_guid&quot;</span> hypervisorlaunchtype off
+
+<span style="color: #0099FF; font-style: italic"># Make VirtualBox the default boot entry</span>
+bcdedit /<span style="color: #006699; font-weight: bold">default</span> <span style="color: #CC3300">&quot;$vboxboot_guid&quot;</span>
+</pre></div>
+</p>
+
+<p>Now, students that boot into Windows get the choice:</p>
 
 <p><img src="http://localhost:1313/notes-to-self/img/bootmenu-hyperv-vbox.jpg" alt="Windows boot menu with options Hyper-V and VirtualBox" />
 </p>
 
-<p>This is the resulting script:</p>
-
-<p><div class="highlight" style="background: #272822"><pre style="line-height: 125%"><span style="color: #75715e"># TODO:</span>
-</pre></div>
-</p>
+<p>Quite remarkable that I didn&rsquo;t learn about this type of stuff from my colleagues that have been teaching Windows Server for years&hellip; ;-)</p>
 </div></article>
 					
 						<div class="share">
