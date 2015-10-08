@@ -1,6 +1,6 @@
 +++
-date = "2015-09-30T21:32:37+02:00"
-draft = true
+date = "2015-10-08T10:51:07+02:00"
+draft = false
 title = "Easily switch between Hyper-V and VirtualBox"
 tags = ["windows", "virtualbox"]
 categories = [ "System administration" ]
@@ -59,5 +59,4 @@ Now, students that boot into Windows get the choice:
 
 ![Windows boot menu with options Hyper-V and VirtualBox](/img/bootmenu-hyperv-vbox.jpg)
 
-
-Quite remarkable that I didn't learn about this type of stuff from my colleagues that have been teaching Windows Server for years... ;-)
+Funny that I didn't learn about this stuff from my colleagues that have been teaching Windows Server for years... ;-)

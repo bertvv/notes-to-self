@@ -3,18 +3,18 @@
   <channel>
       <title>Windows on Notes to self </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://localhost:1313/notes-to-self/tags/windows/</link>
+    <link>https://bertvv.github.io/notes-to-self/tags/windows/</link>
     <language>en-us</language>
     <author>Bert Van Vreckem</author>
     <copyright>© 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back.</copyright>
-    <updated>Wed, 30 Sep 2015 21:32:37 CEST</updated>
+    <updated>Thu, 08 Oct 2015 10:51:07 CEST</updated>
     
     <item>
       <title>Easily switch between Hyper-V and VirtualBox</title>
-      <link>http://localhost:1313/notes-to-self/2015/09/30/easily-switch-between-hyper-v-and-virtualbox</link>
-      <pubDate>Wed, 30 Sep 2015 21:32:37 CEST</pubDate>
+      <link>https://bertvv.github.io/notes-to-self/2015/10/08/easily-switch-between-hyper-v-and-virtualbox</link>
+      <pubDate>Thu, 08 Oct 2015 10:51:07 CEST</pubDate>
       <author>Bert Van Vreckem</author>
-      <guid>http://localhost:1313/notes-to-self/2015/09/30/easily-switch-between-hyper-v-and-virtualbox</guid>
+      <guid>https://bertvv.github.io/notes-to-self/2015/10/08/easily-switch-between-hyper-v-and-virtualbox</guid>
       <description>&lt;p&gt;Hyper-V and VirtualBox are two virtualization platforms that we both use in our system administration courses. Unfortunately, once Hyper-V is active, it won&amp;rsquo;t coexist with other virtualization platforms. In this post, I discuss a method to work around this problem by setting up a custom boot entry for each platform.&lt;/p&gt;
 
 &lt;p&gt;I manage two classrooms with 40 dual boot Windows Server and Linux (Fedora) computers. In our Windows Server course, the idea is to teach students to work with Hyper-V, but other courses taught in the same classroom usually use VirtualBox. Because I thought I couldn&amp;rsquo;t install both, the easy solution was not to install VirtualBox. It&amp;rsquo;s unconvenient, but students that need VirtualBox could boot into Fedora.&lt;/p&gt;
@@ -62,10 +62,10 @@ bcdedit /&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;default&l
 
 &lt;p&gt;Now, students that boot into Windows get the choice:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://localhost:1313/notes-to-self/img/bootmenu-hyperv-vbox.jpg&#34; alt=&#34;Windows boot menu with options Hyper-V and VirtualBox&#34; /&gt;
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/bootmenu-hyperv-vbox.jpg&#34; alt=&#34;Windows boot menu with options Hyper-V and VirtualBox&#34; /&gt;
 &lt;/p&gt;
 
-&lt;p&gt;Quite remarkable that I didn&amp;rsquo;t learn about this type of stuff from my colleagues that have been teaching Windows Server for years&amp;hellip; ;-)&lt;/p&gt;
+&lt;p&gt;Funny that I didn&amp;rsquo;t learn about this stuff from my colleagues that have been teaching Windows Server for years&amp;hellip; ;-)&lt;/p&gt;
 </description>
     </item>
     
