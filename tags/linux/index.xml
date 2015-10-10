@@ -7,7 +7,60 @@
     <language>en-us</language>
     <author>Bert Van Vreckem</author>
     <copyright>© 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back.</copyright>
-    <updated>Tue, 29 Sep 2015 20:58:28 CEST</updated>
+    <updated>Thu, 08 Oct 2015 19:06:48 CEST</updated>
+    
+    <item>
+      <title>Installing VirtualBox Guest Additions in Fedora 22</title>
+      <link>https://bertvv.github.io/notes-to-self/2015/10/08/installing-virtualbox-guest-additions-in-fedora-22</link>
+      <pubDate>Thu, 08 Oct 2015 19:06:48 CEST</pubDate>
+      <author>Bert Van Vreckem</author>
+      <guid>https://bertvv.github.io/notes-to-self/2015/10/08/installing-virtualbox-guest-additions-in-fedora-22</guid>
+      <description>
+
+&lt;p&gt;VirtualBox Guest additions are a set of drivers that you can install on virtual machines to enable a few cool features: a scaling desktop in the VM, shared clipboard, shared folders, etc. This post discusses how to install these in Fedora 22.&lt;/p&gt;
+
+&lt;p&gt;You can easily find other HOWTO&amp;rsquo;s that describe the installation process. For example, I like the one on &lt;a href=&#34;http://www.if-not-true-then-false.com/2010/install-virtualbox-guest-additions-on-fedora-centos-red-hat-rhel/&#34;&gt;If Not True Then False&lt;/a&gt;. That one covers quite a few versions of Fedora and CentOS, which may be confusing for beginning Linux users. This post focuses on recent Fedora versions, specifically Fedora 22 and newer, where &lt;code&gt;yum&lt;/code&gt; is replaced by &lt;code&gt;dnf&lt;/code&gt; as the package management tool.&lt;/p&gt;
+
+&lt;h2 id=&#34;installation-procedure:d27ff6edcf0235db4a3bcb73c2e83780&#34;&gt;Installation procedure&lt;/h2&gt;
+
+&lt;p&gt;Open a terminal (click Activities and type &amp;ldquo;Terminal&amp;rdquo;) and execute the following commands:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;First, update the kernel:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;sudo dnf upgrade kernel*
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Reboot the VM when a new kernel version was installed.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Install some packages needed for the installation:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;sudo dnf install dkms kernel-headers kernel-devel
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Open the &amp;ldquo;Devices&amp;rdquo; menu in the VM window and select &amp;ldquo;Insert Guest Additions CD Image&amp;hellip;&amp;rdquo;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vboxadditions-instert-cd.png&#34; alt=&#34;Devices &amp;gt; Insert Guest Additions CD Image&#34; /&gt;
+&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Click &amp;ldquo;Run&amp;rdquo; in the Autorun dialog box.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vboxadditions-autorun.png&#34; alt=&#34;Autorun dialog box&#34; /&gt;
+&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;A terminal window will open that informs you of the installation process. Look for &lt;code&gt;[  OK  ]&lt;/code&gt; and &lt;code&gt;[FAILED]&lt;/code&gt; in the output. If you followed the instructions, you should only see &lt;code&gt;[  OK  ]&lt;/code&gt;s.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vboxadditions-installation.png&#34; alt=&#34;Guest Additions Installation&#34; /&gt;
+&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Log out (the menu in the top right corner of the screen, click your user name and choose Log out) and back in.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;That&amp;rsquo;s it!&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>VirtualBox Networking: an overview</title>

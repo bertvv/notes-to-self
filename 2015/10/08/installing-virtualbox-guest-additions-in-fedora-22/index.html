@@ -4,7 +4,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>About - Notes to self</title>
+	<title>Installing VirtualBox Guest Additions in Fedora 22 - Notes to self</title>
 	<meta name="author" content="map[name:Bert Van Vreckem email:bert.vanvreckem@gmail.com]">
 
 	
@@ -19,7 +19,7 @@
     
 	<link href='https://bertvv.github.io/notes-to-self/index.xml' rel="alternate" title="Notes to self" type="application/atom+xml">
 	
-	<link rel="canonical" href="https://bertvv.github.io/notes-to-self/about/">
+	<link rel="canonical" href="https://bertvv.github.io/notes-to-self/2015/10/08/installing-virtualbox-guest-additions-in-fedora-22">
 	<link href="https://bertvv.github.io/notes-to-self/favicon.png" rel="shortcut icon">
 	<link href="https://bertvv.github.io/notes-to-self/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="https://bertvv.github.io/notes-to-self/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -105,27 +105,51 @@
 				<div id="content" class="inner">
 					<div itemscope itemtype="https://schema.org/Blog">
 					<article class="post" itemscope itemtype="https://schema.org/BlogPosting">
-    <h1 class="title" itemprop="name">About</h1>
-	<div class="entry-content" itemprop="articleBody"><p>Hi! My name is Bert Van Vreckem and I teach Linux system administration at <a href="https://fbo.hogent.be/faculteit/english/">University College Ghent</a>.</p>
+    <h1 class="title" itemprop="name">Installing VirtualBox Guest Additions in Fedora 22</h1>
+	<div class="entry-content" itemprop="articleBody">
 
-<p>In this blog, I write about stuff that I learn, about solutions for problems that I encounter, answer great questions from my students (or from you!), etc. Topics include basic system administration (especially everything related to RHEL/CentOS 7 and systemd), shell scripting, configuration management with Ansible, etc.</p>
+<p>VirtualBox Guest additions are a set of drivers that you can install on virtual machines to enable a few cool features: a scaling desktop in the VM, shared clipboard, shared folders, etc. This post discusses how to install these in Fedora 22.</p>
 
-<p>I can offer workshops and talks (in Dutch or English) about the subjects below. Contact me if you&rsquo;re interested.</p>
+<p>You can easily find other HOWTO&rsquo;s that describe the installation process. For example, I like the one on <a href="http://www.if-not-true-then-false.com/2010/install-virtualbox-guest-additions-on-fedora-centos-red-hat-rhel/">If Not True Then False</a>. That one covers quite a few versions of Fedora and CentOS, which may be confusing for beginning Linux users. This post focuses on recent Fedora versions, specifically Fedora 22 and newer, where <code>yum</code> is replaced by <code>dnf</code> as the package management tool.</p>
 
-<ul>
-<li>Ansible</li>
-<li>Git</li>
-<li>Linux system administration</li>
-<li>Vagrant</li>
-<li>Vim</li>
-</ul>
+<h2 id="installation-procedure:d27ff6edcf0235db4a3bcb73c2e83780">Installation procedure</h2>
 
-<p>This site is powered by <a href="https://gohugo.io/">Hugo</a>, a static site generator, and hosted by <a href="https://pages.github.com/">Github Pages</a>. The theme is <a href="https://shashankmehta.in/archive/2012/greyshade.html">greyshade</a> by Shashank Mehta.</p>
+<p>Open a terminal (click Activities and type &ldquo;Terminal&rdquo;) and execute the following commands:</p>
 
-<p>The content of this blog is subject to the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution License</a>. Please attribute properly and link back.</p>
+<ol>
+<li><p>First, update the kernel:</p>
 
-<p><img src="https://licensebuttons.net/l/by/3.0/88x31.png" alt="CC-BY" />
-</p>
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>sudo dnf upgrade kernel*
+</pre></div>
+</p></li>
+
+<li><p>Reboot the VM when a new kernel version was installed.</p></li>
+
+<li><p>Install some packages needed for the installation:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>sudo dnf install dkms kernel-headers kernel-devel
+</pre></div>
+</p></li>
+
+<li><p>Open the &ldquo;Devices&rdquo; menu in the VM window and select &ldquo;Insert Guest Additions CD Image&hellip;&rdquo;</p>
+
+<p><img src="https://bertvv.github.io/notes-to-self/img/vboxadditions-instert-cd.png" alt="Devices &gt; Insert Guest Additions CD Image" />
+</p></li>
+
+<li><p>Click &ldquo;Run&rdquo; in the Autorun dialog box.</p>
+
+<p><img src="https://bertvv.github.io/notes-to-self/img/vboxadditions-autorun.png" alt="Autorun dialog box" />
+</p></li>
+
+<li><p>A terminal window will open that informs you of the installation process. Look for <code>[  OK  ]</code> and <code>[FAILED]</code> in the output. If you followed the instructions, you should only see <code>[  OK  ]</code>s.</p>
+
+<p><img src="https://bertvv.github.io/notes-to-self/img/vboxadditions-installation.png" alt="Guest Additions Installation" />
+</p></li>
+
+<li><p>Log out (the menu in the top right corner of the screen, click your user name and choose Log out) and back in.</p></li>
+</ol>
+
+<p>That&rsquo;s it!</p>
 </div></article>
 					
 						<div class="share">
