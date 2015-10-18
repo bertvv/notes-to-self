@@ -1,0 +1,334 @@
+<!DOCTYPE HTML>
+
+<html lang="en-us">
+
+<head>
+	<meta charset="utf-8">
+	<title>The number of hard links in ‘ls -l’ - Notes to self</title>
+	<meta name="author" content="map[name:Bert Van Vreckem email:bert.vanvreckem@gmail.com]">
+
+	
+	
+	<meta name="description" content="">
+	
+
+	
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+	<link href='https://bertvv.github.io/notes-to-self/index.xml' rel="alternate" title="Notes to self" type="application/atom+xml">
+	
+	<link rel="canonical" href="https://bertvv.github.io/notes-to-self/2015/10/18/the-number-of-hard-links-in-ls--l">
+	<link href="https://bertvv.github.io/notes-to-self/favicon.png" rel="shortcut icon">
+	<link href="https://bertvv.github.io/notes-to-self/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://bertvv.github.io/notes-to-self/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	
+	<link href="https://fonts.googleapis.com/css?family=Nunito:400,300,700" rel="stylesheet" type="text/css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	
+	<script src="https://bertvv.github.io/notes-to-self/js/md5.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='https://www.gravatar.com/avatar/" + MD5('bert.vanvreckem@gmail.com') + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+		});
+	</script>
+	
+	
+</div>
+
+<nav id="main-nav"><ul class="main">
+    <li><a href="https://bertvv.github.io/notes-to-self/">Blog</a></li>
+    <li><a href="https://bertvv.github.io/notes-to-self/about/">About</a></li>
+    <li><a href="https://bertvv.github.io/notes-to-self/post/">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    Linux system administration, config management, and stuff
+  </p>
+</section>
+
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href='mailto:bert.vanvreckem@gmail.com' title="Email">Email</a>
+		
+		
+		
+		
+			<a class="twitter" href='https://twitter.com/bertvanvreckem' title="Twitter">Twitter</a>
+		
+		
+			<a class="github" href='https://github.com/bertvv' title="GitHub">GitHub</a>
+		
+		
+		
+		
+			<a class="linkedin" href='https://www.linkedin.com/in/bertvanvreckem' title="LinkedIn">LinkedIn</a>
+		
+		
+			<a class="youtube" href='https://youtube.com/bertvvrhogent' title="Youtube">Youtube</a>
+		
+		
+		
+		
+		
+		
+		
+    	
+    	
+			<a class="rss" href='https://bertvv.github.io/notes-to-self/index.xml' title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>
+			</div>
+		</div>
+		<div class="mid-col">
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+					<div itemscope itemtype="https://schema.org/Blog">
+					<article class="post" itemscope itemtype="https://schema.org/BlogPosting">
+    <h1 class="title" itemprop="name">The number of hard links in ‘ls -l’</h1>
+	<div class="entry-content" itemprop="articleBody">
+
+<p>When you execute the command <code>ls -l</code> in UNIX, you get detailed information about files: permissions, file size, date of last modification, etc. A while ago, I got a question from one of my students who wondered what the second column meant. According to the documentation, it&rsquo;s the &ldquo;number of hard links,&rdquo; but what does that actually mean? Let&rsquo;s get to the bottom of this.</p>
+
+<p>One of my students, Tom, wrote:</p>
+
+<blockquote>
+<p>I created a directory <code>test2</code> containing a file, 3 scripts and another directory <code>test</code> containing the same file and scripts. I don&rsquo;t know whether this is relevant, but I mention it anyway. I created the directory <code>test2</code> by copying another directory and copying it within itself (I was playing with <code>cp</code>).</p>
+
+<p>To get back to the number of hard links: when I executed <code>ls -l</code>, I saw the number 3 next to directory <code>test2</code>. I looked into hard links and noticed that all hard links have the same inode. So I thought, let&rsquo;s find all hard links of <code>test2</code> with the <code>find / -inum ...</code> command. However, I only received 1 value: <code>/home/tom/test2</code> while I expected at least 2 or 3.</p>
+</blockquote>
+
+<p>So, Tom doubts whether the number in the second column is in fact the number of hard links. The documentation (<code>info ls</code>) at least confirms this:</p>
+
+<pre><code>'-l'
+'--format=long'
+'--format=verbose'
+     In addition to the name of each file, print the file type, file
+     mode bits, number of hard links, owner name, group name, size, and
+     timestamp (*note Formatting file timestamps::), normally the
+     modification time.  Print question marks for information that
+     cannot be determined.
+</code></pre>
+
+<p>Let&rsquo;s get to the bottom of this&hellip;</p>
+
+<h2 id="hard-links-between-files:597e460e738179dffa891daf0efe4b28">Hard links between files</h2>
+
+<p>The example below shows that for ordinary files, the second column really is the number of hard links:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>touch orig
+<span style="color: #003333">$ </span>ls -li
+total 0
+1706858 -rw-rw-r--. 1 bert bert 0 Nov  5 21:55 orig
+<span style="color: #003333">$ </span>ln orig link
+<span style="color: #003333">$ </span>ls -li
+1706858 -rw-rw-r--. 2 bert bert 0 Nov  5 21:55 link
+1706858 -rw-rw-r--. 2 bert bert 0 Nov  5 21:55 orig
+<span style="color: #003333">$ </span>find . -inum 1706858
+./orig
+./link
+</pre></div>
+</p>
+
+<p>When creating the file <code>orig</code>, the number of hard links was 1. I also added the option <code>-i</code> to show the <a href="https://en.wikipedia.org/wiki/Inode">inode number</a>. This number uniquely identifies a file. I then created a hard link from the original file. As you can see, both files now have the same inode number and the number of hard links is incremented. Searching on inode number finds both files.</p>
+
+<p>Copying with <code>cp</code>, as Tom did in his example, creates a <em>new</em> file with the same contents as the original. That means that the inode numbers are also different! Changes in one file will not be registered in the other one. The same goes for <em>symbolic links</em>, in fact:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>ln -s orig symb
+<span style="color: #003333">$ </span>ls -il
+total 0
+1706858 -rw-rw-r--. 2 bert bert 0 Nov  5 21:55 link
+1706858 -rw-rw-r--. 2 bert bert 0 Nov  5 21:55 orig
+1707044 lrwxrwxrwx. 1 bert bert 4 Nov  5 22:38 symb -&gt; orig
+</pre></div>
+</p>
+
+<h2 id="directories:597e460e738179dffa891daf0efe4b28">Directories</h2>
+
+<p>Now, hard links between directories don&rsquo;t exist, so the interpretation of the term &ldquo;number of hard links&rdquo; is a bit different than with ordinary files. In this case, the number represents how many other directories ‘link to’ it. Specifically, that means the parent directory and all directories immediately below. A new directory starts at &ldquo;2&rdquo;, i.e. a link from ‘itself’ and one from the parent directory. The number will increment when you create subdirectories, but not when you create new files or symbolic links.</p>
+
+<p>Take a look at the example below, and try it for yourself. Take your time, I&rsquo;ll wait&hellip;</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>ls -l
+total 0
+<span style="color: #003333">$ </span>mkdir a b
+<span style="color: #003333">$ </span>ls -l
+total 8
+drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 a
+drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 b
+<span style="color: #003333">$ </span>mkdir a/c
+<span style="color: #003333">$ </span>ls -l
+total 8
+drwxrwxr-x. 3 bert bert 4096 Nov  5 21:27 a
+drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 b
+<span style="color: #003333">$ </span>mkdir a/d
+<span style="color: #003333">$ </span>ls -l
+total 8
+drwxrwxr-x. 4 bert bert 4096 Nov  5 21:27 a
+drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 b
+<span style="color: #003333">$ </span>touch a/f
+<span style="color: #003333">$ </span>ls -l
+total 8
+drwxrwxr-x. 4 bert bert 4096 Nov  5 21:27 a
+drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 b
+<span style="color: #003333">$ </span>ln -rs b a/e
+<span style="color: #003333">$ </span>ls -l
+total 8
+drwxrwxr-x. 4 bert bert 4096 Nov  5 21:48 a
+drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 b
+<span style="color: #003333">$ </span>tree -F
+.
+|-- a/
+|   |-- c/
+|   |-- d/
+|   |-- e -&gt; ../b/
+|   <span style="color: #CC3300">`</span>-- f
+<span style="color: #CC3300">`</span>-- b/
+</pre></div>
+</p>
+
+<p>Every time I created a new subdirectory, the number of hard links incremented, but not when creating a file or symbolic link, even to a directory!</p>
+
+<p>As mentioned earlier, creating hard links from directories doesn&rsquo;t work:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>ln a c
+ln: ‘a’: hard link not allowed <span style="color: #006699; font-weight: bold">for </span>directory
+</pre></div>
+</p>
+
+<p>So when Tom was using find to search for a directory <code>test2</code> based on its inode number, it could necessarily only find it once.</p>
+
+<p>To finish off, let&rsquo;s look at a corner case, specifically the root directory (<code>/</code>) of the file system. On my laptop:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>ls -l /
+total 64
+lrwxrwxrwx.   1 root root     7 Sep 27 16:37 bin -&gt; usr/bin
+dr-xr-xr-x.   5 root root  3072 Oct 29 09:03 boot
+drwxr-xr-x.  22 root root  3700 Nov  5 18:33 dev
+drwxr-xr-x. 149 root root 12288 Nov  5 18:33 etc
+drwxr-xr-x.   4 root root  4096 Jul  8 10:56 home
+lrwxrwxrwx.   1 root root     7 Sep 27 16:37 lib -&gt; usr/lib
+lrwxrwxrwx.   1 root root     9 Sep 27 16:37 lib64 -&gt; usr/lib64
+drwx------.   2 root root 16384 Jun 27 19:09 lost+found
+drwxr-xr-x.   2 root root  4096 Jul  8 10:56 media
+drwxr-xr-x.   3 root root  4096 Jul  8 10:56 mnt
+drwxr-xr-x.   4 root root  4096 Sep 27 22:05 opt
+dr-xr-xr-x. 263 root root     0 Nov  4 10:28 proc
+dr-xr-x---.   5 root root  4096 Nov  3 02:32 root
+drwxr-xr-x.  37 root root  1120 Nov  5 21:46 run
+lrwxrwxrwx.   1 root root     8 Sep 27 16:37 sbin -&gt; usr/sbin
+drwxr-xr-x.   2 root root  4096 Jul  8 10:56 srv
+dr-xr-xr-x.  13 root root     0 Nov  4 09:28 sys
+drwxrwxrwt.  16 root root   420 Nov  5 21:46 tmp
+drwxr-xr-x.  13 root root  4096 Sep 27 16:37 usr
+drwxr-xr-x.  21 root root  4096 Sep 27 16:39 var
+<span style="color: #003333">$ </span>ls -ld /
+dr-xr-xr-x. 18 root root 4096 Nov  4 09:29 /
+</pre></div>
+</p>
+
+<p>As you can see in the last line, the number of hard links of <code>/</code> is 18. When you count the number of subdirectories directly below <code>/</code> (<em>not</em> counting symbolic links like <code>/sbin -&gt; /usr/sbin</code>), you get 16. Adding the directory&rsquo;s &ldquo;own&rdquo; hard link, you would expect the final number to be 17 because <code>/</code> is at the top of the directory hierarchy, right? But let&rsquo;s try this:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span><span style="color: #336666">cd</span> ..; <span style="color: #336666">pwd</span>
+/
+<span style="color: #003333">$ </span><span style="color: #336666">cd</span> ..; <span style="color: #336666">pwd</span>
+/
+<span style="color: #003333">$ </span><span style="color: #336666">cd</span> ..; <span style="color: #336666">pwd</span>
+/
+...
+</pre></div>
+</p>
+
+<p>Turtles all the way up! So apparently, the root directory is its own parent directory! And consequently, the number 18 is right after all&hellip;</p>
+
+<p>Thank you, Tom, for the interesting question!</p>
+
+<p><em>(I wrote and published this post elsewhere at first, but I&rsquo;m consolidating everything that is worth preserving on this site.)</em></p>
+</div></article>
+					
+						<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	<a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_button_google_plusone" g:plusone:size=''></a>
+	
+	
+	</div>
+	
+  	<script type="text/javascript" src='https://s7.addthis.com/js/250/addthis_widget.js#pubid='></script>
+  	
+</div>
+
+					
+					
+					<section id="comment">
+					    <h1 class="title">Comments</h1>
+					    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+					</section>
+					
+					
+
+<script type="text/javascript">
+    
+    var disqus_shortname = 'notes-to-self-bertvv';
+
+    
+    
+
+    
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+    
+</script>
+
+
+				    </div>
+				</div>
+			</div>
+			<footer id="footer" class="inner">
+    © 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back.
+
+
+Design credit: <a href="https://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="https://bertvv.github.io/notes-to-self/js/slash.js"></script>
+<script src="https://bertvv.github.io/notes-to-self/js/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script>
+</footer>
+		</div>
+	</div>
+	
+</body>
+</html>
