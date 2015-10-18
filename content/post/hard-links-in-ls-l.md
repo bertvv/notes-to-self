@@ -1,6 +1,6 @@
 +++
-date = "2015-10-08T14:59:34+02:00"
-draft = true
+date = "2015-10-18T09:46:19+02:00"
+draft = false
 title = "The number of hard links in ‘ls -l’"
 
 +++
