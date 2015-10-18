@@ -7,7 +7,174 @@
     <language>en-us</language>
     <author>Bert Van Vreckem</author>
     <copyright>© 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back.</copyright>
-    <updated>Thu, 08 Oct 2015 19:06:48 CEST</updated>
+    <updated>Sun, 18 Oct 2015 09:46:19 CEST</updated>
+    
+    <item>
+      <title>The number of hard links in ‘ls -l’</title>
+      <link>https://bertvv.github.io/notes-to-self/2015/10/18/the-number-of-hard-links-in-ls--l</link>
+      <pubDate>Sun, 18 Oct 2015 09:46:19 CEST</pubDate>
+      <author>Bert Van Vreckem</author>
+      <guid>https://bertvv.github.io/notes-to-self/2015/10/18/the-number-of-hard-links-in-ls--l</guid>
+      <description>
+
+&lt;p&gt;When you execute the command &lt;code&gt;ls -l&lt;/code&gt; in UNIX, you get detailed information about files: permissions, file size, date of last modification, etc. A while ago, I got a question from one of my students who wondered what the second column meant. According to the documentation, it&amp;rsquo;s the &amp;ldquo;number of hard links,&amp;rdquo; but what does that actually mean? Let&amp;rsquo;s get to the bottom of this.&lt;/p&gt;
+
+&lt;p&gt;One of my students, Tom, wrote:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;I created a directory &lt;code&gt;test2&lt;/code&gt; containing a file, 3 scripts and another directory &lt;code&gt;test&lt;/code&gt; containing the same file and scripts. I don&amp;rsquo;t know whether this is relevant, but I mention it anyway. I created the directory &lt;code&gt;test2&lt;/code&gt; by copying another directory and copying it within itself (I was playing with &lt;code&gt;cp&lt;/code&gt;).&lt;/p&gt;
+
+&lt;p&gt;To get back to the number of hard links: when I executed &lt;code&gt;ls -l&lt;/code&gt;, I saw the number 3 next to directory &lt;code&gt;test2&lt;/code&gt;. I looked into hard links and noticed that all hard links have the same inode. So I thought, let&amp;rsquo;s find all hard links of &lt;code&gt;test2&lt;/code&gt; with the &lt;code&gt;find / -inum ...&lt;/code&gt; command. However, I only received 1 value: &lt;code&gt;/home/tom/test2&lt;/code&gt; while I expected at least 2 or 3.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;So, Tom doubts whether the number in the second column is in fact the number of hard links. The documentation (&lt;code&gt;info ls&lt;/code&gt;) at least confirms this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&#39;-l&#39;
+&#39;--format=long&#39;
+&#39;--format=verbose&#39;
+     In addition to the name of each file, print the file type, file
+     mode bits, number of hard links, owner name, group name, size, and
+     timestamp (*note Formatting file timestamps::), normally the
+     modification time.  Print question marks for information that
+     cannot be determined.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Let&amp;rsquo;s get to the bottom of this&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&#34;hard-links-between-files:597e460e738179dffa891daf0efe4b28&#34;&gt;Hard links between files&lt;/h2&gt;
+
+&lt;p&gt;The example below shows that for ordinary files, the second column really is the number of hard links:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;touch orig
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ls -li
+total 0
+1706858 -rw-rw-r--. 1 bert bert 0 Nov  5 21:55 orig
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ln orig link
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ls -li
+1706858 -rw-rw-r--. 2 bert bert 0 Nov  5 21:55 link
+1706858 -rw-rw-r--. 2 bert bert 0 Nov  5 21:55 orig
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;find . -inum 1706858
+./orig
+./link
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;When creating the file &lt;code&gt;orig&lt;/code&gt;, the number of hard links was 1. I also added the option &lt;code&gt;-i&lt;/code&gt; to show the &lt;a href=&#34;https://en.wikipedia.org/wiki/Inode&#34;&gt;inode number&lt;/a&gt;. This number uniquely identifies a file. I then created a hard link from the original file. As you can see, both files now have the same inode number and the number of hard links is incremented. Searching on inode number finds both files.&lt;/p&gt;
+
+&lt;p&gt;Copying with &lt;code&gt;cp&lt;/code&gt;, as Tom did in his example, creates a &lt;em&gt;new&lt;/em&gt; file with the same contents as the original. That means that the inode numbers are also different! Changes in one file will not be registered in the other one. The same goes for &lt;em&gt;symbolic links&lt;/em&gt;, in fact:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ln -s orig symb
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ls -il
+total 0
+1706858 -rw-rw-r--. 2 bert bert 0 Nov  5 21:55 link
+1706858 -rw-rw-r--. 2 bert bert 0 Nov  5 21:55 orig
+1707044 lrwxrwxrwx. 1 bert bert 4 Nov  5 22:38 symb -&amp;gt; orig
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;h2 id=&#34;directories:597e460e738179dffa891daf0efe4b28&#34;&gt;Directories&lt;/h2&gt;
+
+&lt;p&gt;Now, hard links between directories don&amp;rsquo;t exist, so the interpretation of the term &amp;ldquo;number of hard links&amp;rdquo; is a bit different than with ordinary files. In this case, the number represents how many other directories ‘link to’ it. Specifically, that means the parent directory and all directories immediately below. A new directory starts at &amp;ldquo;2&amp;rdquo;, i.e. a link from ‘itself’ and one from the parent directory. The number will increment when you create subdirectories, but not when you create new files or symbolic links.&lt;/p&gt;
+
+&lt;p&gt;Take a look at the example below, and try it for yourself. Take your time, I&amp;rsquo;ll wait&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ls -l
+total 0
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;mkdir a b
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ls -l
+total 8
+drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 a
+drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 b
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;mkdir a/c
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ls -l
+total 8
+drwxrwxr-x. 3 bert bert 4096 Nov  5 21:27 a
+drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 b
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;mkdir a/d
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ls -l
+total 8
+drwxrwxr-x. 4 bert bert 4096 Nov  5 21:27 a
+drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 b
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;touch a/f
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ls -l
+total 8
+drwxrwxr-x. 4 bert bert 4096 Nov  5 21:27 a
+drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 b
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ln -rs b a/e
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ls -l
+total 8
+drwxrwxr-x. 4 bert bert 4096 Nov  5 21:48 a
+drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 b
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;tree -F
+.
+|-- a/
+|   |-- c/
+|   |-- d/
+|   |-- e -&amp;gt; ../b/
+|   &lt;span style=&#34;color: #CC3300&#34;&gt;`&lt;/span&gt;-- f
+&lt;span style=&#34;color: #CC3300&#34;&gt;`&lt;/span&gt;-- b/
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Every time I created a new subdirectory, the number of hard links incremented, but not when creating a file or symbolic link, even to a directory!&lt;/p&gt;
+
+&lt;p&gt;As mentioned earlier, creating hard links from directories doesn&amp;rsquo;t work:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ln a c
+ln: ‘a’: hard link not allowed &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;for &lt;/span&gt;directory
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;So when Tom was using find to search for a directory &lt;code&gt;test2&lt;/code&gt; based on its inode number, it could necessarily only find it once.&lt;/p&gt;
+
+&lt;p&gt;To finish off, let&amp;rsquo;s look at a corner case, specifically the root directory (&lt;code&gt;/&lt;/code&gt;) of the file system. On my laptop:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ls -l /
+total 64
+lrwxrwxrwx.   1 root root     7 Sep 27 16:37 bin -&amp;gt; usr/bin
+dr-xr-xr-x.   5 root root  3072 Oct 29 09:03 boot
+drwxr-xr-x.  22 root root  3700 Nov  5 18:33 dev
+drwxr-xr-x. 149 root root 12288 Nov  5 18:33 etc
+drwxr-xr-x.   4 root root  4096 Jul  8 10:56 home
+lrwxrwxrwx.   1 root root     7 Sep 27 16:37 lib -&amp;gt; usr/lib
+lrwxrwxrwx.   1 root root     9 Sep 27 16:37 lib64 -&amp;gt; usr/lib64
+drwx------.   2 root root 16384 Jun 27 19:09 lost+found
+drwxr-xr-x.   2 root root  4096 Jul  8 10:56 media
+drwxr-xr-x.   3 root root  4096 Jul  8 10:56 mnt
+drwxr-xr-x.   4 root root  4096 Sep 27 22:05 opt
+dr-xr-xr-x. 263 root root     0 Nov  4 10:28 proc
+dr-xr-x---.   5 root root  4096 Nov  3 02:32 root
+drwxr-xr-x.  37 root root  1120 Nov  5 21:46 run
+lrwxrwxrwx.   1 root root     8 Sep 27 16:37 sbin -&amp;gt; usr/sbin
+drwxr-xr-x.   2 root root  4096 Jul  8 10:56 srv
+dr-xr-xr-x.  13 root root     0 Nov  4 09:28 sys
+drwxrwxrwt.  16 root root   420 Nov  5 21:46 tmp
+drwxr-xr-x.  13 root root  4096 Sep 27 16:37 usr
+drwxr-xr-x.  21 root root  4096 Sep 27 16:39 var
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ls -ld /
+dr-xr-xr-x. 18 root root 4096 Nov  4 09:29 /
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;As you can see in the last line, the number of hard links of &lt;code&gt;/&lt;/code&gt; is 18. When you count the number of subdirectories directly below &lt;code&gt;/&lt;/code&gt; (&lt;em&gt;not&lt;/em&gt; counting symbolic links like &lt;code&gt;/sbin -&amp;gt; /usr/sbin&lt;/code&gt;), you get 16. Adding the directory&amp;rsquo;s &amp;ldquo;own&amp;rdquo; hard link, you would expect the final number to be 17 because &lt;code&gt;/&lt;/code&gt; is at the top of the directory hierarchy, right? But let&amp;rsquo;s try this:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;&lt;span style=&#34;color: #336666&#34;&gt;cd&lt;/span&gt; ..; &lt;span style=&#34;color: #336666&#34;&gt;pwd&lt;/span&gt;
+/
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;&lt;span style=&#34;color: #336666&#34;&gt;cd&lt;/span&gt; ..; &lt;span style=&#34;color: #336666&#34;&gt;pwd&lt;/span&gt;
+/
+&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;&lt;span style=&#34;color: #336666&#34;&gt;cd&lt;/span&gt; ..; &lt;span style=&#34;color: #336666&#34;&gt;pwd&lt;/span&gt;
+/
+...
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Turtles all the way up! So apparently, the root directory is its own parent directory! And consequently, the number 18 is right after all&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;Thank you, Tom, for the interesting question!&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;(I wrote and published this post elsewhere at first, but I&amp;rsquo;m consolidating everything that is worth preserving on this site.)&lt;/em&gt;&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Installing VirtualBox Guest Additions in Fedora 22</title>
