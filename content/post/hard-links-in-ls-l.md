@@ -9,7 +9,7 @@ When you execute the command `ls -l` in UNIX, you get detailed information about
 
 <!--more-->
 
-My student, Tom, wrote:
+One of my students, Tom, wrote:
 
 > I created a directory `test2` containing a file, 3 scripts and another directory `test` containing the same file and scripts. I don't know whether this is relevant, but I mention it anyway. I created the directory `test2` by copying another directory and copying it within itself (I was playing with `cp`).
 >
@@ -161,4 +161,4 @@ Turtles all the way up! So apparently, the root directory is its own parent dire
 
 Thank you, Tom, for the interesting question!
 
-*(I wrote and published this post on another blog some time ago, but I'm consolidating all articles that are worth preserving here)*
+*(I wrote and published this post elsewhere at first, but I'm consolidating everything that is worth preserving on this site.)*
