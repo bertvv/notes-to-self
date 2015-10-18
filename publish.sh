@@ -30,7 +30,7 @@ fi
 #{{{ Variables
 site_content=public
 git_remote=git@github.com:bertvv/notes-to-self.git
-website_branch=${gh-pages}
+website_branch=gh-pages
 #}}}
 
 # Script proper
