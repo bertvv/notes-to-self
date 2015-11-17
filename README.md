@@ -14,7 +14,7 @@ $ hugo new about.md
 ```ShellSession
 $ hugo new post/some-title.md
 $ vi content/post/some-title.md
-$ hugo undraft post/some-title.md
+$ hugo undraft content/post/some-title.md
 ```
 
 Watch progress with
