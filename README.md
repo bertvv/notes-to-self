@@ -1,4 +1,12 @@
-# Setup
+# Notes to self
+
+This repository contains the source code of my blog, hosted on <https://bertvv.github.io/notes-to-self>. If you want me to write about a specific subject within the topics of the blog (Linux, CentOS, Ansible, ...), [open an issue](https://github.com/bertvv/notes-to-self/issues)!
+
+## Cheat sheet
+
+Useful commands
+
+### Setup
 
 ```ShellSession
 $ hugo new site notes-to-self
@@ -7,9 +15,9 @@ $ hugo new about.md
 
 ```
 
-# Workflow
+### Workflow
 
-## New post
+**New post**
 
 ```ShellSession
 $ hugo new post/some-title.md
@@ -23,7 +31,7 @@ Watch progress with
 $ hugo server --buildDrafts --watch
 ```
 
-## Publish on Github Pages
+**Publish on Github Pages**
 
 `hugo shell` should not be running when you do this:
 
@@ -35,9 +43,9 @@ $ git subtree push --prefix=public git@github.com:bertvv/notes-to-self.git gh-pa
 
 See <https://gohugo.io/tutorials/github-pages-blog/>
 
-# Tricks
+### Tricks
 
-## Source code
+**Source code**
 
 ```
 {{< highlight LANGUAGE>}}
