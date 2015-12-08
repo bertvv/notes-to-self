@@ -1,6 +1,6 @@
 # Notes to self
 
-This repository contains the source code of my blog, hosted on <https://bertvv.github.io/notes-to-self>. If you want me to write about a specific subject within the topics of the blog (Linux, CentOS, Ansible, ...), [open an issue](https://github.com/bertvv/notes-to-self/issues)!
+This repository contains the source code of my blog, hosted on <https://bertvv.github.io/notes-to-self>. If you want me to write about a specific subject within the topics covered (Linux, CentOS, Ansible, LaTeX, ...), [open an issue](https://github.com/bertvv/notes-to-self/issues)!
 
 ## Cheat sheet
 
