@@ -139,11 +139,11 @@
 <p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>touch orig
 <span style="color: #003333">$ </span>ls -li
 total 0
-1706858 -rw-rw-r--. 1 bert bert 0 Nov  5 21:55 orig
+<span style="color: #FF6600">1706858</span> -rw-rw-r--. <span style="color: #FF6600">1</span> bert bert <span style="color: #FF6600">0</span> Nov  <span style="color: #FF6600">5</span> 21:55 orig
 <span style="color: #003333">$ </span>ln orig link
 <span style="color: #003333">$ </span>ls -li
-1706858 -rw-rw-r--. 2 bert bert 0 Nov  5 21:55 link
-1706858 -rw-rw-r--. 2 bert bert 0 Nov  5 21:55 orig
+<span style="color: #FF6600">1706858</span> -rw-rw-r--. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">0</span> Nov  <span style="color: #FF6600">5</span> 21:55 link
+<span style="color: #FF6600">1706858</span> -rw-rw-r--. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">0</span> Nov  <span style="color: #FF6600">5</span> 21:55 orig
 <span style="color: #003333">$ </span>find . -inum 1706858
 ./orig
 ./link
@@ -157,9 +157,9 @@ total 0
 <p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>ln -s orig symb
 <span style="color: #003333">$ </span>ls -il
 total 0
-1706858 -rw-rw-r--. 2 bert bert 0 Nov  5 21:55 link
-1706858 -rw-rw-r--. 2 bert bert 0 Nov  5 21:55 orig
-1707044 lrwxrwxrwx. 1 bert bert 4 Nov  5 22:38 symb -&gt; orig
+<span style="color: #FF6600">1706858</span> -rw-rw-r--. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">0</span> Nov  <span style="color: #FF6600">5</span> 21:55 link
+<span style="color: #FF6600">1706858</span> -rw-rw-r--. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">0</span> Nov  <span style="color: #FF6600">5</span> 21:55 orig
+<span style="color: #FF6600">1707044</span> lrwxrwxrwx. <span style="color: #FF6600">1</span> bert bert <span style="color: #FF6600">4</span> Nov  <span style="color: #FF6600">5</span> 22:38 symb -&gt; orig
 </pre></div>
 </p>
 
@@ -174,28 +174,28 @@ total 0
 <span style="color: #003333">$ </span>mkdir a b
 <span style="color: #003333">$ </span>ls -l
 total 8
-drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 a
-drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 b
+drwxrwxr-x. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:26 a
+drwxrwxr-x. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:26 b
 <span style="color: #003333">$ </span>mkdir a/c
 <span style="color: #003333">$ </span>ls -l
 total 8
-drwxrwxr-x. 3 bert bert 4096 Nov  5 21:27 a
-drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 b
+drwxrwxr-x. <span style="color: #FF6600">3</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:27 a
+drwxrwxr-x. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:26 b
 <span style="color: #003333">$ </span>mkdir a/d
 <span style="color: #003333">$ </span>ls -l
 total 8
-drwxrwxr-x. 4 bert bert 4096 Nov  5 21:27 a
-drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 b
+drwxrwxr-x. <span style="color: #FF6600">4</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:27 a
+drwxrwxr-x. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:26 b
 <span style="color: #003333">$ </span>touch a/f
 <span style="color: #003333">$ </span>ls -l
 total 8
-drwxrwxr-x. 4 bert bert 4096 Nov  5 21:27 a
-drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 b
+drwxrwxr-x. <span style="color: #FF6600">4</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:27 a
+drwxrwxr-x. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:26 b
 <span style="color: #003333">$ </span>ln -rs b a/e
 <span style="color: #003333">$ </span>ls -l
 total 8
-drwxrwxr-x. 4 bert bert 4096 Nov  5 21:48 a
-drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 b
+drwxrwxr-x. <span style="color: #FF6600">4</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:48 a
+drwxrwxr-x. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:26 b
 <span style="color: #003333">$ </span>tree -F
 .
 |-- a/
@@ -212,7 +212,7 @@ drwxrwxr-x. 2 bert bert 4096 Nov  5 21:26 b
 <p>As mentioned earlier, creating hard links from directories doesn&rsquo;t work:</p>
 
 <p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>ln a c
-ln: ‘a’: hard link not allowed <span style="color: #006699; font-weight: bold">for </span>directory
+ln: ‘a’: hard link not allowed <span style="color: #006699; font-weight: bold">for</span> directory
 </pre></div>
 </p>
 
@@ -222,28 +222,28 @@ ln: ‘a’: hard link not allowed <span style="color: #006699; font-weight: bol
 
 <p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>ls -l /
 total 64
-lrwxrwxrwx.   1 root root     7 Sep 27 16:37 bin -&gt; usr/bin
-dr-xr-xr-x.   5 root root  3072 Oct 29 09:03 boot
-drwxr-xr-x.  22 root root  3700 Nov  5 18:33 dev
-drwxr-xr-x. 149 root root 12288 Nov  5 18:33 etc
-drwxr-xr-x.   4 root root  4096 Jul  8 10:56 home
-lrwxrwxrwx.   1 root root     7 Sep 27 16:37 lib -&gt; usr/lib
-lrwxrwxrwx.   1 root root     9 Sep 27 16:37 lib64 -&gt; usr/lib64
-drwx------.   2 root root 16384 Jun 27 19:09 lost+found
-drwxr-xr-x.   2 root root  4096 Jul  8 10:56 media
-drwxr-xr-x.   3 root root  4096 Jul  8 10:56 mnt
-drwxr-xr-x.   4 root root  4096 Sep 27 22:05 opt
-dr-xr-xr-x. 263 root root     0 Nov  4 10:28 proc
-dr-xr-x---.   5 root root  4096 Nov  3 02:32 root
-drwxr-xr-x.  37 root root  1120 Nov  5 21:46 run
-lrwxrwxrwx.   1 root root     8 Sep 27 16:37 sbin -&gt; usr/sbin
-drwxr-xr-x.   2 root root  4096 Jul  8 10:56 srv
-dr-xr-xr-x.  13 root root     0 Nov  4 09:28 sys
-drwxrwxrwt.  16 root root   420 Nov  5 21:46 tmp
-drwxr-xr-x.  13 root root  4096 Sep 27 16:37 usr
-drwxr-xr-x.  21 root root  4096 Sep 27 16:39 var
+lrwxrwxrwx.   <span style="color: #FF6600">1</span> root root     <span style="color: #FF6600">7</span> Sep <span style="color: #FF6600">27</span> 16:37 bin -&gt; usr/bin
+dr-xr-xr-x.   <span style="color: #FF6600">5</span> root root  <span style="color: #FF6600">3072</span> Oct <span style="color: #FF6600">29</span> 09:03 boot
+drwxr-xr-x.  <span style="color: #FF6600">22</span> root root  <span style="color: #FF6600">3700</span> Nov  <span style="color: #FF6600">5</span> 18:33 dev
+drwxr-xr-x. <span style="color: #FF6600">149</span> root root <span style="color: #FF6600">12288</span> Nov  <span style="color: #FF6600">5</span> 18:33 etc
+drwxr-xr-x.   <span style="color: #FF6600">4</span> root root  <span style="color: #FF6600">4096</span> Jul  <span style="color: #FF6600">8</span> 10:56 home
+lrwxrwxrwx.   <span style="color: #FF6600">1</span> root root     <span style="color: #FF6600">7</span> Sep <span style="color: #FF6600">27</span> 16:37 lib -&gt; usr/lib
+lrwxrwxrwx.   <span style="color: #FF6600">1</span> root root     <span style="color: #FF6600">9</span> Sep <span style="color: #FF6600">27</span> 16:37 lib64 -&gt; usr/lib64
+drwx------.   <span style="color: #FF6600">2</span> root root <span style="color: #FF6600">16384</span> Jun <span style="color: #FF6600">27</span> 19:09 lost+found
+drwxr-xr-x.   <span style="color: #FF6600">2</span> root root  <span style="color: #FF6600">4096</span> Jul  <span style="color: #FF6600">8</span> 10:56 media
+drwxr-xr-x.   <span style="color: #FF6600">3</span> root root  <span style="color: #FF6600">4096</span> Jul  <span style="color: #FF6600">8</span> 10:56 mnt
+drwxr-xr-x.   <span style="color: #FF6600">4</span> root root  <span style="color: #FF6600">4096</span> Sep <span style="color: #FF6600">27</span> 22:05 opt
+dr-xr-xr-x. <span style="color: #FF6600">263</span> root root     <span style="color: #FF6600">0</span> Nov  <span style="color: #FF6600">4</span> 10:28 proc
+dr-xr-x---.   <span style="color: #FF6600">5</span> root root  <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">3</span> 02:32 root
+drwxr-xr-x.  <span style="color: #FF6600">37</span> root root  <span style="color: #FF6600">1120</span> Nov  <span style="color: #FF6600">5</span> 21:46 run
+lrwxrwxrwx.   <span style="color: #FF6600">1</span> root root     <span style="color: #FF6600">8</span> Sep <span style="color: #FF6600">27</span> 16:37 sbin -&gt; usr/sbin
+drwxr-xr-x.   <span style="color: #FF6600">2</span> root root  <span style="color: #FF6600">4096</span> Jul  <span style="color: #FF6600">8</span> 10:56 srv
+dr-xr-xr-x.  <span style="color: #FF6600">13</span> root root     <span style="color: #FF6600">0</span> Nov  <span style="color: #FF6600">4</span> 09:28 sys
+drwxrwxrwt.  <span style="color: #FF6600">16</span> root root   <span style="color: #FF6600">420</span> Nov  <span style="color: #FF6600">5</span> 21:46 tmp
+drwxr-xr-x.  <span style="color: #FF6600">13</span> root root  <span style="color: #FF6600">4096</span> Sep <span style="color: #FF6600">27</span> 16:37 usr
+drwxr-xr-x.  <span style="color: #FF6600">21</span> root root  <span style="color: #FF6600">4096</span> Sep <span style="color: #FF6600">27</span> 16:39 var
 <span style="color: #003333">$ </span>ls -ld /
-dr-xr-xr-x. 18 root root 4096 Nov  4 09:29 /
+dr-xr-xr-x. <span style="color: #FF6600">18</span> root root <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">4</span> 09:29 /
 </pre></div>
 </p>
 

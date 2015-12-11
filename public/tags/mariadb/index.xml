@@ -153,26 +153,26 @@ is_mysql_command_available&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;#}}}&lt;/span&gt;
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;#{{{ Command line parsing&lt;/span&gt;
 
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;$#&amp;quot;&lt;/span&gt; -ne &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;1&amp;quot;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;then&lt;/span&gt;
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color: #336666&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;Expected 1 argument, got $#&amp;quot;&lt;/span&gt; &amp;gt;&amp;amp;2
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt;$#&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt; -ne &amp;quot;&lt;/span&gt;1&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot; ]; then&lt;/span&gt;
+&lt;span style=&#34;color: #CC3300&#34;&gt;  echo &amp;quot;&lt;/span&gt;Expected &lt;span style=&#34;color: #FF6600&#34;&gt;1&lt;/span&gt; argument, got &lt;span style=&#34;color: #003333&#34;&gt;$#&amp;quot;&lt;/span&gt; &amp;gt;&amp;amp;2
   usage
   &lt;span style=&#34;color: #336666&#34;&gt;exit &lt;/span&gt;2
 &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;fi&lt;/span&gt;
 
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;#}}}&lt;/span&gt;
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;#{{{ Variables&lt;/span&gt;
-&lt;span style=&#34;color: #003333&#34;&gt;db_root_password&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;${1}&amp;quot;&lt;/span&gt;
+&lt;span style=&#34;color: #003333&#34;&gt;db_root_password&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #AA0000&#34;&gt;${&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color: #AA0000&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;&lt;/span&gt;
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;#}}}&lt;/span&gt;
 
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Script proper&lt;/span&gt;
 
 &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;if&lt;/span&gt; ! is_mysql_command_available; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;then&lt;/span&gt;
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color: #336666&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;The MySQL/MariaDB client mysql(1) is not installed.&amp;quot;&lt;/span&gt;
+  &lt;span style=&#34;color: #336666&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;The MySQL/MariaDB client mysql(1) is not installed.&amp;quot;&lt;/span&gt;
   &lt;span style=&#34;color: #336666&#34;&gt;exit &lt;/span&gt;1
 &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;fi&lt;/span&gt;
 
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;if &lt;/span&gt;is_mysql_root_password_set; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;then&lt;/span&gt;
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color: #336666&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;Database root password already set&amp;quot;&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;if&lt;/span&gt; is_mysql_root_password_set; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;then&lt;/span&gt;
+  &lt;span style=&#34;color: #336666&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;Database root password already set&amp;quot;&lt;/span&gt;
   &lt;span style=&#34;color: #336666&#34;&gt;exit &lt;/span&gt;0
 &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;fi&lt;/span&gt;
 

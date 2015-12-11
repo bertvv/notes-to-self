@@ -244,26 +244,26 @@ is_mysql_command_available<span style="color: #555555">()</span> <span style="co
 <span style="color: #0099FF; font-style: italic">#}}}</span>
 <span style="color: #0099FF; font-style: italic">#{{{ Command line parsing</span>
 
-<span style="color: #006699; font-weight: bold">if</span> <span style="color: #555555">[</span> <span style="color: #CC3300">&quot;$#&quot;</span> -ne <span style="color: #CC3300">&quot;1&quot;</span> <span style="color: #555555">]</span>; <span style="color: #006699; font-weight: bold">then</span>
-<span style="color: #006699; font-weight: bold">  </span><span style="color: #336666">echo</span> <span style="color: #CC3300">&quot;Expected 1 argument, got $#&quot;</span> &gt;&amp;2
+<span style="color: #006699; font-weight: bold">if</span> <span style="color: #555555">[</span> <span style="color: #CC3300">&quot;</span><span style="color: #003333">$#&quot;</span><span style="color: #CC3300"> -ne &quot;</span>1<span style="color: #CC3300">&quot; ]; then</span>
+<span style="color: #CC3300">  echo &quot;</span>Expected <span style="color: #FF6600">1</span> argument, got <span style="color: #003333">$#&quot;</span> &gt;&amp;2
   usage
   <span style="color: #336666">exit </span>2
 <span style="color: #006699; font-weight: bold">fi</span>
 
 <span style="color: #0099FF; font-style: italic">#}}}</span>
 <span style="color: #0099FF; font-style: italic">#{{{ Variables</span>
-<span style="color: #003333">db_root_password</span><span style="color: #555555">=</span><span style="color: #CC3300">&quot;${1}&quot;</span>
+<span style="color: #003333">db_root_password</span><span style="color: #555555">=</span><span style="color: #CC3300">&quot;</span><span style="color: #AA0000">${</span><span style="color: #003333">1</span><span style="color: #AA0000">}</span><span style="color: #CC3300">&quot;</span>
 <span style="color: #0099FF; font-style: italic">#}}}</span>
 
 <span style="color: #0099FF; font-style: italic"># Script proper</span>
 
 <span style="color: #006699; font-weight: bold">if</span> ! is_mysql_command_available; <span style="color: #006699; font-weight: bold">then</span>
-<span style="color: #006699; font-weight: bold">  </span><span style="color: #336666">echo</span> <span style="color: #CC3300">&quot;The MySQL/MariaDB client mysql(1) is not installed.&quot;</span>
+  <span style="color: #336666">echo</span> <span style="color: #CC3300">&quot;The MySQL/MariaDB client mysql(1) is not installed.&quot;</span>
   <span style="color: #336666">exit </span>1
 <span style="color: #006699; font-weight: bold">fi</span>
 
-<span style="color: #006699; font-weight: bold">if </span>is_mysql_root_password_set; <span style="color: #006699; font-weight: bold">then</span>
-<span style="color: #006699; font-weight: bold">  </span><span style="color: #336666">echo</span> <span style="color: #CC3300">&quot;Database root password already set&quot;</span>
+<span style="color: #006699; font-weight: bold">if</span> is_mysql_root_password_set; <span style="color: #006699; font-weight: bold">then</span>
+  <span style="color: #336666">echo</span> <span style="color: #CC3300">&quot;Database root password already set&quot;</span>
   <span style="color: #336666">exit </span>0
 <span style="color: #006699; font-weight: bold">fi</span>
 
