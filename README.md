@@ -45,6 +45,12 @@ See <https://gohugo.io/tutorials/github-pages-blog/>
 
 ### Tricks
 
+**Read more...**
+
+```
+<!--more-->
+```
+
 **Source code**
 
 ```
