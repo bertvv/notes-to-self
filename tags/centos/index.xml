@@ -3,7 +3,7 @@
   <channel>
       <title>Centos on Notes to self </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://localhost:1313/notes-to-self/tags/centos/</link>
+    <link>https://bertvv.github.io/notes-to-self/tags/centos/</link>
     <language>en-us</language>
     <author>Bert Van Vreckem</author>
     <copyright>© 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back.</copyright>
@@ -11,10 +11,10 @@
     
     <item>
       <title>Testing Ansible roles with Travis-CI, Part 1: CentOS</title>
-      <link>http://localhost:1313/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos</link>
+      <link>https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos</link>
       <pubDate>Fri, 11 Dec 2015 20:49:16 CET</pubDate>
       <author>Bert Van Vreckem</author>
-      <guid>http://localhost:1313/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos</guid>
+      <guid>https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos</guid>
       <description>
 
 &lt;p&gt;In this first post on testing Ansible roles with Travis-CI, we&amp;rsquo;ll discuss how you can apply a test playbook on CentOS.&lt;/p&gt;
