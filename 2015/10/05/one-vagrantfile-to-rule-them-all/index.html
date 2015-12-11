@@ -135,21 +135,21 @@
 
 <p>This is the main loop of the script that iterates over the <code>hosts</code>:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 1</span>   hosts<span style="color: #555555">.</span>each <span style="color: #006699; font-weight: bold">do</span> <span style="color: #555555">|</span>host<span style="color: #555555">|</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 2</span>     config<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>define host<span style="color: #555555">[</span><span style="color: #CC3300">&#39;name&#39;</span><span style="color: #555555">]</span> <span style="color: #006699; font-weight: bold">do</span> <span style="color: #555555">|</span>node<span style="color: #555555">|</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 3</span>       node<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>box <span style="color: #555555">=</span> host<span style="color: #555555">[</span><span style="color: #CC3300">&#39;box&#39;</span><span style="color: #555555">]</span> <span style="color: #555555">||=</span> <span style="color: #336600">DEFAULT_BASE_BOX</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 4</span>       node<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>box_url <span style="color: #555555">=</span> host<span style="color: #555555">[</span><span style="color: #CC3300">&#39;box_url&#39;</span><span style="color: #555555">]</span> <span style="color: #555555">||=</span> <span style="color: #336600">DEFAULT_BASE_BOX_URL</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 5</span> 
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 6</span>       node<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>hostname <span style="color: #555555">=</span> host<span style="color: #555555">[</span><span style="color: #CC3300">&#39;name&#39;</span><span style="color: #555555">]</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 7</span>       node<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>network <span style="color: #FFCC33">:private_network</span>, network_options(host)
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 8</span>       custom_synced_folders(node<span style="color: #555555">.</span>vm, host)
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 9</span> 
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">10</span>       node<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>provider <span style="color: #FFCC33">:virtualbox</span> <span style="color: #006699; font-weight: bold">do</span> <span style="color: #555555">|</span>vb<span style="color: #555555">|</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">11</span>         vb<span style="color: #555555">.</span>name <span style="color: #555555">=</span> host<span style="color: #555555">[</span><span style="color: #CC3300">&#39;name&#39;</span><span style="color: #555555">]</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">12</span>         vb<span style="color: #555555">.</span>customize <span style="color: #555555">[</span><span style="color: #CC3300">&#39;modifyvm&#39;</span>, <span style="color: #FFCC33">:id</span>, <span style="color: #CC3300">&#39;--groups&#39;</span>, <span style="color: #336600">PROJECT_NAME</span><span style="color: #555555">]</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">13</span>       <span style="color: #006699; font-weight: bold">end</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">14</span>     <span style="color: #006699; font-weight: bold">end</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">15</span>   <span style="color: #006699; font-weight: bold">end</span>
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 1 </span>  hosts<span style="color: #555555">.</span>each <span style="color: #006699; font-weight: bold">do</span> <span style="color: #555555">|</span>host<span style="color: #555555">|</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 2 </span>    config<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>define host<span style="color: #555555">[</span><span style="color: #CC3300">&#39;name&#39;</span><span style="color: #555555">]</span> <span style="color: #006699; font-weight: bold">do</span> <span style="color: #555555">|</span>node<span style="color: #555555">|</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 3 </span>      node<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>box <span style="color: #555555">=</span> host<span style="color: #555555">[</span><span style="color: #CC3300">&#39;box&#39;</span><span style="color: #555555">]</span> <span style="color: #555555">||=</span> <span style="color: #336600">DEFAULT_BASE_BOX</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 4 </span>      node<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>box_url <span style="color: #555555">=</span> host<span style="color: #555555">[</span><span style="color: #CC3300">&#39;box_url&#39;</span><span style="color: #555555">]</span> <span style="color: #555555">||=</span> <span style="color: #336600">DEFAULT_BASE_BOX_URL</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 5 </span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 6 </span>      node<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>hostname <span style="color: #555555">=</span> host<span style="color: #555555">[</span><span style="color: #CC3300">&#39;name&#39;</span><span style="color: #555555">]</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 7 </span>      node<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>network <span style="color: #FFCC33">:private_network</span>, network_options(host)
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 8 </span>      custom_synced_folders(node<span style="color: #555555">.</span>vm, host)
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 9 </span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">10 </span>      node<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>provider <span style="color: #FFCC33">:virtualbox</span> <span style="color: #006699; font-weight: bold">do</span> <span style="color: #555555">|</span>vb<span style="color: #555555">|</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">11 </span>        vb<span style="color: #555555">.</span>name <span style="color: #555555">=</span> host<span style="color: #555555">[</span><span style="color: #CC3300">&#39;name&#39;</span><span style="color: #555555">]</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">12 </span>        vb<span style="color: #555555">.</span>customize <span style="color: #555555">[</span><span style="color: #CC3300">&#39;modifyvm&#39;</span>, <span style="color: #FFCC33">:id</span>, <span style="color: #CC3300">&#39;--groups&#39;</span>, <span style="color: #336600">PROJECT_NAME</span><span style="color: #555555">]</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">13 </span>      <span style="color: #006699; font-weight: bold">end</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">14 </span>    <span style="color: #006699; font-weight: bold">end</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">15 </span>  <span style="color: #006699; font-weight: bold">end</span>
 </pre></div>
 </p>
 
@@ -186,24 +186,24 @@
 
 <p>However, most of my students are using Windows which is <a href="https://docs.ansible.com/ansible/intro_installation.html#control-machine-requirements">not supported by Ansible</a>. In this case, I work around this problem by installing Ansible on the VM and invoking it locally instead of from the host system. The Vagrantfile detects the host operating system and invokes the appropriate provisioning code:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 1</span> <span style="color: #006699; font-weight: bold">def</span> <span style="color: #CC00FF">is_windows</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 2</span>   <span style="color: #FFCC33">RbConfig</span>:<span style="color: #FFCC33">:CONFIG</span><span style="color: #555555">[</span><span style="color: #CC3300">&#39;host_os&#39;</span><span style="color: #555555">]</span> <span style="color: #555555">=~</span> <span style="color: #33AAAA">/mswin|mingw|cygwin/</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 3</span> <span style="color: #006699; font-weight: bold">end</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 4</span> 
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 5</span> <span style="color: #006699; font-weight: bold">def</span> <span style="color: #CC00FF">provision_ansible</span>(config)
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 6</span>   <span style="color: #006699; font-weight: bold">if</span> is_windows
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 7</span>     <span style="color: #0099FF; font-style: italic"># Run shell script that installs and runs Ansible locallty (on Windows)</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 8</span>     config<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>provision <span style="color: #CC3300">&quot;shell&quot;</span> <span style="color: #006699; font-weight: bold">do</span> <span style="color: #555555">|</span>sh<span style="color: #555555">|</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 9</span>       sh<span style="color: #555555">.</span>path <span style="color: #555555">=</span> <span style="color: #CC3300">&quot;scripts/playbook-win.sh&quot;</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">10</span>     <span style="color: #006699; font-weight: bold">end</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">11</span>   <span style="color: #006699; font-weight: bold">else</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">12</span>     <span style="color: #0099FF; font-style: italic"># Run Ansible from host machine (on Mac/Linux).</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">13</span>     config<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>provision <span style="color: #CC3300">&quot;ansible&quot;</span> <span style="color: #006699; font-weight: bold">do</span> <span style="color: #555555">|</span>ansible<span style="color: #555555">|</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">14</span>       ansible<span style="color: #555555">.</span>playbook <span style="color: #555555">=</span> <span style="color: #CC3300">&quot;ansible/site.yml&quot;</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">15</span>       ansible<span style="color: #555555">.</span>sudo <span style="color: #555555">=</span> <span style="color: #006699">true</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">16</span>     <span style="color: #006699; font-weight: bold">end</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">17</span>   <span style="color: #006699; font-weight: bold">end</span>
-<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">18</span> <span style="color: #006699; font-weight: bold">end</span>
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 1 </span><span style="color: #006699; font-weight: bold">def</span> <span style="color: #CC00FF">is_windows</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 2 </span>  <span style="color: #336600">RbConfig</span><span style="color: #555555">::</span><span style="color: #336600">CONFIG</span><span style="color: #555555">[</span><span style="color: #CC3300">&#39;host_os&#39;</span><span style="color: #555555">]</span> <span style="color: #555555">=~</span> <span style="color: #33AAAA">/mswin|mingw|cygwin/</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 3 </span><span style="color: #006699; font-weight: bold">end</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 4 </span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 5 </span><span style="color: #006699; font-weight: bold">def</span> <span style="color: #CC00FF">provision_ansible</span>(config)
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 6 </span>  <span style="color: #006699; font-weight: bold">if</span> is_windows
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 7 </span>    <span style="color: #0099FF; font-style: italic"># Run shell script that installs and runs Ansible locallty (on Windows)</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 8 </span>    config<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>provision <span style="color: #CC3300">&quot;shell&quot;</span> <span style="color: #006699; font-weight: bold">do</span> <span style="color: #555555">|</span>sh<span style="color: #555555">|</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 9 </span>      sh<span style="color: #555555">.</span>path <span style="color: #555555">=</span> <span style="color: #CC3300">&quot;scripts/playbook-win.sh&quot;</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">10 </span>    <span style="color: #006699; font-weight: bold">end</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">11 </span>  <span style="color: #006699; font-weight: bold">else</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">12 </span>    <span style="color: #0099FF; font-style: italic"># Run Ansible from host machine (on Mac/Linux).</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">13 </span>    config<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>provision <span style="color: #CC3300">&quot;ansible&quot;</span> <span style="color: #006699; font-weight: bold">do</span> <span style="color: #555555">|</span>ansible<span style="color: #555555">|</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">14 </span>      ansible<span style="color: #555555">.</span>playbook <span style="color: #555555">=</span> <span style="color: #CC3300">&quot;ansible/site.yml&quot;</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">15 </span>      ansible<span style="color: #555555">.</span>sudo <span style="color: #555555">=</span> <span style="color: #006699">true</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">16 </span>    <span style="color: #006699; font-weight: bold">end</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">17 </span>  <span style="color: #006699; font-weight: bold">end</span>
+<span style="background-color: #f0f0f0; padding: 0 5px 0 5px">18 </span><span style="color: #006699; font-weight: bold">end</span>
 </pre></div>
 </p>
 
@@ -241,7 +241,7 @@ hosts <span style="color: #555555">=</span> <span style="color: #336600">YAML</s
 <span style="color: #0099FF; font-style: italic"># {{{ Helper functions</span>
 
 <span style="color: #006699; font-weight: bold">def</span> <span style="color: #CC00FF">is_windows</span>
-  <span style="color: #FFCC33">RbConfig</span>:<span style="color: #FFCC33">:CONFIG</span><span style="color: #555555">[</span><span style="color: #CC3300">&#39;host_os&#39;</span><span style="color: #555555">]</span> <span style="color: #555555">=~</span> <span style="color: #33AAAA">/mswin|mingw|cygwin/</span>
+  <span style="color: #336600">RbConfig</span><span style="color: #555555">::</span><span style="color: #336600">CONFIG</span><span style="color: #555555">[</span><span style="color: #CC3300">&#39;host_os&#39;</span><span style="color: #555555">]</span> <span style="color: #555555">=~</span> <span style="color: #33AAAA">/mswin|mingw|cygwin/</span>
 <span style="color: #006699; font-weight: bold">end</span>
 
 <span style="color: #006699; font-weight: bold">def</span> <span style="color: #CC00FF">provision_ansible</span>(config)

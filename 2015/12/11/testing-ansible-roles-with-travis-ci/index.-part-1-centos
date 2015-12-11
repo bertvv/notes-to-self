@@ -1,0 +1,200 @@
+<!DOCTYPE HTML>
+
+<html lang="en-us">
+
+<head>
+	<meta charset="utf-8">
+	<title>Testing Ansible roles with Travis-CI. Part 1: CentOS - Notes to self</title>
+	<meta name="author" content="map[name:Bert Van Vreckem email:bert.vanvreckem@gmail.com]">
+
+	
+	
+	<meta name="description" content="">
+	
+
+	
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+	<link href='http://localhost:1313/notes-to-self/index.xml' rel="alternate" title="Notes to self" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://localhost:1313/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci.-part-1-centos">
+	<link href="http://localhost:1313/notes-to-self//favicon.png" rel="shortcut icon">
+	<link href="http://localhost:1313/notes-to-self//css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://localhost:1313/notes-to-self//css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	
+	<link href="https://fonts.googleapis.com/css?family=Nunito:400,300,700" rel="stylesheet" type="text/css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	
+	<script src="http://localhost:1313/notes-to-self//js/md5.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='https://www.gravatar.com/avatar/" + MD5('bert.vanvreckem@gmail.com') + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+		});
+	</script>
+	
+	
+</div>
+
+<nav id="main-nav"><ul class="main">
+    <li><a href="http://localhost:1313/notes-to-self//">Blog</a></li>
+    <li><a href="http://localhost:1313/notes-to-self//about/">About</a></li>
+    <li><a href="http://localhost:1313/notes-to-self//post/">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    Linux system administration, config management, and stuff
+  </p>
+</section>
+
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href='mailto:bert.vanvreckem@gmail.com' title="Email">Email</a>
+		
+		
+		
+		
+			<a class="twitter" href='https://twitter.com/bertvanvreckem' title="Twitter">Twitter</a>
+		
+		
+			<a class="github" href='https://github.com/bertvv' title="GitHub">GitHub</a>
+		
+		
+		
+		
+			<a class="linkedin" href='https://www.linkedin.com/in/bertvanvreckem' title="LinkedIn">LinkedIn</a>
+		
+		
+			<a class="youtube" href='https://youtube.com/bertvvrhogent' title="Youtube">Youtube</a>
+		
+		
+		
+		
+		
+		
+		
+    	
+    	
+			<a class="rss" href='http://localhost:1313/notes-to-self/index.xml' title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>
+			</div>
+		</div>
+		<div class="mid-col">
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+					<div itemscope itemtype="https://schema.org/Blog">
+					<article class="post" itemscope itemtype="https://schema.org/BlogPosting">
+    <h1 class="title" itemprop="name">Testing Ansible roles with Travis-CI. Part 1: CentOS</h1>
+	<div class="entry-content" itemprop="articleBody">
+
+<p>In this first post on testing Ansible roles with Travis-CI, we&rsquo;ll discuss how you can apply a test playbook on a CentOS box.</p>
+
+<p>I&rsquo;ve known about <a href="https://travis-ci.org/">Travis-CI</a> as a test platform for a while now, but haven&rsquo;t tried it out until a few days ago. It is mainly used for running tests on applications, but it has seen use for infrastructure testing as well. For example, Jeff Geerling <a href="https://servercheck.in/blog/testing-ansible-roles-travis-ci-github">wrote about testing Ansible roles</a> using Travis-CI.</p>
+
+<p>There&rsquo;s a lot to like about Travis-CI: it&rsquo;s free for open source projects and it integrates nicely with Github so that on every push and submitted pull request a test run is triggered. During a test run, a VM is booted and a script called <code>.travis.yml</code> is executed. This contains the necessary steps to configure the system, install dependencies and run the actual test code. Jeff Geerling&rsquo;s method of testing Ansible roles consists of installing Ansible and then running a test playbook locally that applies the role to the VM.</p>
+
+<p>Now, the reason that I haven&rsquo;t been working with Travis-CI before (apart from lack of time), is that the VM that&rsquo;s being created is Ubuntu-based. I&rsquo;m mostly working with CentOS, however, and all <a href="https://galaxy.ansible.com/detail#/user/8834">my Ansible roles</a> are CentOS-based. So as far as I knew, Travis-CI was not suitable for my needs.</p>
+
+<p>Earlier this week, I ran into a <a href="https://stackoverflow.com/questions/29453017/build-project-on-centos-using-travis">StackOverflow discussion</a> on this very subject. One of the replies stated that it is possible to run CentOS on Travis-CI using Docker. Interesting&hellip;</p>
+
+<p>Docker is another technology I haven&rsquo;d played with before, so two learning opportunities in one go!</p>
+
+<h2 id="setting-up-a-centos-docker-container:48d64d145fbcb082238fb5b7d00b35e8">Setting up a CentOS Docker container</h2>
+
+<h2 id="limitations:48d64d145fbcb082238fb5b7d00b35e8">Limitations</h2>
+
+<h2 id="conclusion:48d64d145fbcb082238fb5b7d00b35e8">Conclusion</h2>
+
+<p>In this post, I discussed a proof of concept for testing Ansible roles on CentOS using Travis-CI. The code can be found on <a href="https://github.com/bertvv/travispoc">https://github.com/bertvv/travispoc</a>. Although there are some limitations (SELinux being a notable one), Travis-CI is a suitable platform for this. In a next blog post, we&rsquo;ll extend this solution for running tests on multiple platforms.</p>
+</div></article>
+					
+						<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	<a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_button_google_plusone" g:plusone:size=''></a>
+	
+	
+	</div>
+	
+  	<script type="text/javascript" src='https://s7.addthis.com/js/250/addthis_widget.js#pubid='></script>
+  	
+</div>
+
+					
+					
+					<section id="comment">
+					    <h1 class="title">Comments</h1>
+					    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+					</section>
+					
+					
+
+<script type="text/javascript">
+    
+    var disqus_shortname = 'notes-to-self-bertvv';
+
+    
+    
+
+    
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+    
+</script>
+
+
+				    </div>
+				</div>
+			</div>
+			<footer id="footer" class="inner">
+    © 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back.
+
+
+Design credit: <a href="https://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="http://localhost:1313/notes-to-self//js/slash.js"></script>
+<script src="http://localhost:1313/notes-to-self//js/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script>
+</footer>
+		</div>
+	</div>
+	
+<script data-no-instant>document.write('<script src="http://'
+        + (location.host || 'localhost').split(':')[0]
+		+ ':1313/livereload.js?mindelay=10"></'
+        + 'script>')</script></body>
+</html>
