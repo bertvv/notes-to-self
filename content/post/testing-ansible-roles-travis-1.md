@@ -3,7 +3,6 @@ categories = ["Configuration Management"]
 date = "2015-12-11T20:49:16+01:00"
 tags = ["linux", "ansible", "travis-ci", "centos", "docker", "test-driven-infrastructure"]
 title = "Testing Ansible roles with Travis-CI, Part 1: CentOS"
-draft = "true"
 
 +++
 
