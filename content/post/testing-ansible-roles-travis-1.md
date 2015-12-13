@@ -6,7 +6,7 @@ title = "Testing Ansible roles with Travis-CI, Part 1: CentOS"
 
 +++
 
-In this first post on testing Ansible roles with Travis-CI, we'll discuss how you can apply a test playbook on CentOS.
+In this first post on testing Ansible roles with Travis-CI, we'll discuss how you can apply a test playbook on CentOS. Out-of-the-box, Travis-CI doesn't support CentOS, as its test environment is Ubuntu-based. However, Travis-CI allows you to set up a Docker container and this opens up all kinds of possibilities.
 
 <!--more-->
 
@@ -46,26 +46,11 @@ RUN yum clean all
 RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
 # Install Ansible inventory file
 RUN echo -e '[local]\nlocalhost ansible_connection=local' > /etc/ansible/hosts
-COPY requirements.yml /etc/ansible/requirements.yml
-COPY test.yml /etc/ansible/test.yml
-RUN ansible-galaxy install -r /etc/ansible/requirements.yml
 VOLUME [ "/sys/fs/cgroup" ]
 CMD ["/usr/sbin/init"]
 {{</ highlight >}}
 
-This is based a.o. on the [guidelines](https://hub.docker.com/_/centos/) for the `centos:7` image found on Docker Hub. By default, systemd is not available inside the container, so the code above installs it, albeit in a limited form. After that, Ansible is installed and a basic inventory file is generated. Finally, the test code is pushed to the container, consisting of two files. The first one is `requirements.yml` that [specifies the dependencies](https://docs.ansible.com/ansible/galaxy.html#advanced-control-over-role-requirements-files), including the role under test. These are installed using `ansible-galaxy`. The second one is the test playbook `test.yml` that will apply the role under test to the container.
-
-{{< highlight Yaml>}}
-# /etc/ansible/requirements.yml
----
-- src: bertvv.httpd
-
-# /etc/ansible/test.yml
----
-- hosts: all
-  roles:
-    - bertvv.httpd
-{{</ highlight >}}
+This is based a.o. on the [guidelines](https://hub.docker.com/_/centos/) for the `centos:7` image found on Docker Hub. By default, systemd is not available inside the container, so the code above installs it, albeit in a limited form. After that, Ansible is installed and a basic inventory file is generated.
 
 ## Running the Ansible test on Travis-CI
 
@@ -96,11 +81,11 @@ before_install:
 
 script:
   # Run container in detached state
-  - sudo docker run --detach --privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro travispoc /usr/lib/systemd/systemd > /tmp/container_id
+  - sudo docker run --detach --privileged --volume="${PWD}":/etc/ansible/roles/role_under_test:ro --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro travispoc /usr/lib/systemd/systemd > /tmp/container_id
   # Check syntax of ansible playbook
-  - sudo docker exec "$(cat /tmp/container_id)" ansible-playbook /etc/ansible/test.yml --syntax-check
+  - sudo docker exec "$(cat /tmp/container_id)" ansible-playbook /etc/ansible/roles/role_under_test/test.yml --syntax-check
   # Run ansible playbook
-  - sudo docker exec "$(cat /tmp/container_id)" ansible-playbook /etc/ansible/test.yml
+  - sudo docker exec "$(cat /tmp/container_id)" ansible-playbook /etc/ansible/roles/role_under_test/test.yml
   # Clean up
   - sudo docker stop "$(cat /tmp/container_id)"
 
@@ -108,7 +93,17 @@ notifications:
   email: false
 {{</ highlight >}}
 
-See the result of the build process on the [Travis-CI status page](https://travis-ci.org/bertvv/travispoc/builds/96155750). This configuration pulls down the base image `centos:7` and builds the custom container with Ansible installed. The custom container is then run in privileged mode and detached. The command yields an ID that is written to a temporary file. After that, the test playbook is executed, once with the `--syntax-check` option, and once without (actually applying the role to the container).
+See the result of the build process on the [Travis-CI status page](https://travis-ci.org/bertvv/travispoc/builds/96155750). This configuration pulls down the base image `centos:7` and builds the custom container with Ansible installed. The custom container is then run in privileged mode and detached. The current directory (= the project root of the Git project) is mounted inside the container under `/etc/ansible/roles/role_under_test/`. The name of the directory is not important, actually, and giving it a generic one makes the code reusable over any role. The `docker run` command yields an ID that is written to a temporary file. After that, the test playbook (see below) is executed, once with the `--syntax-check` option, and once without (actually applying the role to the container).
+
+```Yaml
+# test.yml
+---
+- hosts: all
+  roles:
+    - role_under_test
+```
+
+The playbook is kept minimal here, but a `vars:` section can be added to set role variables. The role is called `role_under_test`, consistent with the directory mentioned above.
 
 ## Limitations
 
@@ -121,3 +116,5 @@ In this post, I discussed a proof of concept for testing Ansible roles on CentOS
 There's room for improvement, of course. It would be interesting to postpone pushing the test code to the container until after the build. This would allow us to always use the same base image with Ansible installed instead of rebuilding it at each test run. One approach could be to start the container with the folder containing the test code mounted inside using the `--volume` option. I probably did things in a suboptimal way, because I'm still new to both Travis-CI and Docker, so other suggestions are also welcome! You can leave a comment below, create an issue on the Github project or send me a pull request.
 
 In a next blog post, we'll extend this solution for running tests on multiple platforms.
+
+**Edit:** There was a major flaw in the original version of this post. It installed the role under test from Ansible Galaxy instead of running on the *current* commit. The `Dockerfile` and `.travis.yml` were adapted to fix this.
