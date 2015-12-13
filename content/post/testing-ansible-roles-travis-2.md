@@ -1,7 +1,6 @@
 +++
 categories = ["Configuration Management"]
 date = "2015-12-13T16:00:32+01:00"
-draft = "true"
 tags = ["linux", "ansible", "travis-ci", "centos", "docker", "test-driven-infrastructure"]
 title = "Testing Ansible roles with Travis-CI, Part 2: Multi-platform tests"
 
