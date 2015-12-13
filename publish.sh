@@ -27,11 +27,6 @@ if [ "$#" -eq "0" ]; then
 fi
 
 #}}}
-#{{{ Variables
-site_content=public
-git_remote=git@github.com:bertvv/notes-to-self.git
-website_branch=gh-pages
-#}}}
 
 # Script proper
 
@@ -48,12 +43,15 @@ fi
 # Generate the site
 hugo
 
-# Add everything to Git
+# Push source (branch master) to Git
 git add .
 git commit --message "$*"
-
-# Push to Github
 git push
-git subtree push --prefix="${site_content}" "${git_remote}" "${website_branch}"
 
+# Push  generated website (branch gh-pages) to Git
+pushd public > /dev/null
+git add .
+git commit --message "$*"
+git push
+popd > /dev/null
 
