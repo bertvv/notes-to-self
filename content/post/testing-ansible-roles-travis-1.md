@@ -113,8 +113,8 @@ In the end, a container is -intentionally- not a full VM, so it does have its li
 
 In this post, I discussed a proof of concept for testing Ansible roles on CentOS using Travis-CI. The code can be found on <https://github.com/bertvv/travispoc> and is tagged `centos` (See the [tags page](https://github.com/bertvv/travispoc/tags)). Although there are some limitations (SELinux being a notable one), Travis-CI is usable as a testing platform in this setting.
 
-There's room for improvement, of course. It would be interesting to postpone pushing the test code to the container until after the build. This would allow us to always use the same base image with Ansible installed instead of rebuilding it at each test run. One approach could be to start the container with the folder containing the test code mounted inside using the `--volume` option. I probably did things in a suboptimal way, because I'm still new to both Travis-CI and Docker, so other suggestions are also welcome! You can leave a comment below, create an issue on the Github project or send me a pull request.
+There's probably for improvement. I probably did things in a suboptimal way, because I'm still new to both Travis-CI and Docker, so suggestions are welcome! You can leave a comment below, create an issue on the Github project or send me a pull request.
 
 In a next blog post, we'll extend this solution for running tests on multiple platforms.
 
-**Edit:** There was a major flaw in the original version of this post. It installed the role under test from Ansible Galaxy instead of running on the *current* commit. The `Dockerfile` and `.travis.yml` were adapted to fix this.
+**Edit:** There was a major flaw in the code of the original version of this post. It installed the role under test from Ansible Galaxy instead of running on the *current* commit. The `Dockerfile` and `.travis.yml` were adapted to fix this.
