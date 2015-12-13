@@ -1,0 +1,309 @@
+<!DOCTYPE HTML>
+
+<html lang="en-us">
+
+<head>
+	<meta charset="utf-8">
+	<title>Testing Ansible roles with Travis-CI, Part 2: Multi-platform tests - Notes to self</title>
+	<meta name="author" content="map[name:Bert Van Vreckem email:bert.vanvreckem@gmail.com]">
+
+	
+	
+	<meta name="description" content="">
+	
+
+	
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+	<link href='http://localhost:1313/notes-to-self/index.xml' rel="alternate" title="Notes to self" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://localhost:1313/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests">
+	<link href="http://localhost:1313/notes-to-self//favicon.png" rel="shortcut icon">
+	<link href="http://localhost:1313/notes-to-self//css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://localhost:1313/notes-to-self//css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	
+	<link href="https://fonts.googleapis.com/css?family=Nunito:400,300,700" rel="stylesheet" type="text/css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	
+	<script src="http://localhost:1313/notes-to-self//js/md5.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='https://www.gravatar.com/avatar/" + MD5('bert.vanvreckem@gmail.com') + "?s=160' alt='Profile Picture' style='width: 160px;' />");
+		});
+	</script>
+	
+	
+</div>
+
+<nav id="main-nav"><ul class="main">
+    <li><a href="http://localhost:1313/notes-to-self//">Blog</a></li>
+    <li><a href="http://localhost:1313/notes-to-self//about/">About</a></li>
+    <li><a href="http://localhost:1313/notes-to-self//post/">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    Linux system administration, config management, and stuff
+  </p>
+</section>
+
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href='mailto:bert.vanvreckem@gmail.com' title="Email">Email</a>
+		
+		
+		
+		
+			<a class="twitter" href='https://twitter.com/bertvanvreckem' title="Twitter">Twitter</a>
+		
+		
+			<a class="github" href='https://github.com/bertvv' title="GitHub">GitHub</a>
+		
+		
+		
+		
+			<a class="linkedin" href='https://www.linkedin.com/in/bertvanvreckem' title="LinkedIn">LinkedIn</a>
+		
+		
+			<a class="youtube" href='https://youtube.com/bertvvrhogent' title="Youtube">Youtube</a>
+		
+		
+		
+		
+		
+		
+		
+    	
+    	
+			<a class="rss" href='http://localhost:1313/notes-to-self/index.xml' title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>
+			</div>
+		</div>
+		<div class="mid-col">
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+					<div itemscope itemtype="https://schema.org/Blog">
+					<article class="post" itemscope itemtype="https://schema.org/BlogPosting">
+    <h1 class="title" itemprop="name">Testing Ansible roles with Travis-CI, Part 2: Multi-platform tests</h1>
+	<div class="entry-content" itemprop="articleBody">
+
+<p>In the <a href="https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos">previous post on testing Ansible roles with Travis-CI</a>, I introduced a method to run playbooks on CentOS using Docker. In this post, we take this one step further and show how you can run multi-platform tests of Ansible roles.</p>
+
+<p>As a proof of concept, I&rsquo;ll continue with the example of <a href="https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos">part one</a>: Apache, the hello world of configuration management. My own <a href="https://galaxy.ansible.com/detail#/role/3047">Apache role</a> was written only for EL/CentOS (for now), so it&rsquo;s not suitable. Therefore I thought of giving <a href="https://twitter.com/geerlingguy">Jeff Geerling</a>&rsquo;s <a href="https://galaxy.ansible.com/detail#/role/428">Apache role</a> a try. We&rsquo;ll set up a test environment with two target platforms: Ubuntu and CentOS.</p>
+
+<h2 id="setting-up-the-docker-containers:a3337215d567eb26fa2c36885955428a">Setting up the Docker containers</h2>
+
+<p>The test code is structured as follows (relative to the root of the Git project):</p>
+
+<pre><code>.
+├── tests
+│   ├── Dockerfile.centos
+│   ├── Dockerfile.ubuntu
+│   └── test.yml
+└── .travis.yml
+</code></pre>
+
+<p>The Dockerfile for CentOS is the same as in <a href="https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos">part one</a>, so I won&rsquo;t repeat it here. The one for the Ubuntu container follows below. It is a bit simpler because we don&rsquo;t have to install systemd.</p>
+
+<pre><code># Dockerfile.ubuntu
+FROM ubuntu:14.04
+# Install Ansible
+RUN apt-get install -y software-properties-common git
+RUN apt-add-repository -y ppa:ansible/ansible
+RUN apt-get update
+RUN apt-get install -y ansible
+# Install Ansible inventory file
+RUN echo &quot;[local]\nlocalhost ansible_connection=local&quot; &gt; /etc/ansible/hosts
+</code></pre>
+
+<h2 id="running-the-tests:a3337215d567eb26fa2c36885955428a">Running the tests</h2>
+
+<p>This is the test playbook:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic"># test.yml</span>
+<span style="color: #00CCFF; font-weight: bold">---</span>
+- hosts: all
+  vars:
+    apache_listen_port_ssl: 443
+    apache_create_vhosts: true
+    apache_vhosts_filename: <span style="color: #CC3300">&quot;vhosts.conf&quot;</span>
+    apache_vhosts:
+      - servername: <span style="color: #CC3300">&quot;example.com&quot;</span>
+        documentroot: <span style="color: #CC3300">&quot;/var/www/vhosts/example_com&quot;</span>
+  roles:
+    - role_under_test
+</pre></div>
+</p>
+
+<p>It will be run on both the Ubuntu and the CentOS container. The <code>.travis.yml</code> file becomes:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic"># .travis.yml</span>
+<span style="color: #00CCFF; font-weight: bold">---</span>
+sudo: required
+env:
+  - &gt;
+    <span style="color: #336600">container_id=$(mktemp)</span>
+    <span style="color: #336600">distribution=centos</span>
+    <span style="color: #336600">version=7</span>
+    <span style="color: #336600">init=/usr/lib/systemd/systemd</span>
+    <span style="color: #336600">run_opts=&quot;--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro&quot;</span>
+  - &gt;
+    <span style="color: #336600">container_id=$(mktemp)</span>
+    <span style="color: #336600">distribution=ubuntu</span>
+    <span style="color: #336600">version=14.04</span>
+    <span style="color: #336600">init=/sbin/init</span>
+    <span style="color: #336600">run_opts=&quot;&quot;</span>
+
+services:
+  - docker
+
+before_install:
+  - sudo apt-get update
+  <span style="color: #0099FF; font-style: italic"># Pull container</span>
+  - sudo docker pull ${distribution}:${version}
+  <span style="color: #0099FF; font-style: italic"># Customize container</span>
+  - sudo docker build --rm=true --file=tests/Dockerfile.${distribution} --tag=${distribution}:ansible tests
+
+script:
+    <span style="color: #0099FF; font-style: italic"># Run container in detached state</span>
+  - sudo docker run --detach --volume=&quot;${PWD}&quot;:/etc/ansible/roles/role_under_test:ro ${run_opts} ${distribution}:ansible &quot;${init}&quot; &gt; &quot;${container_id}&quot;
+
+    # Syntax check
+  - sudo docker exec --tty &quot;$(cat ${container_id})&quot; env TERM=xterm ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml --syntax-check
+    # Test role
+  - sudo docker exec --tty &quot;$(cat ${container_id})&quot; env TERM=xterm ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml
+    # Idempotence test
+  - &gt;
+    <span style="color: #336600">sudo docker exec &quot;$(cat ${container_id})&quot; ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml</span>
+    <span style="color: #336600">| grep -q &#39;changed=0.*failed=0&#39;</span>
+    <span style="color: #336600">&amp;&amp; (echo &#39;Idempotence test: pass&#39; &amp;&amp; exit 0)</span>
+    <span style="color: #336600">|| (echo &#39;Idempotence test: fail&#39; &amp;&amp; exit 1)</span>
+
+    <span style="color: #336600"># Clean up</span>
+  - sudo docker stop &quot;$(cat ${container_id})&quot;
+
+notifications:
+  email: false
+</pre></div>
+</p>
+
+<p>With the <code>env:</code> section, Travis-CI allows you to define different environments in which the tests should be run. We have defined two here, one for Ubuntu and one for CentOS. All the differences between the two cases are stored in environment variables that are available when the tests are run.</p>
+
+<p>The <code>before_install:</code> section pulls the base container image for the desired Linux distribution and version (<code>centos:7</code> and <code>ubuntu:14.04</code>) and a custom image is built using the appropriate Dockerfile.</p>
+
+<p>In the <code>script:</code> section, the container is started, and the current directory is mounted inside the container under <code>/etc/ansible/roles/role_under_test</code>. Next, the test playbook is run with the <code>--syntax-check</code> option. The command line options <code>--tty</code> and <code>env TERM=xterm</code> enable coloured output. Then, the test playbook is executed twice. The first time, the role is applied and Apache is installed with the configuration specified by the role variables. The second time is an idempotence test: applying the role a second time should not result in any changes. In the case a change <em>did</em> happen or if a task failed, an appropriate error message is printed and the process will abort.</p>
+
+<p>An example of the build output can be found <a href="https://travis-ci.org/bertvv/ansible-role-apache/builds/96604650">here</a> (for as long as Travis keeps the build logs).</p>
+
+<p><img src="http://localhost:1313/notes-to-self/img/travis-build-status.png" alt="Build status on the Travis-CI website. The output for the tests on CentOS and Ubuntu are shown separately (#9.1 and #9.2 respectively)." />
+</p>
+
+<h2 id="future-work:a3337215d567eb26fa2c36885955428a">Future work</h2>
+
+<p>There is still room for improvement, of course.</p>
+
+<p>Tests for other platforms supported by the role can be added easily by creating a Dockerfile and adding a line to the <code>env:</code> section of <code>.travis.yml</code>.</p>
+
+<p>The containers with Ansible installed are built on-the-fly, but they are always the same. Consequently, they can be reused for most, if not all, other roles you might want to run tests on. If you publish the containers on <a href="https://hub.docker.com/">Docker Hub</a> (with any other customizations you may want), you can pull them from there and skip the build step.</p>
+
+<p>What also could be added is black box system/acceptance tests from the host system (i.e. the Travis-CI VM), e.g. trying to access the website that runs on the container with <code>curl</code>, checking the TLS certificate, etc. This is left as an exercise to the upstream maintainer&hellip; ;-)</p>
+
+<h2 id="conclusion:a3337215d567eb26fa2c36885955428a">Conclusion</h2>
+
+<p>The complete code for this test setup was <a href="https://github.com/geerlingguy/ansible-role-apache/pull/60">submitted upstream as a pull request</a>. As you will see in the commit history, there were quite a few hiccups as I was still getting familiar with the tools, and I made a few mistakes that I&rsquo;ll attribute to the fact that I continued working on this until rather late at night&hellip; ;-)</p>
+
+<p>Testing Ansible roles on Travis-CI becomes a very compelling proposition, given the flexibility Docker containers provide. Whether it is suitable in <em>all</em> situations remains an open question. Most of my roles, for example, assume SELinux is running, but this is probably not available in a container set up within the Ubuntu VM provided by Travis-CI. If you know more about this, I would be interested to hear from you!</p>
+
+<p>I finish this post with a shout-out to Valeriy Solovyov who (as far as I can tell) pioniered this method of testing Ansible roles. The code for his <a href="https://github.com/weldpua2008/ansible-apache">Apache role</a>, and <a href="https://stackoverflow.com/questions/32535195/how-to-run-tests-on-centos-7-with-travis-ci">this discussion on Stack Overflow</a> are the only sources I could find on this, however.</p>
+</div></article>
+					
+						<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	<a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_button_google_plusone" g:plusone:size=''></a>
+	
+	
+	</div>
+	
+  	<script type="text/javascript" src='https://s7.addthis.com/js/250/addthis_widget.js#pubid='></script>
+  	
+</div>
+
+					
+					
+					<section id="comment">
+					    <h1 class="title">Comments</h1>
+					    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+					</section>
+					
+					
+
+<script type="text/javascript">
+    
+    var disqus_shortname = 'notes-to-self-bertvv';
+
+    
+    
+
+    
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+    
+</script>
+
+
+				    </div>
+				</div>
+			</div>
+			<footer id="footer" class="inner">
+    © 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back.
+
+
+Design credit: <a href="https://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="http://localhost:1313/notes-to-self//js/slash.js"></script>
+<script src="http://localhost:1313/notes-to-self//js/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script>
+</footer>
+		</div>
+	</div>
+	
+<script data-no-instant>document.write('<script src="http://'
+        + (location.host || 'localhost').split(':')[0]
+		+ ':1313/livereload.js?mindelay=10"></'
+        + 'script>')</script></body>
+</html>
