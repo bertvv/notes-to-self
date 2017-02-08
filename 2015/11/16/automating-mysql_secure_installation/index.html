@@ -106,9 +106,9 @@
 					<div itemscope itemtype="https://schema.org/Blog">
 					<article class="post" itemscope itemtype="https://schema.org/BlogPosting">
     <h1 class="title" itemprop="name">Automating `mysql_secure_installation`</h1>
-	<div class="entry-content" itemprop="articleBody">
+	<div class="entry-content" itemprop="articleBody"><p>Many HOWTO&rsquo;s and blog posts about installing MySQL/MariaDB, a LAMP stack, etc. suggest to run the script <code>mysql_secure_installation</code> to tighten the security holes in the default installation of the database engine. This includes setting a root password (empty by default), removing anonymous users, and deleting a test database. For a database server that you&rsquo;re going to run in production, it is really important to do this. However, I have a problem with the fact that <code>mysql_secure_installation</code> is interactive, i.e. it asks for user input. This makes it very hard to include it in an automated setup. In this post, we&rsquo;ll discuss how the script works and how we can automate what it does.</p>
 
-<p>Many HOWTO&rsquo;s and blog posts about installing MySQL/MariaDB, a LAMP stack, etc. suggest to run the script <code>mysql_secure_installation</code> to tighten the security holes in the default installation of the database engine. This includes setting a root password (empty by default), removing anonymous users, and deleting a test database. For a database server that you&rsquo;re going to run in production, it is really important to do this. However, I have a problem with the fact that <code>mysql_secure_installation</code> is interactive, i.e. it asks for user input. This makes it very hard to include it in an automated setup. In this post, we&rsquo;ll discuss how the script works and how we can automate what it does.</p>
+<p></p>
 
 <p><a href="https://serverfault.com/questions/593508/how-to-pass-input-from-one-script-into-another-using-bash">One approach</a> to automating <code>mysql_secure_installation</code> consists of using the <a href="http://linux.die.net/man/1/expect"><code>expect(1)</code></a> tool that can &ldquo;sense&rdquo; when the user is asked for input and can inject the appropriate response. This is a kludge and should be avoided. Expect is written in the scripting language Tcl/Tk, which is typically not installed by default. So installing <code>expect(1)</code> also pulls in dependencies that have no added value to the functionality of the system itself. Installing unneccesary software is a <a href="http://www.cyberciti.biz/tips/linux-security.html">bad security practice</a>. Expect also adds an unnecessary layer of complexity to a script that is already too complicated to begin with. If the <code>mysql_secure_installation</code> script was written in a way that was more friendly towards automation, it wouldn&rsquo;t be needed at all.</p>
 
@@ -126,72 +126,72 @@
 
 <p>In the sections below, these steps are explained in more detail, and after that, I&rsquo;ll show how to automate them.</p>
 
-<h2 id="setting-the-database-root-password:b58024812153d4d2edd10a4a8e18b19c">Setting the database root password</h2>
+<h2 id="setting-the-database-root-password">Setting the database root password</h2>
 
 <p>There&rsquo;s actually (at least) two ways of doing this: using the SQL query (like the <code>mysql_secure_installation</code> script does), or by using the <code>mysqladmin</code> command. The SQL statement can e.g. be executed within the <a href="http://linux.die.net/man/1/mysql"><code>mysql(1)</code></a> client tool that can be accessed with the command:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>mysql -u root -p
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span>$ mysql -u root -p
 </pre></div>
-</p>
+
 
 <p>The option <code>-u</code> specifies the user (<code>root</code>), the option <code>-p</code> prompts for a password. You can just press ENTER now, but later, when you have set the root password, you will of course need to type it.</p>
 
 <p>The SQL command to set the root password, copied from the script source, is:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #006699; font-weight: bold">UPDATE</span> mysql.<span style="color: #006699; font-weight: bold">user</span> <span style="color: #006699; font-weight: bold">SET</span> Password<span style="color: #555555">=</span>PASSWORD(<span style="color: #CC3300">&#39;my_new_password&#39;</span>) <span style="color: #006699; font-weight: bold">WHERE</span> <span style="color: #006699; font-weight: bold">User</span><span style="color: #555555">=</span><span style="color: #CC3300">&#39;root&#39;</span>;
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span><span style="color: #006699; font-weight: bold">UPDATE</span> mysql.<span style="color: #006699; font-weight: bold">user</span> <span style="color: #006699; font-weight: bold">SET</span> Password<span style="color: #555555">=</span>PASSWORD(<span style="color: #CC3300">&#39;my_new_password&#39;</span>) <span style="color: #006699; font-weight: bold">WHERE</span> <span style="color: #006699; font-weight: bold">User</span><span style="color: #555555">=</span><span style="color: #CC3300">&#39;root&#39;</span>;
 </pre></div>
-</p>
+
 
 <p>Replace <code>my_new_password</code> with the desired password.</p>
 
 <p>The alternative method is the <a href="http://linux.die.net/man/1/mysqladmin"><code>mysqladmin(1)</code></a> command:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>mysqladmin password <span style="color: #CC3300">&quot;my_new_password&quot;</span>
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span>$ mysqladmin password <span style="color: #CC3300">&quot;my_new_password&quot;</span>
 </pre></div>
-</p>
 
-<h2 id="delete-anonymous-users:b58024812153d4d2edd10a4a8e18b19c">Delete anonymous users</h2>
+
+<h2 id="delete-anonymous-users">Delete anonymous users</h2>
 
 <p>In the default installation includes anonymous users, apparently for testing. These should be removed before putting the database server into production, as it allows to access the database without a password. Anonymous users have an empty user name and can be deleted with the following SQL statement (from <code>mysql_secure_installation</code>):</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #006699; font-weight: bold">DELETE</span> <span style="color: #006699; font-weight: bold">FROM</span> mysql.<span style="color: #006699; font-weight: bold">user</span> <span style="color: #006699; font-weight: bold">WHERE</span> <span style="color: #006699; font-weight: bold">User</span><span style="color: #555555">=</span><span style="color: #CC3300">&#39;&#39;</span>;
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span><span style="color: #006699; font-weight: bold">DELETE</span> <span style="color: #006699; font-weight: bold">FROM</span> mysql.<span style="color: #006699; font-weight: bold">user</span> <span style="color: #006699; font-weight: bold">WHERE</span> <span style="color: #006699; font-weight: bold">User</span><span style="color: #555555">=</span><span style="color: #CC3300">&#39;&#39;</span>;
 </pre></div>
-</p>
 
-<h2 id="ensure-the-root-user-can-not-log-in-remotely:b58024812153d4d2edd10a4a8e18b19c">Ensure the root user can not log in remotely</h2>
+
+<h2 id="ensure-the-root-user-can-not-log-in-remotely">Ensure the root user can not log in remotely</h2>
 
 <p>It&rsquo;s always a good idea to limit access for the database root user to localhost for added security. This won&rsquo;t even affect a setup with <a href="https://www.phpmyadmin.net/">phpMyAdmin</a> if it&rsquo;s installed on the same host!</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #006699; font-weight: bold">DELETE</span> <span style="color: #006699; font-weight: bold">FROM</span> mysql.<span style="color: #006699; font-weight: bold">user</span> <span style="color: #006699; font-weight: bold">WHERE</span> <span style="color: #006699; font-weight: bold">User</span><span style="color: #555555">=</span><span style="color: #CC3300">&#39;root&#39;</span> <span style="color: #006699; font-weight: bold">AND</span> <span style="color: #006699; font-weight: bold">Host</span> <span style="color: #006699; font-weight: bold">NOT</span> <span style="color: #006699; font-weight: bold">IN</span> (<span style="color: #CC3300">&#39;localhost&#39;</span>, <span style="color: #CC3300">&#39;127.0.0.1&#39;</span>, <span style="color: #CC3300">&#39;::1&#39;</span>);
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span><span style="color: #006699; font-weight: bold">DELETE</span> <span style="color: #006699; font-weight: bold">FROM</span> mysql.<span style="color: #006699; font-weight: bold">user</span> <span style="color: #006699; font-weight: bold">WHERE</span> <span style="color: #006699; font-weight: bold">User</span><span style="color: #555555">=</span><span style="color: #CC3300">&#39;root&#39;</span> <span style="color: #006699; font-weight: bold">AND</span> <span style="color: #006699; font-weight: bold">Host</span> <span style="color: #006699; font-weight: bold">NOT</span> <span style="color: #006699; font-weight: bold">IN</span> (<span style="color: #CC3300">&#39;localhost&#39;</span>, <span style="color: #CC3300">&#39;127.0.0.1&#39;</span>, <span style="color: #CC3300">&#39;::1&#39;</span>);
 </pre></div>
-</p>
 
-<h2 id="remove-the-test-database:b58024812153d4d2edd10a4a8e18b19c">Remove the test database</h2>
+
+<h2 id="remove-the-test-database">Remove the test database</h2>
 
 <p>The default installation contains a database with the name <code>test</code> (with associated user privileges). These should also be deleted before putting the database into production:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #006699; font-weight: bold">DROP</span> <span style="color: #006699; font-weight: bold">DATABASE</span> test;
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span><span style="color: #006699; font-weight: bold">DROP</span> <span style="color: #006699; font-weight: bold">DATABASE</span> test;
 <span style="color: #006699; font-weight: bold">DELETE</span> <span style="color: #006699; font-weight: bold">FROM</span> mysql.db <span style="color: #006699; font-weight: bold">WHERE</span> Db<span style="color: #555555">=</span><span style="color: #CC3300">&#39;test&#39;</span> <span style="color: #006699; font-weight: bold">OR</span> Db<span style="color: #555555">=</span><span style="color: #CC3300">&#39;test\_%&#39;</span>;
 </pre></div>
-</p>
+
 
 <p>The first statement removes the database, the second privileges on the database.</p>
 
-<h2 id="flush-the-privileges-tables:b58024812153d4d2edd10a4a8e18b19c">Flush the privileges tables</h2>
+<h2 id="flush-the-privileges-tables">Flush the privileges tables</h2>
 
 <p>The statements above that change user access to the database <a href="https://dev.mysql.com/doc/refman/5.6/en/privilege-changes.html">have no immediate effect</a>. The following command will commit the changes:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">FLUSH <span style="color: #006699; font-weight: bold">PRIVILEGES</span>;
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span>FLUSH <span style="color: #006699; font-weight: bold">PRIVILEGES</span>;
 </pre></div>
-</p>
+
 
 <p>Without flushing the privilege tables, the root password will remain unset.</p>
 
-<h2 id="putting-it-all-together:b58024812153d4d2edd10a4a8e18b19c">Putting it all together</h2>
+<h2 id="putting-it-all-together">Putting it all together</h2>
 
 <p>We can execute all the SQL statements above with the following code snippet:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">myql --user<span style="color: #555555">=</span>root <span style="color: #CC3300">&lt;&lt;_EOF_</span>
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span>myql --user<span style="color: #555555">=</span>root <span style="color: #CC3300">&lt;&lt;_EOF_</span>
 <span style="color: #CC3300">UPDATE mysql.user SET Password=PASSWORD(&#39;${db_root_password}&#39;) WHERE User=&#39;root&#39;;</span>
 <span style="color: #CC3300">DELETE FROM mysql.user WHERE User=&#39;&#39;;</span>
 <span style="color: #CC3300">DELETE FROM mysql.user WHERE User=&#39;root&#39; AND Host NOT IN (&#39;localhost&#39;, &#39;127.0.0.1&#39;, &#39;::1&#39;);</span>
@@ -200,11 +200,11 @@
 <span style="color: #CC3300">FLUSH PRIVILEGES;</span>
 <span style="color: #CC3300">_EOF_</span>
 </pre></div>
-</p>
+
 
 <p>The SQL commands are passed to <code>mysql(1)</code> in a <a href="http://tldp.org/LDP/abs/html/here-docs.html">here document</a>. The variable &lsquo;${db_root_password}&rsquo; needs to be set. I&rsquo;ve written a more elaborate shell script that takes the value of the database root password from the command line and has some checks in place. The full source can be found below:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic">#! /bin/sh</span>
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span><span style="color: #0099FF; font-style: italic">#! /bin/sh</span>
 <span style="color: #0099FF; font-style: italic">#</span>
 <span style="color: #0099FF; font-style: italic"># Author: Bert Van Vreckem &lt;bert.vanvreckem@gmail.com&gt;</span>
 <span style="color: #0099FF; font-style: italic">#</span>
@@ -244,10 +244,10 @@ is_mysql_command_available<span style="color: #555555">()</span> <span style="co
 <span style="color: #0099FF; font-style: italic">#}}}</span>
 <span style="color: #0099FF; font-style: italic">#{{{ Command line parsing</span>
 
-<span style="color: #006699; font-weight: bold">if</span> <span style="color: #555555">[</span> <span style="color: #CC3300">&quot;</span><span style="color: #003333">$#&quot;</span><span style="color: #CC3300"> -ne &quot;</span>1<span style="color: #CC3300">&quot; ]; then</span>
-<span style="color: #CC3300">  echo &quot;</span>Expected <span style="color: #FF6600">1</span> argument, got <span style="color: #003333">$#&quot;</span> &gt;&amp;2
+<span style="color: #006699; font-weight: bold">if</span> <span style="color: #555555">[</span> <span style="color: #CC3300">&quot;</span><span style="color: #003333">$#</span><span style="color: #CC3300">&quot;</span> -ne <span style="color: #CC3300">&quot;1&quot;</span> <span style="color: #555555">]</span>; <span style="color: #006699; font-weight: bold">then</span>
+  <span style="color: #336666">echo</span> <span style="color: #CC3300">&quot;Expected 1 argument, got </span><span style="color: #003333">$#</span><span style="color: #CC3300">&quot;</span> &gt;&amp;2
   usage
-  <span style="color: #336666">exit </span>2
+  <span style="color: #336666">exit</span> 2
 <span style="color: #006699; font-weight: bold">fi</span>
 
 <span style="color: #0099FF; font-style: italic">#}}}</span>
@@ -259,12 +259,12 @@ is_mysql_command_available<span style="color: #555555">()</span> <span style="co
 
 <span style="color: #006699; font-weight: bold">if</span> ! is_mysql_command_available; <span style="color: #006699; font-weight: bold">then</span>
   <span style="color: #336666">echo</span> <span style="color: #CC3300">&quot;The MySQL/MariaDB client mysql(1) is not installed.&quot;</span>
-  <span style="color: #336666">exit </span>1
+  <span style="color: #336666">exit</span> 1
 <span style="color: #006699; font-weight: bold">fi</span>
 
 <span style="color: #006699; font-weight: bold">if</span> is_mysql_root_password_set; <span style="color: #006699; font-weight: bold">then</span>
   <span style="color: #336666">echo</span> <span style="color: #CC3300">&quot;Database root password already set&quot;</span>
-  <span style="color: #336666">exit </span>0
+  <span style="color: #336666">exit</span> 0
 <span style="color: #006699; font-weight: bold">fi</span>
 
 mysql --user<span style="color: #555555">=</span>root <span style="color: #CC3300">&lt;&lt;_EOF_</span>
@@ -276,16 +276,15 @@ mysql --user<span style="color: #555555">=</span>root <span style="color: #CC330
 <span style="color: #CC3300">  FLUSH PRIVILEGES;</span>
 <span style="color: #CC3300">_EOF_</span>
 </pre></div>
-</p>
+
 
 <p>I also put the script on Github, in my <a href="https://github.com/bertvv/scripts/">scripts repository</a>. If I modify/improve the script in the future, you can find the newer versions there.</p>
 
-<h2 id="conclusion:b58024812153d4d2edd10a4a8e18b19c">Conclusion</h2>
+<h2 id="conclusion">Conclusion</h2>
 
 <p>The <code>mysql_secure_installation</code> script makes the installation of MariaDB/MySQL more secure and the actions that it performs <em>should always</em> be applied to database servers that you put into production. However, by making the script interactive, it has become unnecessarily complicated. Worse, it&rsquo;s an obstruction in our quest to &ldquo;Automate All the Things&trade;&rdquo;.</p>
 
-<p>I&rsquo;m certainly <a href="https://gist.github.com/Mins/4602864#gistcomment-1294952">not the first one</a> to suggest a non-interactive script that does the same as <code>mysql_secure_installation</code>, but I haven&rsquo;t seen this approach actually being encouraged. I hope this post at least adds to the discussion.</p>
-</div></article>
+<p>I&rsquo;m certainly <a href="https://gist.github.com/Mins/4602864#gistcomment-1294952">not the first one</a> to suggest a non-interactive script that does the same as <code>mysql_secure_installation</code>, but I haven&rsquo;t seen this approach actually being encouraged. I hope this post at least adds to the discussion.</p></div></article>
 					
 						<div class="share">
 	<div class="addthis_toolbox addthis_default_style ">
@@ -313,24 +312,23 @@ mysql --user<span style="color: #555555">=</span>root <span style="color: #CC330
 </div>
 					</section>
 					
-					
-
+					<div id="disqus_thread"></div>
 <script type="text/javascript">
-    
-    var disqus_shortname = 'notes-to-self-bertvv';
 
+(function() {
     
     
+    if (window.location.hostname == "localhost")
+        return;
 
-    
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-    
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
 </script>
-
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 				    </div>
 				</div>

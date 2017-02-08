@@ -106,9 +106,9 @@
 					<div itemscope itemtype="https://schema.org/Blog">
 					<article class="post" itemscope itemtype="https://schema.org/BlogPosting">
     <h1 class="title" itemprop="name">The number of hard links in ‘ls -l’</h1>
-	<div class="entry-content" itemprop="articleBody">
+	<div class="entry-content" itemprop="articleBody"><p>When you execute the command <code>ls -l</code> in UNIX, you get detailed information about files: permissions, file size, date of last modification, etc. A while ago, I got a question from one of my students who wondered what the second column meant. According to the documentation, it&rsquo;s the &ldquo;number of hard links,&rdquo; but what does that actually mean? Let&rsquo;s get to the bottom of this.</p>
 
-<p>When you execute the command <code>ls -l</code> in UNIX, you get detailed information about files: permissions, file size, date of last modification, etc. A while ago, I got a question from one of my students who wondered what the second column meant. According to the documentation, it&rsquo;s the &ldquo;number of hard links,&rdquo; but what does that actually mean? Let&rsquo;s get to the bottom of this.</p>
+<p></p>
 
 <p>One of my students, Tom, wrote:</p>
 
@@ -132,71 +132,71 @@
 
 <p>Let&rsquo;s get to the bottom of this&hellip;</p>
 
-<h2 id="hard-links-between-files:597e460e738179dffa891daf0efe4b28">Hard links between files</h2>
+<h2 id="hard-links-between-files">Hard links between files</h2>
 
 <p>The example below shows that for ordinary files, the second column really is the number of hard links:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>touch orig
-<span style="color: #003333">$ </span>ls -li
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span>$ touch orig
+$ ls -li
 total 0
 <span style="color: #FF6600">1706858</span> -rw-rw-r--. <span style="color: #FF6600">1</span> bert bert <span style="color: #FF6600">0</span> Nov  <span style="color: #FF6600">5</span> 21:55 orig
-<span style="color: #003333">$ </span>ln orig link
-<span style="color: #003333">$ </span>ls -li
+$ ln orig link
+$ ls -li
 <span style="color: #FF6600">1706858</span> -rw-rw-r--. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">0</span> Nov  <span style="color: #FF6600">5</span> 21:55 link
 <span style="color: #FF6600">1706858</span> -rw-rw-r--. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">0</span> Nov  <span style="color: #FF6600">5</span> 21:55 orig
-<span style="color: #003333">$ </span>find . -inum 1706858
+$ find . -inum 1706858
 ./orig
 ./link
 </pre></div>
-</p>
+
 
 <p>When creating the file <code>orig</code>, the number of hard links was 1. I also added the option <code>-i</code> to show the <a href="https://en.wikipedia.org/wiki/Inode">inode number</a>. This number uniquely identifies a file. I then created a hard link from the original file. As you can see, both files now have the same inode number and the number of hard links is incremented. Searching on inode number finds both files.</p>
 
 <p>Copying with <code>cp</code>, as Tom did in his example, creates a <em>new</em> file with the same contents as the original. That means that the inode numbers are also different! Changes in one file will not be registered in the other one. The same goes for <em>symbolic links</em>, in fact:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>ln -s orig symb
-<span style="color: #003333">$ </span>ls -il
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span>$ ln -s orig symb
+$ ls -il
 total 0
 <span style="color: #FF6600">1706858</span> -rw-rw-r--. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">0</span> Nov  <span style="color: #FF6600">5</span> 21:55 link
 <span style="color: #FF6600">1706858</span> -rw-rw-r--. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">0</span> Nov  <span style="color: #FF6600">5</span> 21:55 orig
 <span style="color: #FF6600">1707044</span> lrwxrwxrwx. <span style="color: #FF6600">1</span> bert bert <span style="color: #FF6600">4</span> Nov  <span style="color: #FF6600">5</span> 22:38 symb -&gt; orig
 </pre></div>
-</p>
 
-<h2 id="directories:597e460e738179dffa891daf0efe4b28">Directories</h2>
+
+<h2 id="directories">Directories</h2>
 
 <p>Now, hard links between directories don&rsquo;t exist, so the interpretation of the term &ldquo;number of hard links&rdquo; is a bit different than with ordinary files. In this case, the number represents how many other directories ‘link to’ it. Specifically, that means the parent directory and all directories immediately below. A new directory starts at &ldquo;2&rdquo;, i.e. a link from ‘itself’ and one from the parent directory. The number will increment when you create subdirectories, but not when you create new files or symbolic links.</p>
 
 <p>Take a look at the example below, and try it for yourself. Take your time, I&rsquo;ll wait&hellip;</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>ls -l
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span>$ ls -l
 total 0
-<span style="color: #003333">$ </span>mkdir a b
-<span style="color: #003333">$ </span>ls -l
+$ mkdir a b
+$ ls -l
 total 8
 drwxrwxr-x. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:26 a
 drwxrwxr-x. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:26 b
-<span style="color: #003333">$ </span>mkdir a/c
-<span style="color: #003333">$ </span>ls -l
+$ mkdir a/c
+$ ls -l
 total 8
 drwxrwxr-x. <span style="color: #FF6600">3</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:27 a
 drwxrwxr-x. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:26 b
-<span style="color: #003333">$ </span>mkdir a/d
-<span style="color: #003333">$ </span>ls -l
+$ mkdir a/d
+$ ls -l
 total 8
 drwxrwxr-x. <span style="color: #FF6600">4</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:27 a
 drwxrwxr-x. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:26 b
-<span style="color: #003333">$ </span>touch a/f
-<span style="color: #003333">$ </span>ls -l
+$ touch a/f
+$ ls -l
 total 8
 drwxrwxr-x. <span style="color: #FF6600">4</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:27 a
 drwxrwxr-x. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:26 b
-<span style="color: #003333">$ </span>ln -rs b a/e
-<span style="color: #003333">$ </span>ls -l
+$ ln -rs b a/e
+$ ls -l
 total 8
 drwxrwxr-x. <span style="color: #FF6600">4</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:48 a
 drwxrwxr-x. <span style="color: #FF6600">2</span> bert bert <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">5</span> 21:26 b
-<span style="color: #003333">$ </span>tree -F
+$ tree -F
 .
 |-- a/
 |   |-- c/
@@ -205,22 +205,22 @@ drwxrwxr-x. <span style="color: #FF6600">2</span> bert bert <span style="color: 
 |   <span style="color: #CC3300">`</span>-- f
 <span style="color: #CC3300">`</span>-- b/
 </pre></div>
-</p>
+
 
 <p>Every time I created a new subdirectory, the number of hard links incremented, but not when creating a file or symbolic link, even to a directory!</p>
 
 <p>As mentioned earlier, creating hard links from directories doesn&rsquo;t work:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>ln a c
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span>$ ln a c
 ln: ‘a’: hard link not allowed <span style="color: #006699; font-weight: bold">for</span> directory
 </pre></div>
-</p>
+
 
 <p>So when Tom was using find to search for a directory <code>test2</code> based on its inode number, it could necessarily only find it once.</p>
 
 <p>To finish off, let&rsquo;s look at a corner case, specifically the root directory (<code>/</code>) of the file system. On my laptop:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>ls -l /
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span>$ ls -l /
 total 64
 lrwxrwxrwx.   <span style="color: #FF6600">1</span> root root     <span style="color: #FF6600">7</span> Sep <span style="color: #FF6600">27</span> 16:37 bin -&gt; usr/bin
 dr-xr-xr-x.   <span style="color: #FF6600">5</span> root root  <span style="color: #FF6600">3072</span> Oct <span style="color: #FF6600">29</span> 09:03 boot
@@ -242,29 +242,28 @@ dr-xr-xr-x.  <span style="color: #FF6600">13</span> root root     <span style="c
 drwxrwxrwt.  <span style="color: #FF6600">16</span> root root   <span style="color: #FF6600">420</span> Nov  <span style="color: #FF6600">5</span> 21:46 tmp
 drwxr-xr-x.  <span style="color: #FF6600">13</span> root root  <span style="color: #FF6600">4096</span> Sep <span style="color: #FF6600">27</span> 16:37 usr
 drwxr-xr-x.  <span style="color: #FF6600">21</span> root root  <span style="color: #FF6600">4096</span> Sep <span style="color: #FF6600">27</span> 16:39 var
-<span style="color: #003333">$ </span>ls -ld /
+$ ls -ld /
 dr-xr-xr-x. <span style="color: #FF6600">18</span> root root <span style="color: #FF6600">4096</span> Nov  <span style="color: #FF6600">4</span> 09:29 /
 </pre></div>
-</p>
+
 
 <p>As you can see in the last line, the number of hard links of <code>/</code> is 18. When you count the number of subdirectories directly below <code>/</code> (<em>not</em> counting symbolic links like <code>/sbin -&gt; /usr/sbin</code>), you get 16. Adding the directory&rsquo;s &ldquo;own&rdquo; hard link, you would expect the final number to be 17 because <code>/</code> is at the top of the directory hierarchy, right? But let&rsquo;s try this:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span><span style="color: #336666">cd</span> ..; <span style="color: #336666">pwd</span>
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span>$ <span style="color: #336666">cd</span> ..; <span style="color: #336666">pwd</span>
 /
-<span style="color: #003333">$ </span><span style="color: #336666">cd</span> ..; <span style="color: #336666">pwd</span>
+$ <span style="color: #336666">cd</span> ..; <span style="color: #336666">pwd</span>
 /
-<span style="color: #003333">$ </span><span style="color: #336666">cd</span> ..; <span style="color: #336666">pwd</span>
+$ <span style="color: #336666">cd</span> ..; <span style="color: #336666">pwd</span>
 /
 ...
 </pre></div>
-</p>
+
 
 <p>Turtles all the way up! So apparently, the root directory is its own parent directory! And consequently, the number 18 is right after all&hellip;</p>
 
 <p>Thank you, Tom, for the interesting question!</p>
 
-<p><em>(I wrote and published this post elsewhere at first, but I&rsquo;m consolidating everything that is worth preserving on this site.)</em></p>
-</div></article>
+<p><em>(I wrote and published this post elsewhere at first, but I&rsquo;m consolidating everything that is worth preserving on this site.)</em></p></div></article>
 					
 						<div class="share">
 	<div class="addthis_toolbox addthis_default_style ">
@@ -292,24 +291,23 @@ dr-xr-xr-x. <span style="color: #FF6600">18</span> root root <span style="color:
 </div>
 					</section>
 					
-					
-
+					<div id="disqus_thread"></div>
 <script type="text/javascript">
-    
-    var disqus_shortname = 'notes-to-self-bertvv';
 
+(function() {
     
     
+    if (window.location.hostname == "localhost")
+        return;
 
-    
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-    
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
 </script>
-
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 				    </div>
 				</div>

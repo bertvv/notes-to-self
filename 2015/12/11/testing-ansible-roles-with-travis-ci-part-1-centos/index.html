@@ -106,9 +106,9 @@
 					<div itemscope itemtype="https://schema.org/Blog">
 					<article class="post" itemscope itemtype="https://schema.org/BlogPosting">
     <h1 class="title" itemprop="name">Testing Ansible roles with Travis-CI, Part 1: CentOS</h1>
-	<div class="entry-content" itemprop="articleBody">
+	<div class="entry-content" itemprop="articleBody"><p>In this first post on testing Ansible roles with Travis-CI, we&rsquo;ll discuss how you can apply a test playbook on CentOS. Out-of-the-box, Travis-CI doesn&rsquo;t support CentOS, as its test environment is Ubuntu-based. However, Travis-CI allows you to set up a Docker container and this opens up all kinds of possibilities.</p>
 
-<p>In this first post on testing Ansible roles with Travis-CI, we&rsquo;ll discuss how you can apply a test playbook on CentOS. Out-of-the-box, Travis-CI doesn&rsquo;t support CentOS, as its test environment is Ubuntu-based. However, Travis-CI allows you to set up a Docker container and this opens up all kinds of possibilities.</p>
+<p></p>
 
 <p>I&rsquo;ve known about <a href="https://travis-ci.org/">Travis-CI</a> as a test platform for a while now, but haven&rsquo;t tried it out until a few days ago. It is mainly used for running tests on applications, but it has seen use for infrastructure testing as well. For example, Jeff Geerling already <a href="https://servercheck.in/blog/testing-ansible-roles-travis-ci-github">wrote about testing Ansible roles</a> using Travis-CI.</p>
 
@@ -120,12 +120,12 @@
 
 <p>Docker is another technology I haven&rsquo;d played with before, so two learning opportunities in one go! I&rsquo;m not going to delve into getting started with Docker, <a href="https://docs.docker.com/engine/userguide/basics/">you can find that elsewhere</a>.</p>
 
-<h2 id="setting-up-a-centos-docker-container:48d64d145fbcb082238fb5b7d00b35e8">Setting up a CentOS Docker container</h2>
+<h2 id="setting-up-a-centos-docker-container">Setting up a CentOS Docker container</h2>
 
 <p>In this section, we&rsquo;re going to set up a simple test for my own <a href="https://galaxy.ansible.com/detail#/role/3047">Apache role</a>.
 The first step is to create a Docker container for CentOS with all dependencies installed. After a few attempts, I settled for the following Dockerfile:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">FROM centos:7
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span>FROM centos:7
 <span style="color: #0099FF; font-style: italic"># Install systemd -- See https://hub.docker.com/_/centos/</span>
 RUN yum -y swap -- remove fakesystemd -- install systemd systemd-libs
 RUN yum -y update; yum clean all; <span style="color: #CC3300; font-weight: bold">\</span>
@@ -148,11 +148,11 @@ RUN <span style="color: #336666">echo</span> -e <span style="color: #CC3300">&#3
 VOLUME <span style="color: #555555">[</span> <span style="color: #CC3300">&quot;/sys/fs/cgroup&quot;</span> <span style="color: #555555">]</span>
 CMD <span style="color: #555555">[</span><span style="color: #CC3300">&quot;/usr/sbin/init&quot;</span><span style="color: #555555">]</span>
 </pre></div>
-</p>
+
 
 <p>This is based a.o. on the <a href="https://hub.docker.com/_/centos/">guidelines</a> for the <code>centos:7</code> image found on Docker Hub. By default, systemd is not available inside the container, so the code above installs it, albeit in a limited form. After that, Ansible is installed and a basic inventory file is generated.</p>
 
-<h2 id="running-the-ansible-test-on-travis-ci:48d64d145fbcb082238fb5b7d00b35e8">Running the Ansible test on Travis-CI</h2>
+<h2 id="running-the-ansible-test-on-travis-ci">Running the Ansible test on Travis-CI</h2>
 
 <p>The next step is to configure Travis-CI with a <code>.travis.yml</code> file. In this stage, I ran into another problem w.r.t. systemd. After building the container, I succeeded in running <code>ansible-playbook</code>, but the role failed when the service was started:</p>
 
@@ -167,7 +167,7 @@ msg: no service or tool found for: httpd
 
 <p>Finally, I got to the following <code>.travis.yml</code> file:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">sudo: required
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span>sudo: required
 
 services:
   - docker
@@ -190,7 +190,7 @@ script:
 notifications:
   email: false
 </pre></div>
-</p>
+
 
 <p>See the result of the build process on the <a href="https://travis-ci.org/bertvv/travispoc/builds/96155750">Travis-CI status page</a>. This configuration pulls down the base image <code>centos:7</code> and builds the custom container with Ansible installed. The custom container is then run in privileged mode and detached. The current directory (= the project root of the Git project) is mounted inside the container under <code>/etc/ansible/roles/role_under_test/</code>. The name of the directory is not important, actually, and giving it a generic one makes the code reusable over any role. The <code>docker run</code> command yields an ID that is written to a temporary file. After that, the test playbook (see below) is executed, once with the <code>--syntax-check</code> option, and once without (actually applying the role to the container).</p>
 
@@ -203,11 +203,11 @@ notifications:
 
 <p>The playbook is kept minimal here, but a <code>vars:</code> section can be added to set role variables. The role is called <code>role_under_test</code>, consistent with the directory mentioned above.</p>
 
-<h2 id="limitations:48d64d145fbcb082238fb5b7d00b35e8">Limitations</h2>
+<h2 id="limitations">Limitations</h2>
 
 <p>In the end, a container is -intentionally- not a full VM, so it does have its limitations. As discussed before, systemd is not available out-of-the-box. Basic services that you expect to be present, like ssh and firewalld aren&rsquo;t installed by default. Another big issue is SELinux. Since this is a kernel extension, I suspect it would interact with the host system. The host system in this case is Travis-CI&rsquo;s Ubuntu box that runs the tests, and that certainly won&rsquo;t have SELinux enabled. I haven&rsquo;t looked into this, but I suspect that in this setting, SELinux will not work inside the container. Please let me know in the comments if I&rsquo;m wrong! Anyway, my roles usually assume SELinux is running, so I suspect it won&rsquo;t be possible to test these on Travis-CI&hellip; In those cases, a solution based on full virtualization like KVM, VirtualBox, etc. is probably more suitable.</p>
 
-<h2 id="conclusion:48d64d145fbcb082238fb5b7d00b35e8">Conclusion</h2>
+<h2 id="conclusion">Conclusion</h2>
 
 <p>In this post, I discussed a proof of concept for testing Ansible roles on CentOS using Travis-CI. The code can be found on <a href="https://github.com/bertvv/travispoc">https://github.com/bertvv/travispoc</a> and is tagged <code>centos</code> (See the <a href="https://github.com/bertvv/travispoc/tags">tags page</a>). Although there are some limitations (SELinux being a notable one), Travis-CI is usable as a testing platform in this setting.</p>
 
@@ -215,8 +215,7 @@ notifications:
 
 <p>In a next blog post, we&rsquo;ll extend this solution for running tests on multiple platforms.</p>
 
-<p><strong>Edit:</strong> There was a major flaw in the code of the original version of this post. It installed the role under test from Ansible Galaxy instead of running on the <em>current</em> commit. The <code>Dockerfile</code> and <code>.travis.yml</code> were adapted to fix this.</p>
-</div></article>
+<p><strong>Edit:</strong> There was a major flaw in the code of the original version of this post. It installed the role under test from Ansible Galaxy instead of running on the <em>current</em> commit. The <code>Dockerfile</code> and <code>.travis.yml</code> were adapted to fix this.</p></div></article>
 					
 						<div class="share">
 	<div class="addthis_toolbox addthis_default_style ">
@@ -244,24 +243,23 @@ notifications:
 </div>
 					</section>
 					
-					
-
+					<div id="disqus_thread"></div>
 <script type="text/javascript">
-    
-    var disqus_shortname = 'notes-to-self-bertvv';
 
+(function() {
     
     
+    if (window.location.hostname == "localhost")
+        return;
 
-    
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-    
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
 </script>
-
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 				    </div>
 				</div>

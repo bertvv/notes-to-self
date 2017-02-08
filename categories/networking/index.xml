@@ -3,11 +3,11 @@
   <channel>
       <title>Networking on Notes to self </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>https://bertvv.github.io/notes-to-self/categories/networking/</link>
+    <link>https://bertvv.github.io/notes-to-self/categories/networking/index.xml</link>
     <language>en-us</language>
     <author>Bert Van Vreckem</author>
     <copyright>© 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back.</copyright>
-    <updated>Tue, 29 Sep 2015 20:58:28 CEST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>VirtualBox Networking: an overview</title>
@@ -15,13 +15,13 @@
       <pubDate>Tue, 29 Sep 2015 20:58:28 CEST</pubDate>
       <author>Bert Van Vreckem</author>
       <guid>https://bertvv.github.io/notes-to-self/2015/09/29/virtualbox-networking-an-overview</guid>
-      <description>
-
-&lt;p&gt;One of the greatest pitfalls when working with VirtualBox VMs is a good understanding of how networking works. In this post, we&amp;rsquo;ll discuss the most important differences between them, and their limitations when you use VirtualBox to experiment with setting up network services on a VM.&lt;/p&gt;
+      <description>&lt;p&gt;One of the greatest pitfalls when working with VirtualBox VMs is a good understanding of how networking works. In this post, we&amp;rsquo;ll discuss the most important differences between them, and their limitations when you use VirtualBox to experiment with setting up network services on a VM.&lt;/p&gt;
 
 &lt;p&gt;In our system administration courses, we use VirtualBox to allow students to set up their own Linux machines without having to resort to dual booting. VirtualBox is certainly not the &amp;ldquo;best&amp;rdquo; virtualization platform, but it is supported on the three common desktop platforms and works similarly on all of them.&lt;/p&gt;
 
-&lt;h1 id=&#34;overview:fc5e5586f11d39e89379de40fcf44f1e&#34;&gt;Overview&lt;/h1&gt;
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;overview&#34;&gt;Overview&lt;/h1&gt;
 
 &lt;p&gt;A VirtualBox VM can be assigned 4 network adapters from the GUI (Machine &amp;gt; Settings &amp;gt; Network), and even more from the command line. In a VirtualBox VM with EL7, the network interfaces are usually named as follows:&lt;/p&gt;
 
@@ -94,13 +94,12 @@
 
 &lt;p&gt;In the sections below, each adapter type is discussed in more detail, including the network settings that you can expect.&lt;/p&gt;
 
-&lt;h1 id=&#34;the-nat-interface:fc5e5586f11d39e89379de40fcf44f1e&#34;&gt;The NAT interface&lt;/h1&gt;
+&lt;h1 id=&#34;the-nat-interface&#34;&gt;The NAT interface&lt;/h1&gt;
 
 &lt;p&gt;The VirtualBox &lt;a href=&#34;http://www.virtualbox.org/manual/ch06.html#network_nat&#34;&gt;NAT adapter&lt;/a&gt;
 is the default way of allowing your VM to access the Internet. However, it is normally not possible to access your VM from the host system over the network.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vbnat.png&#34; alt=&#34;The NAT interface: most reliable way to give your VM internet access&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vbnat.png&#34; alt=&#34;The NAT interface: most reliable way to give your VM internet access&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;The network settings of your VM are predictable. Any VM with a NAT interface has:&lt;/p&gt;
 
@@ -114,12 +113,11 @@ is the default way of allowing your VM to access the Internet. However, it is no
 
 &lt;p&gt;The NAT adapter is the most reliable to give your VM Internet access. If your host system can get on the net, your VM can as well.  There is one exception: when you switch your host system between a wired and a wireless adapter while the VM is running, the latter will lose its access.&lt;/p&gt;
 
-&lt;h1 id=&#34;the-host-only-interface:fc5e5586f11d39e89379de40fcf44f1e&#34;&gt;The Host-only interface&lt;/h1&gt;
+&lt;h1 id=&#34;the-host-only-interface&#34;&gt;The Host-only interface&lt;/h1&gt;
 
 &lt;p&gt;The VirtualBox &lt;a href=&#34;http://www.virtualbox.org/manual/ch06.html#network_hostonly&#34;&gt;host-only adapter&lt;/a&gt; allows network traffic between your host system and a VM. A virtual Ethernet interface is created that is also visible on your host system. You can create multiple host-only adapters and configure network settings from the main window by opening File &amp;gt; Preferences &amp;gt; Network &amp;gt; Host-only Networks.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vbho.png&#34; alt=&#34;The Host-only interface: a virtual network between host and VMs&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vbho.png&#34; alt=&#34;The Host-only interface: a virtual network between host and VMs&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;A host-only interface is named:&lt;/p&gt;
 
@@ -153,12 +151,11 @@ is the default way of allowing your VM to access the Internet. However, it is no
 
 &lt;p&gt;I strongly suggest to leave the default host-only interface as is, and create new interfaces when you want to work with other IP ranges. It may be needed to shut down all VMs and restart VirtualBox for configuration changes to come into effect, especially after creating a new interface.&lt;/p&gt;
 
-&lt;h1 id=&#34;the-bridged-interface:fc5e5586f11d39e89379de40fcf44f1e&#34;&gt;The Bridged interface&lt;/h1&gt;
+&lt;h1 id=&#34;the-bridged-interface&#34;&gt;The Bridged interface&lt;/h1&gt;
 
 &lt;p&gt;As mentioned before, the &lt;a href=&#34;https://www.virtualbox.org/manual/ch06.html#network_bridged&#34;&gt;bridged&lt;/a&gt; interface gives the VM access to the physical network on which the host system is attached. Other hosts on the LAN can likewise communicate with the VM.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vbbridged.png&#34; alt=&#34;The bridged interface: the VMs get immediate access to the physical network&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vbbridged.png&#34; alt=&#34;The bridged interface: the VMs get immediate access to the physical network&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;At first sight, this is the ideal setting for setting up a network service on a VM. However, there are big limitations:&lt;/p&gt;
 
@@ -168,7 +165,7 @@ is the default way of allowing your VM to access the Internet. However, it is no
 &lt;li&gt;Bridging over a wireless interface is limited, and often doesn&amp;rsquo;t work at all&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h1 id=&#34;recommendation-nat-host-only:fc5e5586f11d39e89379de40fcf44f1e&#34;&gt;Recommendation: NAT + Host-only&lt;/h1&gt;
+&lt;h1 id=&#34;recommendation-nat-host-only&#34;&gt;Recommendation: NAT + Host-only&lt;/h1&gt;
 
 &lt;p&gt;If you&amp;rsquo;re setting up a network service on a VM that you at least want to access from your host system, this leaves you in a bit of a pickle:&lt;/p&gt;
 
@@ -189,10 +186,9 @@ is the default way of allowing your VM to access the Internet. However, it is no
 
 &lt;p&gt;The VM is not accessible from the &lt;em&gt;physical&lt;/em&gt; LAN, but seen from a security standpoint, that&amp;rsquo;s more of an advantage&amp;hellip;&lt;/p&gt;
 
-&lt;h1 id=&#34;finally:fc5e5586f11d39e89379de40fcf44f1e&#34;&gt;Finally&amp;hellip;&lt;/h1&gt;
+&lt;h1 id=&#34;finally&#34;&gt;Finally&amp;hellip;&lt;/h1&gt;
 
-&lt;p&gt;The NAT network and internal interfaces aren&amp;rsquo;t discussed in this article, they aren&amp;rsquo;t used as often as the other ones. Be sure to read the &lt;a href=&#34;https://www.virtualbox.org/manual/ch06.html&#34;&gt;VirtualBox documentation&lt;/a&gt; if you want to delve deeper into the subject!&lt;/p&gt;
-</description>
+&lt;p&gt;The NAT network and internal interfaces aren&amp;rsquo;t discussed in this article, they aren&amp;rsquo;t used as often as the other ones. Be sure to read the &lt;a href=&#34;https://www.virtualbox.org/manual/ch06.html&#34;&gt;VirtualBox documentation&lt;/a&gt; if you want to delve deeper into the subject!&lt;/p&gt;</description>
     </item>
     
   </channel>

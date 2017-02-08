@@ -3,11 +3,11 @@
   <channel>
       <title>System Administration on Notes to self </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>https://bertvv.github.io/notes-to-self/categories/system-administration/</link>
+    <link>https://bertvv.github.io/notes-to-self/categories/system-administration/index.xml</link>
     <language>en-us</language>
     <author>Bert Van Vreckem</author>
     <copyright>© 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back.</copyright>
-    <updated>Mon, 16 Nov 2015 16:07:42 CET</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>Automating `mysql_secure_installation`</title>
@@ -15,9 +15,9 @@
       <pubDate>Mon, 16 Nov 2015 16:07:42 CET</pubDate>
       <author>Bert Van Vreckem</author>
       <guid>https://bertvv.github.io/notes-to-self/2015/11/16/automating-mysql_secure_installation</guid>
-      <description>
+      <description>&lt;p&gt;Many HOWTO&amp;rsquo;s and blog posts about installing MySQL/MariaDB, a LAMP stack, etc. suggest to run the script &lt;code&gt;mysql_secure_installation&lt;/code&gt; to tighten the security holes in the default installation of the database engine. This includes setting a root password (empty by default), removing anonymous users, and deleting a test database. For a database server that you&amp;rsquo;re going to run in production, it is really important to do this. However, I have a problem with the fact that &lt;code&gt;mysql_secure_installation&lt;/code&gt; is interactive, i.e. it asks for user input. This makes it very hard to include it in an automated setup. In this post, we&amp;rsquo;ll discuss how the script works and how we can automate what it does.&lt;/p&gt;
 
-&lt;p&gt;Many HOWTO&amp;rsquo;s and blog posts about installing MySQL/MariaDB, a LAMP stack, etc. suggest to run the script &lt;code&gt;mysql_secure_installation&lt;/code&gt; to tighten the security holes in the default installation of the database engine. This includes setting a root password (empty by default), removing anonymous users, and deleting a test database. For a database server that you&amp;rsquo;re going to run in production, it is really important to do this. However, I have a problem with the fact that &lt;code&gt;mysql_secure_installation&lt;/code&gt; is interactive, i.e. it asks for user input. This makes it very hard to include it in an automated setup. In this post, we&amp;rsquo;ll discuss how the script works and how we can automate what it does.&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://serverfault.com/questions/593508/how-to-pass-input-from-one-script-into-another-using-bash&#34;&gt;One approach&lt;/a&gt; to automating &lt;code&gt;mysql_secure_installation&lt;/code&gt; consists of using the &lt;a href=&#34;http://linux.die.net/man/1/expect&#34;&gt;&lt;code&gt;expect(1)&lt;/code&gt;&lt;/a&gt; tool that can &amp;ldquo;sense&amp;rdquo; when the user is asked for input and can inject the appropriate response. This is a kludge and should be avoided. Expect is written in the scripting language Tcl/Tk, which is typically not installed by default. So installing &lt;code&gt;expect(1)&lt;/code&gt; also pulls in dependencies that have no added value to the functionality of the system itself. Installing unneccesary software is a &lt;a href=&#34;http://www.cyberciti.biz/tips/linux-security.html&#34;&gt;bad security practice&lt;/a&gt;. Expect also adds an unnecessary layer of complexity to a script that is already too complicated to begin with. If the &lt;code&gt;mysql_secure_installation&lt;/code&gt; script was written in a way that was more friendly towards automation, it wouldn&amp;rsquo;t be needed at all.&lt;/p&gt;
 
@@ -35,72 +35,72 @@
 
 &lt;p&gt;In the sections below, these steps are explained in more detail, and after that, I&amp;rsquo;ll show how to automate them.&lt;/p&gt;
 
-&lt;h2 id=&#34;setting-the-database-root-password:b58024812153d4d2edd10a4a8e18b19c&#34;&gt;Setting the database root password&lt;/h2&gt;
+&lt;h2 id=&#34;setting-the-database-root-password&#34;&gt;Setting the database root password&lt;/h2&gt;
 
 &lt;p&gt;There&amp;rsquo;s actually (at least) two ways of doing this: using the SQL query (like the &lt;code&gt;mysql_secure_installation&lt;/code&gt; script does), or by using the &lt;code&gt;mysqladmin&lt;/code&gt; command. The SQL statement can e.g. be executed within the &lt;a href=&#34;http://linux.die.net/man/1/mysql&#34;&gt;&lt;code&gt;mysql(1)&lt;/code&gt;&lt;/a&gt; client tool that can be accessed with the command:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;mysql -u root -p
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;$ mysql -u root -p
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
+
 
 &lt;p&gt;The option &lt;code&gt;-u&lt;/code&gt; specifies the user (&lt;code&gt;root&lt;/code&gt;), the option &lt;code&gt;-p&lt;/code&gt; prompts for a password. You can just press ENTER now, but later, when you have set the root password, you will of course need to type it.&lt;/p&gt;
 
 &lt;p&gt;The SQL command to set the root password, copied from the script source, is:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;UPDATE&lt;/span&gt; mysql.&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;user&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;SET&lt;/span&gt; Password&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;PASSWORD(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;my_new_password&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;WHERE&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;User&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;root&amp;#39;&lt;/span&gt;;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;UPDATE&lt;/span&gt; mysql.&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;user&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;SET&lt;/span&gt; Password&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;PASSWORD(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;my_new_password&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;WHERE&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;User&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;root&amp;#39;&lt;/span&gt;;
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
+
 
 &lt;p&gt;Replace &lt;code&gt;my_new_password&lt;/code&gt; with the desired password.&lt;/p&gt;
 
 &lt;p&gt;The alternative method is the &lt;a href=&#34;http://linux.die.net/man/1/mysqladmin&#34;&gt;&lt;code&gt;mysqladmin(1)&lt;/code&gt;&lt;/a&gt; command:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;mysqladmin password &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;my_new_password&amp;quot;&lt;/span&gt;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;$ mysqladmin password &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;my_new_password&amp;quot;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
 
-&lt;h2 id=&#34;delete-anonymous-users:b58024812153d4d2edd10a4a8e18b19c&#34;&gt;Delete anonymous users&lt;/h2&gt;
+
+&lt;h2 id=&#34;delete-anonymous-users&#34;&gt;Delete anonymous users&lt;/h2&gt;
 
 &lt;p&gt;In the default installation includes anonymous users, apparently for testing. These should be removed before putting the database server into production, as it allows to access the database without a password. Anonymous users have an empty user name and can be deleted with the following SQL statement (from &lt;code&gt;mysql_secure_installation&lt;/code&gt;):&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;DELETE&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;FROM&lt;/span&gt; mysql.&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;user&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;WHERE&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;User&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;DELETE&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;FROM&lt;/span&gt; mysql.&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;user&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;WHERE&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;User&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;;
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
 
-&lt;h2 id=&#34;ensure-the-root-user-can-not-log-in-remotely:b58024812153d4d2edd10a4a8e18b19c&#34;&gt;Ensure the root user can not log in remotely&lt;/h2&gt;
+
+&lt;h2 id=&#34;ensure-the-root-user-can-not-log-in-remotely&#34;&gt;Ensure the root user can not log in remotely&lt;/h2&gt;
 
 &lt;p&gt;It&amp;rsquo;s always a good idea to limit access for the database root user to localhost for added security. This won&amp;rsquo;t even affect a setup with &lt;a href=&#34;https://www.phpmyadmin.net/&#34;&gt;phpMyAdmin&lt;/a&gt; if it&amp;rsquo;s installed on the same host!&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;DELETE&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;FROM&lt;/span&gt; mysql.&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;user&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;WHERE&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;User&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;root&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;AND&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;Host&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;NOT&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;IN&lt;/span&gt; (&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;localhost&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;127.0.0.1&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;::1&amp;#39;&lt;/span&gt;);
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;DELETE&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;FROM&lt;/span&gt; mysql.&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;user&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;WHERE&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;User&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;root&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;AND&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;Host&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;NOT&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;IN&lt;/span&gt; (&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;localhost&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;127.0.0.1&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;::1&amp;#39;&lt;/span&gt;);
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
 
-&lt;h2 id=&#34;remove-the-test-database:b58024812153d4d2edd10a4a8e18b19c&#34;&gt;Remove the test database&lt;/h2&gt;
+
+&lt;h2 id=&#34;remove-the-test-database&#34;&gt;Remove the test database&lt;/h2&gt;
 
 &lt;p&gt;The default installation contains a database with the name &lt;code&gt;test&lt;/code&gt; (with associated user privileges). These should also be deleted before putting the database into production:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;DROP&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;DATABASE&lt;/span&gt; test;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;DROP&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;DATABASE&lt;/span&gt; test;
 &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;DELETE&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;FROM&lt;/span&gt; mysql.db &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;WHERE&lt;/span&gt; Db&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;test&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;OR&lt;/span&gt; Db&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;test\_%&amp;#39;&lt;/span&gt;;
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
+
 
 &lt;p&gt;The first statement removes the database, the second privileges on the database.&lt;/p&gt;
 
-&lt;h2 id=&#34;flush-the-privileges-tables:b58024812153d4d2edd10a4a8e18b19c&#34;&gt;Flush the privileges tables&lt;/h2&gt;
+&lt;h2 id=&#34;flush-the-privileges-tables&#34;&gt;Flush the privileges tables&lt;/h2&gt;
 
 &lt;p&gt;The statements above that change user access to the database &lt;a href=&#34;https://dev.mysql.com/doc/refman/5.6/en/privilege-changes.html&#34;&gt;have no immediate effect&lt;/a&gt;. The following command will commit the changes:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;FLUSH &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;PRIVILEGES&lt;/span&gt;;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;FLUSH &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;PRIVILEGES&lt;/span&gt;;
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
+
 
 &lt;p&gt;Without flushing the privilege tables, the root password will remain unset.&lt;/p&gt;
 
-&lt;h2 id=&#34;putting-it-all-together:b58024812153d4d2edd10a4a8e18b19c&#34;&gt;Putting it all together&lt;/h2&gt;
+&lt;h2 id=&#34;putting-it-all-together&#34;&gt;Putting it all together&lt;/h2&gt;
 
 &lt;p&gt;We can execute all the SQL statements above with the following code snippet:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;myql --user&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;root &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;lt;&amp;lt;_EOF_&lt;/span&gt;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;myql --user&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;root &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;lt;&amp;lt;_EOF_&lt;/span&gt;
 &lt;span style=&#34;color: #CC3300&#34;&gt;UPDATE mysql.user SET Password=PASSWORD(&amp;#39;${db_root_password}&amp;#39;) WHERE User=&amp;#39;root&amp;#39;;&lt;/span&gt;
 &lt;span style=&#34;color: #CC3300&#34;&gt;DELETE FROM mysql.user WHERE User=&amp;#39;&amp;#39;;&lt;/span&gt;
 &lt;span style=&#34;color: #CC3300&#34;&gt;DELETE FROM mysql.user WHERE User=&amp;#39;root&amp;#39; AND Host NOT IN (&amp;#39;localhost&amp;#39;, &amp;#39;127.0.0.1&amp;#39;, &amp;#39;::1&amp;#39;);&lt;/span&gt;
@@ -109,11 +109,11 @@
 &lt;span style=&#34;color: #CC3300&#34;&gt;FLUSH PRIVILEGES;&lt;/span&gt;
 &lt;span style=&#34;color: #CC3300&#34;&gt;_EOF_&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
+
 
 &lt;p&gt;The SQL commands are passed to &lt;code&gt;mysql(1)&lt;/code&gt; in a &lt;a href=&#34;http://tldp.org/LDP/abs/html/here-docs.html&#34;&gt;here document&lt;/a&gt;. The variable &amp;lsquo;${db_root_password}&amp;rsquo; needs to be set. I&amp;rsquo;ve written a more elaborate shell script that takes the value of the database root password from the command line and has some checks in place. The full source can be found below:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;#! /bin/sh&lt;/span&gt;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;#! /bin/sh&lt;/span&gt;
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;#&lt;/span&gt;
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Author: Bert Van Vreckem &amp;lt;bert.vanvreckem@gmail.com&amp;gt;&lt;/span&gt;
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;#&lt;/span&gt;
@@ -153,10 +153,10 @@ is_mysql_command_available&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;#}}}&lt;/span&gt;
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;#{{{ Command line parsing&lt;/span&gt;
 
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt;$#&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt; -ne &amp;quot;&lt;/span&gt;1&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot; ]; then&lt;/span&gt;
-&lt;span style=&#34;color: #CC3300&#34;&gt;  echo &amp;quot;&lt;/span&gt;Expected &lt;span style=&#34;color: #FF6600&#34;&gt;1&lt;/span&gt; argument, got &lt;span style=&#34;color: #003333&#34;&gt;$#&amp;quot;&lt;/span&gt; &amp;gt;&amp;amp;2
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt;$#&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;&lt;/span&gt; -ne &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;1&amp;quot;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;then&lt;/span&gt;
+  &lt;span style=&#34;color: #336666&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;Expected 1 argument, got &lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt;$#&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;&lt;/span&gt; &amp;gt;&amp;amp;2
   usage
-  &lt;span style=&#34;color: #336666&#34;&gt;exit &lt;/span&gt;2
+  &lt;span style=&#34;color: #336666&#34;&gt;exit&lt;/span&gt; 2
 &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;fi&lt;/span&gt;
 
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;#}}}&lt;/span&gt;
@@ -168,12 +168,12 @@ is_mysql_command_available&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span
 
 &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;if&lt;/span&gt; ! is_mysql_command_available; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;then&lt;/span&gt;
   &lt;span style=&#34;color: #336666&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;The MySQL/MariaDB client mysql(1) is not installed.&amp;quot;&lt;/span&gt;
-  &lt;span style=&#34;color: #336666&#34;&gt;exit &lt;/span&gt;1
+  &lt;span style=&#34;color: #336666&#34;&gt;exit&lt;/span&gt; 1
 &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;fi&lt;/span&gt;
 
 &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;if&lt;/span&gt; is_mysql_root_password_set; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;then&lt;/span&gt;
   &lt;span style=&#34;color: #336666&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;Database root password already set&amp;quot;&lt;/span&gt;
-  &lt;span style=&#34;color: #336666&#34;&gt;exit &lt;/span&gt;0
+  &lt;span style=&#34;color: #336666&#34;&gt;exit&lt;/span&gt; 0
 &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;fi&lt;/span&gt;
 
 mysql --user&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;root &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;lt;&amp;lt;_EOF_&lt;/span&gt;
@@ -185,16 +185,15 @@ mysql --user&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;root &lt;sp
 &lt;span style=&#34;color: #CC3300&#34;&gt;  FLUSH PRIVILEGES;&lt;/span&gt;
 &lt;span style=&#34;color: #CC3300&#34;&gt;_EOF_&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
+
 
 &lt;p&gt;I also put the script on Github, in my &lt;a href=&#34;https://github.com/bertvv/scripts/&#34;&gt;scripts repository&lt;/a&gt;. If I modify/improve the script in the future, you can find the newer versions there.&lt;/p&gt;
 
-&lt;h2 id=&#34;conclusion:b58024812153d4d2edd10a4a8e18b19c&#34;&gt;Conclusion&lt;/h2&gt;
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
 
 &lt;p&gt;The &lt;code&gt;mysql_secure_installation&lt;/code&gt; script makes the installation of MariaDB/MySQL more secure and the actions that it performs &lt;em&gt;should always&lt;/em&gt; be applied to database servers that you put into production. However, by making the script interactive, it has become unnecessarily complicated. Worse, it&amp;rsquo;s an obstruction in our quest to &amp;ldquo;Automate All the Things&amp;trade;&amp;rdquo;.&lt;/p&gt;
 
-&lt;p&gt;I&amp;rsquo;m certainly &lt;a href=&#34;https://gist.github.com/Mins/4602864#gistcomment-1294952&#34;&gt;not the first one&lt;/a&gt; to suggest a non-interactive script that does the same as &lt;code&gt;mysql_secure_installation&lt;/code&gt;, but I haven&amp;rsquo;t seen this approach actually being encouraged. I hope this post at least adds to the discussion.&lt;/p&gt;
-</description>
+&lt;p&gt;I&amp;rsquo;m certainly &lt;a href=&#34;https://gist.github.com/Mins/4602864#gistcomment-1294952&#34;&gt;not the first one&lt;/a&gt; to suggest a non-interactive script that does the same as &lt;code&gt;mysql_secure_installation&lt;/code&gt;, but I haven&amp;rsquo;t seen this approach actually being encouraged. I hope this post at least adds to the discussion.&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -203,51 +202,47 @@ mysql --user&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;root &lt;sp
       <pubDate>Thu, 08 Oct 2015 19:06:48 CEST</pubDate>
       <author>Bert Van Vreckem</author>
       <guid>https://bertvv.github.io/notes-to-self/2015/10/08/installing-virtualbox-guest-additions-in-fedora-22</guid>
-      <description>
+      <description>&lt;p&gt;VirtualBox Guest additions are a set of drivers that you can install on virtual machines to enable a few cool features: a scaling desktop in the VM, shared clipboard, shared folders, etc. This post discusses how to install these in Fedora 22.&lt;/p&gt;
 
-&lt;p&gt;VirtualBox Guest additions are a set of drivers that you can install on virtual machines to enable a few cool features: a scaling desktop in the VM, shared clipboard, shared folders, etc. This post discusses how to install these in Fedora 22.&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;You can easily find other HOWTO&amp;rsquo;s that describe the installation process. For example, I like the one on &lt;a href=&#34;http://www.if-not-true-then-false.com/2010/install-virtualbox-guest-additions-on-fedora-centos-red-hat-rhel/&#34;&gt;If Not True Then False&lt;/a&gt;. That one covers quite a few versions of Fedora and CentOS, which may be confusing for beginning Linux users. This post focuses on recent Fedora versions, specifically Fedora 22 and newer, where &lt;code&gt;yum&lt;/code&gt; is replaced by &lt;code&gt;dnf&lt;/code&gt; as the package management tool.&lt;/p&gt;
 
-&lt;h2 id=&#34;installation-procedure:d27ff6edcf0235db4a3bcb73c2e83780&#34;&gt;Installation procedure&lt;/h2&gt;
+&lt;h2 id=&#34;installation-procedure&#34;&gt;Installation procedure&lt;/h2&gt;
 
 &lt;p&gt;Open a terminal (click Activities and type &amp;ldquo;Terminal&amp;rdquo;) and execute the following commands:&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;p&gt;First, update the kernel:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;sudo dnf upgrade kernel*
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;$ sudo dnf upgrade kernel*
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;&lt;/li&gt;
+&lt;/li&gt;
 
 &lt;li&gt;&lt;p&gt;Reboot the VM when a new kernel version was installed.&lt;/p&gt;&lt;/li&gt;
 
 &lt;li&gt;&lt;p&gt;Install some packages needed for the installation:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;sudo dnf install dkms kernel-headers kernel-devel
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;$ sudo dnf install dkms kernel-headers kernel-devel
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;&lt;/li&gt;
+&lt;/li&gt;
 
 &lt;li&gt;&lt;p&gt;Open the &amp;ldquo;Devices&amp;rdquo; menu in the VM window and select &amp;ldquo;Insert Guest Additions CD Image&amp;hellip;&amp;rdquo;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vboxadditions-instert-cd.png&#34; alt=&#34;Devices &amp;gt; Insert Guest Additions CD Image&#34; /&gt;
-&lt;/p&gt;&lt;/li&gt;
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vboxadditions-instert-cd.png&#34; alt=&#34;Devices &amp;gt; Insert Guest Additions CD Image&#34; /&gt;&lt;/p&gt;&lt;/li&gt;
 
 &lt;li&gt;&lt;p&gt;Click &amp;ldquo;Run&amp;rdquo; in the Autorun dialog box.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vboxadditions-autorun.png&#34; alt=&#34;Autorun dialog box&#34; /&gt;
-&lt;/p&gt;&lt;/li&gt;
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vboxadditions-autorun.png&#34; alt=&#34;Autorun dialog box&#34; /&gt;&lt;/p&gt;&lt;/li&gt;
 
 &lt;li&gt;&lt;p&gt;A terminal window will open that informs you of the installation process. Look for &lt;code&gt;[  OK  ]&lt;/code&gt; and &lt;code&gt;[FAILED]&lt;/code&gt; in the output. If you followed the instructions, you should only see &lt;code&gt;[  OK  ]&lt;/code&gt;s.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vboxadditions-installation.png&#34; alt=&#34;Guest Additions Installation&#34; /&gt;
-&lt;/p&gt;&lt;/li&gt;
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vboxadditions-installation.png&#34; alt=&#34;Guest Additions Installation&#34; /&gt;&lt;/p&gt;&lt;/li&gt;
 
 &lt;li&gt;&lt;p&gt;Log out (the menu in the top right corner of the screen, click your user name and choose Log out) and back in.&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;That&amp;rsquo;s it!&lt;/p&gt;
-</description>
+&lt;p&gt;That&amp;rsquo;s it!&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -258,6 +253,8 @@ mysql --user&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;root &lt;sp
       <guid>https://bertvv.github.io/notes-to-self/2015/10/08/easily-switch-between-hyper-v-and-virtualbox</guid>
       <description>&lt;p&gt;Hyper-V and VirtualBox are two virtualization platforms that we both use in our system administration courses. Unfortunately, once Hyper-V is active, it won&amp;rsquo;t coexist with other virtualization platforms. In this post, I discuss a method to work around this problem by setting up a custom boot entry for each platform.&lt;/p&gt;
 
+&lt;p&gt;&lt;/p&gt;
+
 &lt;p&gt;I manage two classrooms with 40 dual boot Windows Server and Linux (Fedora) computers. In our Windows Server course, the idea is to teach students to work with Hyper-V, but other courses taught in the same classroom usually use VirtualBox. Because I thought I couldn&amp;rsquo;t install both, the easy solution was not to install VirtualBox. It&amp;rsquo;s unconvenient, but students that need VirtualBox could boot into Fedora.&lt;/p&gt;
 
 &lt;p&gt;However, a few weeks ago, one of my students ran into a similar problem: he has Hyper-V installed on his laptop and also wanted to use VirtualBox for my Linux course. He then let me know that he solved the problem by disabling Hyper-V, something I didn&amp;rsquo;t realize was possible. That made me wonder if there wasn&amp;rsquo;t a solution that I could automate and deploy on all classroom computers.&lt;/p&gt;
@@ -266,7 +263,7 @@ mysql --user&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;root &lt;sp
 
 &lt;p&gt;So I went a little further and wrote a PowerShell script that duplicates the current (single) boot entry, assigns suitable names to each, turns off Hyper-V in the copy, and made the copy the default one. This is the resulting script:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# AddBootOptionNoHyperV.ps1&lt;/span&gt;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# AddBootOptionNoHyperV.ps1&lt;/span&gt;
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Create a boot option with Hyper-V turned off&lt;/span&gt;
 
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Variables&lt;/span&gt;
@@ -299,15 +296,13 @@ bcdedit /set &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;$vboxboot_guid
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Make VirtualBox the default boot entry&lt;/span&gt;
 bcdedit /&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;$vboxboot_guid&amp;quot;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
+
 
 &lt;p&gt;Now, students that boot into Windows get the choice:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/bootmenu-hyperv-vbox.jpg&#34; alt=&#34;Windows boot menu with options Hyper-V and VirtualBox&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/bootmenu-hyperv-vbox.jpg&#34; alt=&#34;Windows boot menu with options Hyper-V and VirtualBox&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Funny that I didn&amp;rsquo;t learn about this stuff from my colleagues that have been teaching Windows Server for years&amp;hellip; ;-)&lt;/p&gt;
-</description>
+&lt;p&gt;Funny that I didn&amp;rsquo;t learn about this stuff from my colleagues that have been teaching Windows Server for years&amp;hellip; ;-)&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -316,36 +311,36 @@ bcdedit /&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;default&l
       <pubDate>Mon, 05 Oct 2015 16:59:14 CEST</pubDate>
       <author>Bert Van Vreckem</author>
       <guid>https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all</guid>
-      <description>
+      <description>&lt;p&gt;Writing Vagrantfiles is tedious, especially when you&amp;rsquo;re setting up a multi-VM environment. Typically, people will copy/paste code blocks that define hosts, but that becomes unwieldy. However, a Vagrantfile is &amp;ldquo;just&amp;rdquo; Ruby, so can&amp;rsquo;t we simplify things a bit using the power of the language? Turns out, we can! Read below to find how you can reduce setting up a multi-VM Vagrant environment to writing a simple YAML file.&lt;/p&gt;
 
-&lt;p&gt;Writing Vagrantfiles is tedious, especially when you&amp;rsquo;re setting up a multi-VM environment. Typically, people will copy/paste code blocks that define hosts, but that becomes unwieldy. However, a Vagrantfile is &amp;ldquo;just&amp;rdquo; Ruby, so can&amp;rsquo;t we simplify things a bit using the power of the language? Turns out, we can! Read below to find how you can reduce setting up a multi-VM Vagrant environment to writing a simple YAML file.&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
-&lt;h2 id=&#34;simplifying-multi-vm-setups:c8f35458a74cb8ca2d70d8b99127632a&#34;&gt;Simplifying multi-VM setups&lt;/h2&gt;
+&lt;h2 id=&#34;simplifying-multi-vm-setups&#34;&gt;Simplifying multi-VM setups&lt;/h2&gt;
 
 &lt;p&gt;A typical Vagrantfile has separate blocks of code for each host (see e.g. &lt;a href=&#34;https://stackoverflow.com/questions/24072916/multi-vm-in-one-vagrantfile-could-i-set-different-memory-size-for-each-of-them&#34;&gt;this StackOverflow discussion&lt;/a&gt;). When the complexity of your environment grows, this becomes harder and harder to maintain. The &lt;a href=&#34;https://docs.vagrantup.com/v2/vagrantfile/tips.html&#34;&gt;Vagrant documentation&lt;/a&gt; states that you can simplify by introducing loops in your Vagrantfile, but then you have the problem of how to manage differences in the properties of each VM. A nice solution to this is to define a Hash at the beginning of the Vagrantfile with the properties and apply them for each host (see e.g. &lt;a href=&#34;https://gist.github.com/dlutzy/2469037&#34;&gt;this example&lt;/a&gt;).&lt;/p&gt;
 
-&lt;h2 id=&#34;a-universal-vagrantfile-sort-of:c8f35458a74cb8ca2d70d8b99127632a&#34;&gt;A universal Vagrantfile (sort of)&lt;/h2&gt;
+&lt;h2 id=&#34;a-universal-vagrantfile-sort-of&#34;&gt;A universal Vagrantfile (sort of)&lt;/h2&gt;
 
 &lt;p&gt;I developed a Vagrantfile (for the full source, see the end of this post or my Github project &lt;a href=&#34;https://github.com/bertvv/ansible-skeleton&#34;&gt;ansible-skeleton&lt;/a&gt;) where the parts that have to be changed, i.e. properties of individual machines, are stored in a separate YAML file. The Vagrantfile will parse the YAML file and apply the settings to each specified VM. A simple example to get started:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# vagrant_hosts.yml&lt;/span&gt;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# vagrant_hosts.yml&lt;/span&gt;
 - name: box001
   ip: 192.168.56.10
 - name: box002
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
+
 
 &lt;p&gt;This will create a Vagrant environment with two VMs, &lt;code&gt;box001&lt;/code&gt; and &lt;code&gt;box002&lt;/code&gt;. Each will get a private network interface. For &lt;code&gt;box001&lt;/code&gt; a fixed IP address (192.168.56.10) is assigned, &lt;code&gt;box002&lt;/code&gt; will get one via DHCP.&lt;/p&gt;
 
 &lt;p&gt;The Vagrantfile will parse the YAML and convert it to a Ruby data structure, specifically a list of Hashes:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;hosts &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #336600&#34;&gt;YAML&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;load_file(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;vagrant_hosts.yml&amp;#39;&lt;/span&gt;)
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;hosts &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #336600&#34;&gt;YAML&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;load_file(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;vagrant_hosts.yml&amp;#39;&lt;/span&gt;)
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
+
 
 &lt;p&gt;This is the main loop of the script that iterates over the &lt;code&gt;hosts&lt;/code&gt;:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;background-color: #f0f0f0; padding: 0 5px 0 5px&#34;&gt; 1 &lt;/span&gt;  hosts&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;each &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;do&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;|&lt;/span&gt;host&lt;span style=&#34;color: #555555&#34;&gt;|&lt;/span&gt;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;background-color: #f0f0f0; padding: 0 5px 0 5px&#34;&gt; 1 &lt;/span&gt;  hosts&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;each &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;do&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;|&lt;/span&gt;host&lt;span style=&#34;color: #555555&#34;&gt;|&lt;/span&gt;
 &lt;span style=&#34;background-color: #f0f0f0; padding: 0 5px 0 5px&#34;&gt; 2 &lt;/span&gt;    config&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;vm&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;define host&lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;name&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;do&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;|&lt;/span&gt;node&lt;span style=&#34;color: #555555&#34;&gt;|&lt;/span&gt;
 &lt;span style=&#34;background-color: #f0f0f0; padding: 0 5px 0 5px&#34;&gt; 3 &lt;/span&gt;      node&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;vm&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;box &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; host&lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;box&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;||=&lt;/span&gt; &lt;span style=&#34;color: #336600&#34;&gt;DEFAULT_BASE_BOX&lt;/span&gt;
 &lt;span style=&#34;background-color: #f0f0f0; padding: 0 5px 0 5px&#34;&gt; 4 &lt;/span&gt;      node&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;vm&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;box_url &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; host&lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;box_url&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;||=&lt;/span&gt; &lt;span style=&#34;color: #336600&#34;&gt;DEFAULT_BASE_BOX_URL&lt;/span&gt;
@@ -361,7 +356,7 @@ bcdedit /&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;default&l
 &lt;span style=&#34;background-color: #f0f0f0; padding: 0 5px 0 5px&#34;&gt;14 &lt;/span&gt;    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;end&lt;/span&gt;
 &lt;span style=&#34;background-color: #f0f0f0; padding: 0 5px 0 5px&#34;&gt;15 &lt;/span&gt;  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
+
 
 &lt;p&gt;In line 2, a new VM is defined with the name &lt;code&gt;host[&#39;name&#39;]&lt;/code&gt;. In the example above, that is &lt;code&gt;box001&lt;/code&gt; in the first iteration and &lt;code&gt;box002&lt;/code&gt; in te next one.&lt;/p&gt;
 
@@ -371,7 +366,7 @@ bcdedit /&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;default&l
 
 &lt;p&gt;It&amp;rsquo;s possible to specify &lt;a href=&#34;https://docs.vagrantup.com/v2/synced-folders/index.html&#34;&gt;synced folders&lt;/a&gt;. Line 8 calls the method that sets these up. An example of how these can be set up in &lt;code&gt;vagrant_hosts.yml&lt;/code&gt;:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;- name: box002
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;- name: box002
   ip: 192.168.56.11
   synced_folders:
     - src: test
@@ -384,19 +379,19 @@ bcdedit /&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;default&l
         :group: root
         :mount_options: [&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;dmode=0755&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;fmode=0644&amp;#39;&lt;/span&gt;]
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
+
 
 &lt;p&gt;This gives &lt;code&gt;box002&lt;/code&gt; two synced folders. One is mounted under &lt;code&gt;/tmp/test&lt;/code&gt;, the other under &lt;code&gt;/var/www/html&lt;/code&gt;. The second synced folder has a few options, e.g that the owner and group should be &lt;code&gt;root&lt;/code&gt; (instead of &lt;code&gt;vagrant&lt;/code&gt;). The colons in front of the option names (&lt;code&gt;:create&lt;/code&gt;, &lt;code&gt;:group&lt;/code&gt;, etc.) are mandatory here.&lt;/p&gt;
 
 &lt;p&gt;Finally, lines 10-13 apply a few VirtualBox-specific settings. The VM name in VirtualBox is set to the host name (&lt;code&gt;box002&lt;/code&gt;) instead of the standard name assigned by Vagrant (e.g. &lt;code&gt;projectdir_box002_1443709007553_58669&lt;/code&gt;). Also, the VMs will be grouped together in the VirtualBox GUI.&lt;/p&gt;
 
-&lt;h2 id=&#34;provisioning:c8f35458a74cb8ca2d70d8b99127632a&#34;&gt;Provisioning&lt;/h2&gt;
+&lt;h2 id=&#34;provisioning&#34;&gt;Provisioning&lt;/h2&gt;
 
 &lt;p&gt;Once the VM is configured and booted, Vagrant allows you to run a provisioning script that finalizes the configuration of the VM. I use Ansible for this, and let every host read the same master playbook (see the &amp;ldquo;&lt;a href=&#34;https://docs.ansible.com/ansible/playbooks_best_practices.html&#34;&gt;Playbooks Best Practices&lt;/a&gt;&amp;rdquo; section of the &lt;a href=&#34;https://docs.ansible.com/ansible/&#34;&gt;Ansible Documentation&lt;/a&gt;).&lt;/p&gt;
 
 &lt;p&gt;However, most of my students are using Windows which is &lt;a href=&#34;https://docs.ansible.com/ansible/intro_installation.html#control-machine-requirements&#34;&gt;not supported by Ansible&lt;/a&gt;. In this case, I work around this problem by installing Ansible on the VM and invoking it locally instead of from the host system. The Vagrantfile detects the host operating system and invokes the appropriate provisioning code:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;background-color: #f0f0f0; padding: 0 5px 0 5px&#34;&gt; 1 &lt;/span&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;is_windows&lt;/span&gt;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;background-color: #f0f0f0; padding: 0 5px 0 5px&#34;&gt; 1 &lt;/span&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;is_windows&lt;/span&gt;
 &lt;span style=&#34;background-color: #f0f0f0; padding: 0 5px 0 5px&#34;&gt; 2 &lt;/span&gt;  &lt;span style=&#34;color: #336600&#34;&gt;RbConfig&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color: #336600&#34;&gt;CONFIG&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;host_os&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;=~&lt;/span&gt; &lt;span style=&#34;color: #33AAAA&#34;&gt;/mswin|mingw|cygwin/&lt;/span&gt;
 &lt;span style=&#34;background-color: #f0f0f0; padding: 0 5px 0 5px&#34;&gt; 3 &lt;/span&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;end&lt;/span&gt;
 &lt;span style=&#34;background-color: #f0f0f0; padding: 0 5px 0 5px&#34;&gt; 4 &lt;/span&gt;
@@ -415,21 +410,21 @@ bcdedit /&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;default&l
 &lt;span style=&#34;background-color: #f0f0f0; padding: 0 5px 0 5px&#34;&gt;17 &lt;/span&gt;  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;end&lt;/span&gt;
 &lt;span style=&#34;background-color: #f0f0f0; padding: 0 5px 0 5px&#34;&gt;18 &lt;/span&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;end&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
+
 
 &lt;p&gt;I&amp;rsquo;m not discussing the provisioning script &lt;code&gt;scripts/playbook-win.sh&lt;/code&gt; in this blog post. It&amp;rsquo;s based on the work of &lt;a href=&#34;https://github.com/KSid/windows-vagrant-ansible&#34;&gt;Kawsar Saiyeed&lt;/a&gt; and &lt;a href=&#34;https://github.com/geerlingguy/JJG-Ansible-Windows&#34;&gt;Jeff Geerling&lt;/a&gt; and my version can be found on my Github project &lt;a href=&#34;https://github.com/bertvv/ansible-skeleton&#34;&gt;ansible-skeleton&lt;/a&gt;.&lt;/p&gt;
 
-&lt;h2 id=&#34;conclusion:c8f35458a74cb8ca2d70d8b99127632a&#34;&gt;Conclusion&lt;/h2&gt;
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
 
 &lt;p&gt;And that&amp;rsquo;s about it! After setting the default base box name and download URL in the Vagrantfile, you don&amp;rsquo;t need to touch the Vagrantfile anymore. Adding a VM is just a couple of lines of YAML. See the &lt;a href=&#34;https://github.com/bertvv/ansible-skeleton/blob/master/vagrant_hosts.yml&#34;&gt;source code for &lt;code&gt;vagrant_hosts.yml&lt;/code&gt;&lt;/a&gt; for an overview of all supported settings.&lt;/p&gt;
 
 &lt;p&gt;If you have suggestions for improvements, let me know! Pull requests on the &lt;a href=&#34;https://github.com/bertvv/ansible-skeleton&#34;&gt;project&lt;/a&gt; are also more than welcome.&lt;/p&gt;
 
-&lt;h2 id=&#34;the-complete-vagrantfile:c8f35458a74cb8ca2d70d8b99127632a&#34;&gt;The complete Vagrantfile&lt;/h2&gt;
+&lt;h2 id=&#34;the-complete-vagrantfile&#34;&gt;The complete Vagrantfile&lt;/h2&gt;
 
 &lt;p&gt;You can find the complete Vagrantfile below. The latest version is available in my &lt;a href=&#34;https://github.com/bertvv/ansible-skeleton&#34;&gt;Ansible skeleton&lt;/a&gt; project on Github.&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# -*- mode: ruby -*-&lt;/span&gt;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# -*- mode: ruby -*-&lt;/span&gt;
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# vi: ft=ruby :&lt;/span&gt;
 
 &lt;span style=&#34;color: #336666&#34;&gt;require&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;rbconfig&amp;#39;&lt;/span&gt;
@@ -531,9 +526,7 @@ hosts &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&
   &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;end&lt;/span&gt;
   provision_ansible(config)
 &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;end&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
-</description>
+&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
@@ -542,13 +535,13 @@ hosts &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&
       <pubDate>Tue, 29 Sep 2015 20:58:28 CEST</pubDate>
       <author>Bert Van Vreckem</author>
       <guid>https://bertvv.github.io/notes-to-self/2015/09/29/virtualbox-networking-an-overview</guid>
-      <description>
-
-&lt;p&gt;One of the greatest pitfalls when working with VirtualBox VMs is a good understanding of how networking works. In this post, we&amp;rsquo;ll discuss the most important differences between them, and their limitations when you use VirtualBox to experiment with setting up network services on a VM.&lt;/p&gt;
+      <description>&lt;p&gt;One of the greatest pitfalls when working with VirtualBox VMs is a good understanding of how networking works. In this post, we&amp;rsquo;ll discuss the most important differences between them, and their limitations when you use VirtualBox to experiment with setting up network services on a VM.&lt;/p&gt;
 
 &lt;p&gt;In our system administration courses, we use VirtualBox to allow students to set up their own Linux machines without having to resort to dual booting. VirtualBox is certainly not the &amp;ldquo;best&amp;rdquo; virtualization platform, but it is supported on the three common desktop platforms and works similarly on all of them.&lt;/p&gt;
 
-&lt;h1 id=&#34;overview:fc5e5586f11d39e89379de40fcf44f1e&#34;&gt;Overview&lt;/h1&gt;
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;overview&#34;&gt;Overview&lt;/h1&gt;
 
 &lt;p&gt;A VirtualBox VM can be assigned 4 network adapters from the GUI (Machine &amp;gt; Settings &amp;gt; Network), and even more from the command line. In a VirtualBox VM with EL7, the network interfaces are usually named as follows:&lt;/p&gt;
 
@@ -621,13 +614,12 @@ hosts &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&
 
 &lt;p&gt;In the sections below, each adapter type is discussed in more detail, including the network settings that you can expect.&lt;/p&gt;
 
-&lt;h1 id=&#34;the-nat-interface:fc5e5586f11d39e89379de40fcf44f1e&#34;&gt;The NAT interface&lt;/h1&gt;
+&lt;h1 id=&#34;the-nat-interface&#34;&gt;The NAT interface&lt;/h1&gt;
 
 &lt;p&gt;The VirtualBox &lt;a href=&#34;http://www.virtualbox.org/manual/ch06.html#network_nat&#34;&gt;NAT adapter&lt;/a&gt;
 is the default way of allowing your VM to access the Internet. However, it is normally not possible to access your VM from the host system over the network.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vbnat.png&#34; alt=&#34;The NAT interface: most reliable way to give your VM internet access&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vbnat.png&#34; alt=&#34;The NAT interface: most reliable way to give your VM internet access&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;The network settings of your VM are predictable. Any VM with a NAT interface has:&lt;/p&gt;
 
@@ -641,12 +633,11 @@ is the default way of allowing your VM to access the Internet. However, it is no
 
 &lt;p&gt;The NAT adapter is the most reliable to give your VM Internet access. If your host system can get on the net, your VM can as well.  There is one exception: when you switch your host system between a wired and a wireless adapter while the VM is running, the latter will lose its access.&lt;/p&gt;
 
-&lt;h1 id=&#34;the-host-only-interface:fc5e5586f11d39e89379de40fcf44f1e&#34;&gt;The Host-only interface&lt;/h1&gt;
+&lt;h1 id=&#34;the-host-only-interface&#34;&gt;The Host-only interface&lt;/h1&gt;
 
 &lt;p&gt;The VirtualBox &lt;a href=&#34;http://www.virtualbox.org/manual/ch06.html#network_hostonly&#34;&gt;host-only adapter&lt;/a&gt; allows network traffic between your host system and a VM. A virtual Ethernet interface is created that is also visible on your host system. You can create multiple host-only adapters and configure network settings from the main window by opening File &amp;gt; Preferences &amp;gt; Network &amp;gt; Host-only Networks.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vbho.png&#34; alt=&#34;The Host-only interface: a virtual network between host and VMs&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vbho.png&#34; alt=&#34;The Host-only interface: a virtual network between host and VMs&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;A host-only interface is named:&lt;/p&gt;
 
@@ -680,12 +671,11 @@ is the default way of allowing your VM to access the Internet. However, it is no
 
 &lt;p&gt;I strongly suggest to leave the default host-only interface as is, and create new interfaces when you want to work with other IP ranges. It may be needed to shut down all VMs and restart VirtualBox for configuration changes to come into effect, especially after creating a new interface.&lt;/p&gt;
 
-&lt;h1 id=&#34;the-bridged-interface:fc5e5586f11d39e89379de40fcf44f1e&#34;&gt;The Bridged interface&lt;/h1&gt;
+&lt;h1 id=&#34;the-bridged-interface&#34;&gt;The Bridged interface&lt;/h1&gt;
 
 &lt;p&gt;As mentioned before, the &lt;a href=&#34;https://www.virtualbox.org/manual/ch06.html#network_bridged&#34;&gt;bridged&lt;/a&gt; interface gives the VM access to the physical network on which the host system is attached. Other hosts on the LAN can likewise communicate with the VM.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vbbridged.png&#34; alt=&#34;The bridged interface: the VMs get immediate access to the physical network&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/vbbridged.png&#34; alt=&#34;The bridged interface: the VMs get immediate access to the physical network&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;At first sight, this is the ideal setting for setting up a network service on a VM. However, there are big limitations:&lt;/p&gt;
 
@@ -695,7 +685,7 @@ is the default way of allowing your VM to access the Internet. However, it is no
 &lt;li&gt;Bridging over a wireless interface is limited, and often doesn&amp;rsquo;t work at all&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h1 id=&#34;recommendation-nat-host-only:fc5e5586f11d39e89379de40fcf44f1e&#34;&gt;Recommendation: NAT + Host-only&lt;/h1&gt;
+&lt;h1 id=&#34;recommendation-nat-host-only&#34;&gt;Recommendation: NAT + Host-only&lt;/h1&gt;
 
 &lt;p&gt;If you&amp;rsquo;re setting up a network service on a VM that you at least want to access from your host system, this leaves you in a bit of a pickle:&lt;/p&gt;
 
@@ -716,10 +706,9 @@ is the default way of allowing your VM to access the Internet. However, it is no
 
 &lt;p&gt;The VM is not accessible from the &lt;em&gt;physical&lt;/em&gt; LAN, but seen from a security standpoint, that&amp;rsquo;s more of an advantage&amp;hellip;&lt;/p&gt;
 
-&lt;h1 id=&#34;finally:fc5e5586f11d39e89379de40fcf44f1e&#34;&gt;Finally&amp;hellip;&lt;/h1&gt;
+&lt;h1 id=&#34;finally&#34;&gt;Finally&amp;hellip;&lt;/h1&gt;
 
-&lt;p&gt;The NAT network and internal interfaces aren&amp;rsquo;t discussed in this article, they aren&amp;rsquo;t used as often as the other ones. Be sure to read the &lt;a href=&#34;https://www.virtualbox.org/manual/ch06.html&#34;&gt;VirtualBox documentation&lt;/a&gt; if you want to delve deeper into the subject!&lt;/p&gt;
-</description>
+&lt;p&gt;The NAT network and internal interfaces aren&amp;rsquo;t discussed in this article, they aren&amp;rsquo;t used as often as the other ones. Be sure to read the &lt;a href=&#34;https://www.virtualbox.org/manual/ch06.html&#34;&gt;VirtualBox documentation&lt;/a&gt; if you want to delve deeper into the subject!&lt;/p&gt;</description>
     </item>
     
   </channel>

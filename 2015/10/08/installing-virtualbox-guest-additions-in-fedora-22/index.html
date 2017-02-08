@@ -106,51 +106,47 @@
 					<div itemscope itemtype="https://schema.org/Blog">
 					<article class="post" itemscope itemtype="https://schema.org/BlogPosting">
     <h1 class="title" itemprop="name">Installing VirtualBox Guest Additions in Fedora 22</h1>
-	<div class="entry-content" itemprop="articleBody">
+	<div class="entry-content" itemprop="articleBody"><p>VirtualBox Guest additions are a set of drivers that you can install on virtual machines to enable a few cool features: a scaling desktop in the VM, shared clipboard, shared folders, etc. This post discusses how to install these in Fedora 22.</p>
 
-<p>VirtualBox Guest additions are a set of drivers that you can install on virtual machines to enable a few cool features: a scaling desktop in the VM, shared clipboard, shared folders, etc. This post discusses how to install these in Fedora 22.</p>
+<p></p>
 
 <p>You can easily find other HOWTO&rsquo;s that describe the installation process. For example, I like the one on <a href="http://www.if-not-true-then-false.com/2010/install-virtualbox-guest-additions-on-fedora-centos-red-hat-rhel/">If Not True Then False</a>. That one covers quite a few versions of Fedora and CentOS, which may be confusing for beginning Linux users. This post focuses on recent Fedora versions, specifically Fedora 22 and newer, where <code>yum</code> is replaced by <code>dnf</code> as the package management tool.</p>
 
-<h2 id="installation-procedure:d27ff6edcf0235db4a3bcb73c2e83780">Installation procedure</h2>
+<h2 id="installation-procedure">Installation procedure</h2>
 
 <p>Open a terminal (click Activities and type &ldquo;Terminal&rdquo;) and execute the following commands:</p>
 
 <ol>
 <li><p>First, update the kernel:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>sudo dnf upgrade kernel*
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span>$ sudo dnf upgrade kernel*
 </pre></div>
-</p></li>
+</li>
 
 <li><p>Reboot the VM when a new kernel version was installed.</p></li>
 
 <li><p>Install some packages needed for the installation:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>sudo dnf install dkms kernel-headers kernel-devel
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span>$ sudo dnf install dkms kernel-headers kernel-devel
 </pre></div>
-</p></li>
+</li>
 
 <li><p>Open the &ldquo;Devices&rdquo; menu in the VM window and select &ldquo;Insert Guest Additions CD Image&hellip;&rdquo;</p>
 
-<p><img src="https://bertvv.github.io/notes-to-self/img/vboxadditions-instert-cd.png" alt="Devices &gt; Insert Guest Additions CD Image" />
-</p></li>
+<p><img src="https://bertvv.github.io/notes-to-self/img/vboxadditions-instert-cd.png" alt="Devices &gt; Insert Guest Additions CD Image" /></p></li>
 
 <li><p>Click &ldquo;Run&rdquo; in the Autorun dialog box.</p>
 
-<p><img src="https://bertvv.github.io/notes-to-self/img/vboxadditions-autorun.png" alt="Autorun dialog box" />
-</p></li>
+<p><img src="https://bertvv.github.io/notes-to-self/img/vboxadditions-autorun.png" alt="Autorun dialog box" /></p></li>
 
 <li><p>A terminal window will open that informs you of the installation process. Look for <code>[  OK  ]</code> and <code>[FAILED]</code> in the output. If you followed the instructions, you should only see <code>[  OK  ]</code>s.</p>
 
-<p><img src="https://bertvv.github.io/notes-to-self/img/vboxadditions-installation.png" alt="Guest Additions Installation" />
-</p></li>
+<p><img src="https://bertvv.github.io/notes-to-self/img/vboxadditions-installation.png" alt="Guest Additions Installation" /></p></li>
 
 <li><p>Log out (the menu in the top right corner of the screen, click your user name and choose Log out) and back in.</p></li>
 </ol>
 
-<p>That&rsquo;s it!</p>
-</div></article>
+<p>That&rsquo;s it!</p></div></article>
 					
 						<div class="share">
 	<div class="addthis_toolbox addthis_default_style ">
@@ -178,24 +174,23 @@
 </div>
 					</section>
 					
-					
-
+					<div id="disqus_thread"></div>
 <script type="text/javascript">
-    
-    var disqus_shortname = 'notes-to-self-bertvv';
 
+(function() {
     
     
+    if (window.location.hostname == "localhost")
+        return;
 
-    
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-    
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
 </script>
-
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 				    </div>
 				</div>

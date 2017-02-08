@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>About - Notes to self</title>
-	<meta name="author" content="map[name:Bert Van Vreckem email:bert.vanvreckem@gmail.com]">
+	<meta name="author" content="map[email:bert.vanvreckem@gmail.com name:Bert Van Vreckem]">
 
 	
 	
@@ -124,8 +124,7 @@
 
 <p>The content of this blog is subject to the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution License</a>. Please attribute properly and link back.</p>
 
-<p><img src="https://licensebuttons.net/l/by/3.0/88x31.png" alt="CC-BY" />
-</p>
+<p><img src="https://licensebuttons.net/l/by/3.0/88x31.png" alt="CC-BY" /></p>
 </div></article>
 					
 						<div class="share">
@@ -154,24 +153,23 @@
 </div>
 					</section>
 					
-					
-
+					<div id="disqus_thread"></div>
 <script type="text/javascript">
-    
-    var disqus_shortname = 'notes-to-self-bertvv';
 
+(function() {
     
     
+    if (window.location.hostname == "localhost")
+        return;
 
-    
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-    
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
 </script>
-
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 				    </div>
 				</div>

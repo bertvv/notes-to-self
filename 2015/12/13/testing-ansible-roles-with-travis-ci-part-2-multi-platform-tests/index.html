@@ -106,13 +106,13 @@
 					<div itemscope itemtype="https://schema.org/Blog">
 					<article class="post" itemscope itemtype="https://schema.org/BlogPosting">
     <h1 class="title" itemprop="name">Testing Ansible roles with Travis-CI, Part 2: Multi-platform tests</h1>
-	<div class="entry-content" itemprop="articleBody">
+	<div class="entry-content" itemprop="articleBody"><p>In the <a href="https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos">previous post on testing Ansible roles with Travis-CI</a>, I introduced a method to run playbooks on CentOS using Docker. In this post, we take this one step further and show how you can run multi-platform tests of Ansible roles.</p>
 
-<p>In the <a href="https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos">previous post on testing Ansible roles with Travis-CI</a>, I introduced a method to run playbooks on CentOS using Docker. In this post, we take this one step further and show how you can run multi-platform tests of Ansible roles.</p>
+<p></p>
 
 <p>As a proof of concept, I&rsquo;ll continue with the example of <a href="https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos">part one</a>: Apache, the hello world of configuration management. My own <a href="https://galaxy.ansible.com/detail#/role/3047">Apache role</a> was written only for EL/CentOS (for now), so it&rsquo;s not suitable. Therefore I thought of giving <a href="https://twitter.com/geerlingguy">Jeff Geerling</a>&rsquo;s <a href="https://galaxy.ansible.com/detail#/role/428">Apache role</a> a try. We&rsquo;ll set up a test environment with two target platforms: Ubuntu and CentOS.</p>
 
-<h2 id="setting-up-the-docker-containers:a3337215d567eb26fa2c36885955428a">Setting up the Docker containers</h2>
+<h2 id="setting-up-the-docker-containers">Setting up the Docker containers</h2>
 
 <p>The test code is structured as follows (relative to the root of the Git project):</p>
 
@@ -137,11 +137,11 @@ RUN apt-get install -y ansible
 RUN echo &quot;[local]\nlocalhost ansible_connection=local&quot; &gt; /etc/ansible/hosts
 </code></pre>
 
-<h2 id="running-the-tests:a3337215d567eb26fa2c36885955428a">Running the tests</h2>
+<h2 id="running-the-tests">Running the tests</h2>
 
 <p>This is the test playbook:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic"># test.yml</span>
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span><span style="color: #0099FF; font-style: italic"># test.yml</span>
 <span style="color: #00CCFF; font-weight: bold">---</span>
 - hosts: all
   vars:
@@ -154,11 +154,11 @@ RUN echo &quot;[local]\nlocalhost ansible_connection=local&quot; &gt; /etc/ansib
   roles:
     - role_under_test
 </pre></div>
-</p>
+
 
 <p>It will be run on both the Ubuntu and the CentOS container. The <code>.travis.yml</code> file becomes:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic"># .travis.yml</span>
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span><span style="color: #0099FF; font-style: italic"># .travis.yml</span>
 <span style="color: #00CCFF; font-weight: bold">---</span>
 sudo: required
 env:
@@ -206,7 +206,7 @@ script:
 notifications:
   email: false
 </pre></div>
-</p>
+
 
 <p>With the <code>env:</code> section, Travis-CI allows you to define different environments in which the tests should be run. We have defined two here, one for Ubuntu and one for CentOS. All the differences between the two cases are stored in environment variables that are available when the tests are run.</p>
 
@@ -216,10 +216,9 @@ notifications:
 
 <p>An example of the build output can be found <a href="https://travis-ci.org/bertvv/ansible-role-apache/builds/96604650">here</a> (for as long as Travis keeps the build logs).</p>
 
-<p><img src="https://bertvv.github.io/notes-to-self/img/travis-build-status.png" alt="Build status on the Travis-CI website. The output for the tests on CentOS and Ubuntu are shown separately (#9.1 and #9.2 respectively)." />
-</p>
+<p><img src="https://bertvv.github.io/notes-to-self/img/travis-build-status.png" alt="Build status on the Travis-CI website. The output for the tests on CentOS and Ubuntu are shown separately (#9.1 and #9.2 respectively)." /></p>
 
-<h2 id="future-work:a3337215d567eb26fa2c36885955428a">Future work</h2>
+<h2 id="future-work">Future work</h2>
 
 <p>There is still room for improvement, of course.</p>
 
@@ -229,14 +228,13 @@ notifications:
 
 <p>What also could be added is black box system/acceptance tests from the host system (i.e. the Travis-CI VM), e.g. trying to access the website that runs on the container with <code>curl</code>, checking the TLS certificate, etc. This is left as an exercise to the upstream maintainer&hellip; ;-)</p>
 
-<h2 id="conclusion:a3337215d567eb26fa2c36885955428a">Conclusion</h2>
+<h2 id="conclusion">Conclusion</h2>
 
 <p>The complete code for this test setup was <a href="https://github.com/geerlingguy/ansible-role-apache/pull/60">submitted upstream as a pull request</a>. As you will see in the commit history, there were quite a few hiccups as I was still getting familiar with the tools, and I made a few mistakes that I&rsquo;ll attribute to the fact that I continued working on this until rather late at night&hellip; ;-)</p>
 
 <p>Testing Ansible roles on Travis-CI becomes a very compelling proposition, given the flexibility Docker containers provide. Whether it is suitable in <em>all</em> situations remains an open question. Most of my roles, for example, assume SELinux is running, but this is probably not available in a container set up within the Ubuntu VM provided by Travis-CI. If you know more about this, I would be interested to hear from you!</p>
 
-<p>I finish this post with a shout-out to Valeriy Solovyov who (as far as I can tell) pioniered this method of testing Ansible roles. The code for his <a href="https://github.com/weldpua2008/ansible-apache">Apache role</a>, and <a href="https://stackoverflow.com/questions/32535195/how-to-run-tests-on-centos-7-with-travis-ci">this discussion on Stack Overflow</a> are the only sources I could find on this, however.</p>
-</div></article>
+<p>I finish this post with a shout-out to Valeriy Solovyov who (as far as I can tell) pioniered this method of testing Ansible roles. The code for his <a href="https://github.com/weldpua2008/ansible-apache">Apache role</a>, and <a href="https://stackoverflow.com/questions/32535195/how-to-run-tests-on-centos-7-with-travis-ci">this discussion on Stack Overflow</a> are the only sources I could find on this, however.</p></div></article>
 					
 						<div class="share">
 	<div class="addthis_toolbox addthis_default_style ">
@@ -264,24 +262,23 @@ notifications:
 </div>
 					</section>
 					
-					
-
+					<div id="disqus_thread"></div>
 <script type="text/javascript">
-    
-    var disqus_shortname = 'notes-to-self-bertvv';
 
+(function() {
     
     
+    if (window.location.hostname == "localhost")
+        return;
 
-    
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-    
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
 </script>
-
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 				    </div>
 				</div>

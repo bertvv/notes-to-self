@@ -3,6 +3,7 @@
 <html lang="en-us">
 
 <head>
+	<meta name="generator" content="Hugo 0.18.1" />
 	<meta charset="utf-8">
 	<title>Notes to self</title>
 	<meta name="author" content="map[name:Bert Van Vreckem email:bert.vanvreckem@gmail.com]">
@@ -126,6 +127,7 @@
 	<div class="entry-content" itemprop="articleBody">
 		<p>In the <a href="https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos">previous post on testing Ansible roles with Travis-CI</a>, I introduced a method to run playbooks on CentOS using Docker. In this post, we take this one step further and show how you can run multi-platform tests of Ansible roles.</p>
 
+<p></p>
 		<a href="https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -151,6 +153,7 @@
 	<div class="entry-content" itemprop="articleBody">
 		<p>In this first post on testing Ansible roles with Travis-CI, we&rsquo;ll discuss how you can apply a test playbook on CentOS. Out-of-the-box, Travis-CI doesn&rsquo;t support CentOS, as its test environment is Ubuntu-based. However, Travis-CI allows you to set up a Docker container and this opens up all kinds of possibilities.</p>
 
+<p></p>
 		<a href="https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -176,6 +179,7 @@
 	<div class="entry-content" itemprop="articleBody">
 		<p>Many HOWTO&rsquo;s and blog posts about installing MySQL/MariaDB, a LAMP stack, etc. suggest to run the script <code>mysql_secure_installation</code> to tighten the security holes in the default installation of the database engine. This includes setting a root password (empty by default), removing anonymous users, and deleting a test database. For a database server that you&rsquo;re going to run in production, it is really important to do this. However, I have a problem with the fact that <code>mysql_secure_installation</code> is interactive, i.e. it asks for user input. This makes it very hard to include it in an automated setup. In this post, we&rsquo;ll discuss how the script works and how we can automate what it does.</p>
 
+<p></p>
 		<a href="https://bertvv.github.io/notes-to-self/2015/11/16/automating-mysql_secure_installation" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -193,6 +197,7 @@
 	<div class="entry-content" itemprop="articleBody">
 		<p>When you execute the command <code>ls -l</code> in UNIX, you get detailed information about files: permissions, file size, date of last modification, etc. A while ago, I got a question from one of my students who wondered what the second column meant. According to the documentation, it&rsquo;s the &ldquo;number of hard links,&rdquo; but what does that actually mean? Let&rsquo;s get to the bottom of this.</p>
 
+<p></p>
 		<a href="https://bertvv.github.io/notes-to-self/2015/10/18/the-number-of-hard-links-in-ls--l" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -218,6 +223,7 @@
 	<div class="entry-content" itemprop="articleBody">
 		<p>VirtualBox Guest additions are a set of drivers that you can install on virtual machines to enable a few cool features: a scaling desktop in the VM, shared clipboard, shared folders, etc. This post discusses how to install these in Fedora 22.</p>
 
+<p></p>
 		<a href="https://bertvv.github.io/notes-to-self/2015/10/08/installing-virtualbox-guest-additions-in-fedora-22" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -243,6 +249,7 @@
 	<div class="entry-content" itemprop="articleBody">
 		<p>Hyper-V and VirtualBox are two virtualization platforms that we both use in our system administration courses. Unfortunately, once Hyper-V is active, it won&rsquo;t coexist with other virtualization platforms. In this post, I discuss a method to work around this problem by setting up a custom boot entry for each platform.</p>
 
+<p></p>
 		<a href="https://bertvv.github.io/notes-to-self/2015/10/08/easily-switch-between-hyper-v-and-virtualbox" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -268,6 +275,7 @@
 	<div class="entry-content" itemprop="articleBody">
 		<p>Writing Vagrantfiles is tedious, especially when you&rsquo;re setting up a multi-VM environment. Typically, people will copy/paste code blocks that define hosts, but that becomes unwieldy. However, a Vagrantfile is &ldquo;just&rdquo; Ruby, so can&rsquo;t we simplify things a bit using the power of the language? Turns out, we can! Read below to find how you can reduce setting up a multi-VM Vagrant environment to writing a simple YAML file.</p>
 
+<p></p>
 		<a href="https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -300,6 +308,7 @@
 
 <p>In our system administration courses, we use VirtualBox to allow students to set up their own Linux machines without having to resort to dual booting. VirtualBox is certainly not the &ldquo;best&rdquo; virtualization platform, but it is supported on the three common desktop platforms and works similarly on all of them.</p>
 
+<p></p>
 		<a href="https://bertvv.github.io/notes-to-self/2015/09/29/virtualbox-networking-an-overview" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -328,18 +337,23 @@ Design credit: <a href="https://shashankmehta.in/archive/2012/greyshade.html">Sh
 </footer>
 		</div>
 	</div>
-	
-
+	<div id="disqus_thread"></div>
 <script type="text/javascript">
-    
-    var disqus_shortname = 'notes-to-self-bertvv';
 
+(function() {
     
     
+    if (window.location.hostname == "localhost")
+        return;
 
-    
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
 </script>
-
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 	
 </body>

@@ -106,13 +106,13 @@
 					<div itemscope itemtype="https://schema.org/Blog">
 					<article class="post" itemscope itemtype="https://schema.org/BlogPosting">
     <h1 class="title" itemprop="name">VirtualBox Networking: an overview</h1>
-	<div class="entry-content" itemprop="articleBody">
-
-<p>One of the greatest pitfalls when working with VirtualBox VMs is a good understanding of how networking works. In this post, we&rsquo;ll discuss the most important differences between them, and their limitations when you use VirtualBox to experiment with setting up network services on a VM.</p>
+	<div class="entry-content" itemprop="articleBody"><p>One of the greatest pitfalls when working with VirtualBox VMs is a good understanding of how networking works. In this post, we&rsquo;ll discuss the most important differences between them, and their limitations when you use VirtualBox to experiment with setting up network services on a VM.</p>
 
 <p>In our system administration courses, we use VirtualBox to allow students to set up their own Linux machines without having to resort to dual booting. VirtualBox is certainly not the &ldquo;best&rdquo; virtualization platform, but it is supported on the three common desktop platforms and works similarly on all of them.</p>
 
-<h1 id="overview:fc5e5586f11d39e89379de40fcf44f1e">Overview</h1>
+<p></p>
+
+<h1 id="overview">Overview</h1>
 
 <p>A VirtualBox VM can be assigned 4 network adapters from the GUI (Machine &gt; Settings &gt; Network), and even more from the command line. In a VirtualBox VM with EL7, the network interfaces are usually named as follows:</p>
 
@@ -185,13 +185,12 @@
 
 <p>In the sections below, each adapter type is discussed in more detail, including the network settings that you can expect.</p>
 
-<h1 id="the-nat-interface:fc5e5586f11d39e89379de40fcf44f1e">The NAT interface</h1>
+<h1 id="the-nat-interface">The NAT interface</h1>
 
 <p>The VirtualBox <a href="http://www.virtualbox.org/manual/ch06.html#network_nat">NAT adapter</a>
 is the default way of allowing your VM to access the Internet. However, it is normally not possible to access your VM from the host system over the network.</p>
 
-<p><img src="https://bertvv.github.io/notes-to-self/img/vbnat.png" alt="The NAT interface: most reliable way to give your VM internet access" />
-</p>
+<p><img src="https://bertvv.github.io/notes-to-self/img/vbnat.png" alt="The NAT interface: most reliable way to give your VM internet access" /></p>
 
 <p>The network settings of your VM are predictable. Any VM with a NAT interface has:</p>
 
@@ -205,12 +204,11 @@ is the default way of allowing your VM to access the Internet. However, it is no
 
 <p>The NAT adapter is the most reliable to give your VM Internet access. If your host system can get on the net, your VM can as well.  There is one exception: when you switch your host system between a wired and a wireless adapter while the VM is running, the latter will lose its access.</p>
 
-<h1 id="the-host-only-interface:fc5e5586f11d39e89379de40fcf44f1e">The Host-only interface</h1>
+<h1 id="the-host-only-interface">The Host-only interface</h1>
 
 <p>The VirtualBox <a href="http://www.virtualbox.org/manual/ch06.html#network_hostonly">host-only adapter</a> allows network traffic between your host system and a VM. A virtual Ethernet interface is created that is also visible on your host system. You can create multiple host-only adapters and configure network settings from the main window by opening File &gt; Preferences &gt; Network &gt; Host-only Networks.</p>
 
-<p><img src="https://bertvv.github.io/notes-to-self/img/vbho.png" alt="The Host-only interface: a virtual network between host and VMs" />
-</p>
+<p><img src="https://bertvv.github.io/notes-to-self/img/vbho.png" alt="The Host-only interface: a virtual network between host and VMs" /></p>
 
 <p>A host-only interface is named:</p>
 
@@ -244,12 +242,11 @@ is the default way of allowing your VM to access the Internet. However, it is no
 
 <p>I strongly suggest to leave the default host-only interface as is, and create new interfaces when you want to work with other IP ranges. It may be needed to shut down all VMs and restart VirtualBox for configuration changes to come into effect, especially after creating a new interface.</p>
 
-<h1 id="the-bridged-interface:fc5e5586f11d39e89379de40fcf44f1e">The Bridged interface</h1>
+<h1 id="the-bridged-interface">The Bridged interface</h1>
 
 <p>As mentioned before, the <a href="https://www.virtualbox.org/manual/ch06.html#network_bridged">bridged</a> interface gives the VM access to the physical network on which the host system is attached. Other hosts on the LAN can likewise communicate with the VM.</p>
 
-<p><img src="https://bertvv.github.io/notes-to-self/img/vbbridged.png" alt="The bridged interface: the VMs get immediate access to the physical network" />
-</p>
+<p><img src="https://bertvv.github.io/notes-to-self/img/vbbridged.png" alt="The bridged interface: the VMs get immediate access to the physical network" /></p>
 
 <p>At first sight, this is the ideal setting for setting up a network service on a VM. However, there are big limitations:</p>
 
@@ -259,7 +256,7 @@ is the default way of allowing your VM to access the Internet. However, it is no
 <li>Bridging over a wireless interface is limited, and often doesn&rsquo;t work at all</li>
 </ul>
 
-<h1 id="recommendation-nat-host-only:fc5e5586f11d39e89379de40fcf44f1e">Recommendation: NAT + Host-only</h1>
+<h1 id="recommendation-nat-host-only">Recommendation: NAT + Host-only</h1>
 
 <p>If you&rsquo;re setting up a network service on a VM that you at least want to access from your host system, this leaves you in a bit of a pickle:</p>
 
@@ -280,10 +277,9 @@ is the default way of allowing your VM to access the Internet. However, it is no
 
 <p>The VM is not accessible from the <em>physical</em> LAN, but seen from a security standpoint, that&rsquo;s more of an advantage&hellip;</p>
 
-<h1 id="finally:fc5e5586f11d39e89379de40fcf44f1e">Finally&hellip;</h1>
+<h1 id="finally">Finally&hellip;</h1>
 
-<p>The NAT network and internal interfaces aren&rsquo;t discussed in this article, they aren&rsquo;t used as often as the other ones. Be sure to read the <a href="https://www.virtualbox.org/manual/ch06.html">VirtualBox documentation</a> if you want to delve deeper into the subject!</p>
-</div></article>
+<p>The NAT network and internal interfaces aren&rsquo;t discussed in this article, they aren&rsquo;t used as often as the other ones. Be sure to read the <a href="https://www.virtualbox.org/manual/ch06.html">VirtualBox documentation</a> if you want to delve deeper into the subject!</p></div></article>
 					
 						<div class="share">
 	<div class="addthis_toolbox addthis_default_style ">
@@ -311,24 +307,23 @@ is the default way of allowing your VM to access the Internet. However, it is no
 </div>
 					</section>
 					
-					
-
+					<div id="disqus_thread"></div>
 <script type="text/javascript">
-    
-    var disqus_shortname = 'notes-to-self-bertvv';
 
+(function() {
     
     
+    if (window.location.hostname == "localhost")
+        return;
 
-    
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-    
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
 </script>
-
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 				    </div>
 				</div>

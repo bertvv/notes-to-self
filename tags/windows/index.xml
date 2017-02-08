@@ -3,11 +3,11 @@
   <channel>
       <title>Windows on Notes to self </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>https://bertvv.github.io/notes-to-self/tags/windows/</link>
+    <link>https://bertvv.github.io/notes-to-self/tags/windows/index.xml</link>
     <language>en-us</language>
     <author>Bert Van Vreckem</author>
     <copyright>© 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back.</copyright>
-    <updated>Thu, 08 Oct 2015 10:51:07 CEST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>Easily switch between Hyper-V and VirtualBox</title>
@@ -17,6 +17,8 @@
       <guid>https://bertvv.github.io/notes-to-self/2015/10/08/easily-switch-between-hyper-v-and-virtualbox</guid>
       <description>&lt;p&gt;Hyper-V and VirtualBox are two virtualization platforms that we both use in our system administration courses. Unfortunately, once Hyper-V is active, it won&amp;rsquo;t coexist with other virtualization platforms. In this post, I discuss a method to work around this problem by setting up a custom boot entry for each platform.&lt;/p&gt;
 
+&lt;p&gt;&lt;/p&gt;
+
 &lt;p&gt;I manage two classrooms with 40 dual boot Windows Server and Linux (Fedora) computers. In our Windows Server course, the idea is to teach students to work with Hyper-V, but other courses taught in the same classroom usually use VirtualBox. Because I thought I couldn&amp;rsquo;t install both, the easy solution was not to install VirtualBox. It&amp;rsquo;s unconvenient, but students that need VirtualBox could boot into Fedora.&lt;/p&gt;
 
 &lt;p&gt;However, a few weeks ago, one of my students ran into a similar problem: he has Hyper-V installed on his laptop and also wanted to use VirtualBox for my Linux course. He then let me know that he solved the problem by disabling Hyper-V, something I didn&amp;rsquo;t realize was possible. That made me wonder if there wasn&amp;rsquo;t a solution that I could automate and deploy on all classroom computers.&lt;/p&gt;
@@ -25,7 +27,7 @@
 
 &lt;p&gt;So I went a little further and wrote a PowerShell script that duplicates the current (single) boot entry, assigns suitable names to each, turns off Hyper-V in the copy, and made the copy the default one. This is the resulting script:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# AddBootOptionNoHyperV.ps1&lt;/span&gt;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# AddBootOptionNoHyperV.ps1&lt;/span&gt;
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Create a boot option with Hyper-V turned off&lt;/span&gt;
 
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Variables&lt;/span&gt;
@@ -58,15 +60,13 @@ bcdedit /set &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;$vboxboot_guid
 &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Make VirtualBox the default boot entry&lt;/span&gt;
 bcdedit /&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;default&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;$vboxboot_guid&amp;quot;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
+
 
 &lt;p&gt;Now, students that boot into Windows get the choice:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/bootmenu-hyperv-vbox.jpg&#34; alt=&#34;Windows boot menu with options Hyper-V and VirtualBox&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/bootmenu-hyperv-vbox.jpg&#34; alt=&#34;Windows boot menu with options Hyper-V and VirtualBox&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Funny that I didn&amp;rsquo;t learn about this stuff from my colleagues that have been teaching Windows Server for years&amp;hellip; ;-)&lt;/p&gt;
-</description>
+&lt;p&gt;Funny that I didn&amp;rsquo;t learn about this stuff from my colleagues that have been teaching Windows Server for years&amp;hellip; ;-)&lt;/p&gt;</description>
     </item>
     
   </channel>

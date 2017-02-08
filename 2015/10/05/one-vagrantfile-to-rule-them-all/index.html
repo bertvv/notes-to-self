@@ -106,36 +106,36 @@
 					<div itemscope itemtype="https://schema.org/Blog">
 					<article class="post" itemscope itemtype="https://schema.org/BlogPosting">
     <h1 class="title" itemprop="name">One Vagrantfile to rule them all</h1>
-	<div class="entry-content" itemprop="articleBody">
+	<div class="entry-content" itemprop="articleBody"><p>Writing Vagrantfiles is tedious, especially when you&rsquo;re setting up a multi-VM environment. Typically, people will copy/paste code blocks that define hosts, but that becomes unwieldy. However, a Vagrantfile is &ldquo;just&rdquo; Ruby, so can&rsquo;t we simplify things a bit using the power of the language? Turns out, we can! Read below to find how you can reduce setting up a multi-VM Vagrant environment to writing a simple YAML file.</p>
 
-<p>Writing Vagrantfiles is tedious, especially when you&rsquo;re setting up a multi-VM environment. Typically, people will copy/paste code blocks that define hosts, but that becomes unwieldy. However, a Vagrantfile is &ldquo;just&rdquo; Ruby, so can&rsquo;t we simplify things a bit using the power of the language? Turns out, we can! Read below to find how you can reduce setting up a multi-VM Vagrant environment to writing a simple YAML file.</p>
+<p></p>
 
-<h2 id="simplifying-multi-vm-setups:c8f35458a74cb8ca2d70d8b99127632a">Simplifying multi-VM setups</h2>
+<h2 id="simplifying-multi-vm-setups">Simplifying multi-VM setups</h2>
 
 <p>A typical Vagrantfile has separate blocks of code for each host (see e.g. <a href="https://stackoverflow.com/questions/24072916/multi-vm-in-one-vagrantfile-could-i-set-different-memory-size-for-each-of-them">this StackOverflow discussion</a>). When the complexity of your environment grows, this becomes harder and harder to maintain. The <a href="https://docs.vagrantup.com/v2/vagrantfile/tips.html">Vagrant documentation</a> states that you can simplify by introducing loops in your Vagrantfile, but then you have the problem of how to manage differences in the properties of each VM. A nice solution to this is to define a Hash at the beginning of the Vagrantfile with the properties and apply them for each host (see e.g. <a href="https://gist.github.com/dlutzy/2469037">this example</a>).</p>
 
-<h2 id="a-universal-vagrantfile-sort-of:c8f35458a74cb8ca2d70d8b99127632a">A universal Vagrantfile (sort of)</h2>
+<h2 id="a-universal-vagrantfile-sort-of">A universal Vagrantfile (sort of)</h2>
 
 <p>I developed a Vagrantfile (for the full source, see the end of this post or my Github project <a href="https://github.com/bertvv/ansible-skeleton">ansible-skeleton</a>) where the parts that have to be changed, i.e. properties of individual machines, are stored in a separate YAML file. The Vagrantfile will parse the YAML file and apply the settings to each specified VM. A simple example to get started:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic"># vagrant_hosts.yml</span>
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span><span style="color: #0099FF; font-style: italic"># vagrant_hosts.yml</span>
 - name: box001
   ip: 192.168.56.10
 - name: box002
 </pre></div>
-</p>
+
 
 <p>This will create a Vagrant environment with two VMs, <code>box001</code> and <code>box002</code>. Each will get a private network interface. For <code>box001</code> a fixed IP address (192.168.56.10) is assigned, <code>box002</code> will get one via DHCP.</p>
 
 <p>The Vagrantfile will parse the YAML and convert it to a Ruby data structure, specifically a list of Hashes:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">hosts <span style="color: #555555">=</span> <span style="color: #336600">YAML</span><span style="color: #555555">.</span>load_file(<span style="color: #CC3300">&#39;vagrant_hosts.yml&#39;</span>)
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span>hosts <span style="color: #555555">=</span> <span style="color: #336600">YAML</span><span style="color: #555555">.</span>load_file(<span style="color: #CC3300">&#39;vagrant_hosts.yml&#39;</span>)
 </pre></div>
-</p>
+
 
 <p>This is the main loop of the script that iterates over the <code>hosts</code>:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 1 </span>  hosts<span style="color: #555555">.</span>each <span style="color: #006699; font-weight: bold">do</span> <span style="color: #555555">|</span>host<span style="color: #555555">|</span>
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span><span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 1 </span>  hosts<span style="color: #555555">.</span>each <span style="color: #006699; font-weight: bold">do</span> <span style="color: #555555">|</span>host<span style="color: #555555">|</span>
 <span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 2 </span>    config<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>define host<span style="color: #555555">[</span><span style="color: #CC3300">&#39;name&#39;</span><span style="color: #555555">]</span> <span style="color: #006699; font-weight: bold">do</span> <span style="color: #555555">|</span>node<span style="color: #555555">|</span>
 <span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 3 </span>      node<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>box <span style="color: #555555">=</span> host<span style="color: #555555">[</span><span style="color: #CC3300">&#39;box&#39;</span><span style="color: #555555">]</span> <span style="color: #555555">||=</span> <span style="color: #336600">DEFAULT_BASE_BOX</span>
 <span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 4 </span>      node<span style="color: #555555">.</span>vm<span style="color: #555555">.</span>box_url <span style="color: #555555">=</span> host<span style="color: #555555">[</span><span style="color: #CC3300">&#39;box_url&#39;</span><span style="color: #555555">]</span> <span style="color: #555555">||=</span> <span style="color: #336600">DEFAULT_BASE_BOX_URL</span>
@@ -151,7 +151,7 @@
 <span style="background-color: #f0f0f0; padding: 0 5px 0 5px">14 </span>    <span style="color: #006699; font-weight: bold">end</span>
 <span style="background-color: #f0f0f0; padding: 0 5px 0 5px">15 </span>  <span style="color: #006699; font-weight: bold">end</span>
 </pre></div>
-</p>
+
 
 <p>In line 2, a new VM is defined with the name <code>host['name']</code>. In the example above, that is <code>box001</code> in the first iteration and <code>box002</code> in te next one.</p>
 
@@ -161,7 +161,7 @@
 
 <p>It&rsquo;s possible to specify <a href="https://docs.vagrantup.com/v2/synced-folders/index.html">synced folders</a>. Line 8 calls the method that sets these up. An example of how these can be set up in <code>vagrant_hosts.yml</code>:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">- name: box002
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span>- name: box002
   ip: 192.168.56.11
   synced_folders:
     - src: test
@@ -174,19 +174,19 @@
         :group: root
         :mount_options: [<span style="color: #CC3300">&#39;dmode=0755&#39;</span>, <span style="color: #CC3300">&#39;fmode=0644&#39;</span>]
 </pre></div>
-</p>
+
 
 <p>This gives <code>box002</code> two synced folders. One is mounted under <code>/tmp/test</code>, the other under <code>/var/www/html</code>. The second synced folder has a few options, e.g that the owner and group should be <code>root</code> (instead of <code>vagrant</code>). The colons in front of the option names (<code>:create</code>, <code>:group</code>, etc.) are mandatory here.</p>
 
 <p>Finally, lines 10-13 apply a few VirtualBox-specific settings. The VM name in VirtualBox is set to the host name (<code>box002</code>) instead of the standard name assigned by Vagrant (e.g. <code>projectdir_box002_1443709007553_58669</code>). Also, the VMs will be grouped together in the VirtualBox GUI.</p>
 
-<h2 id="provisioning:c8f35458a74cb8ca2d70d8b99127632a">Provisioning</h2>
+<h2 id="provisioning">Provisioning</h2>
 
 <p>Once the VM is configured and booted, Vagrant allows you to run a provisioning script that finalizes the configuration of the VM. I use Ansible for this, and let every host read the same master playbook (see the &ldquo;<a href="https://docs.ansible.com/ansible/playbooks_best_practices.html">Playbooks Best Practices</a>&rdquo; section of the <a href="https://docs.ansible.com/ansible/">Ansible Documentation</a>).</p>
 
 <p>However, most of my students are using Windows which is <a href="https://docs.ansible.com/ansible/intro_installation.html#control-machine-requirements">not supported by Ansible</a>. In this case, I work around this problem by installing Ansible on the VM and invoking it locally instead of from the host system. The Vagrantfile detects the host operating system and invokes the appropriate provisioning code:</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 1 </span><span style="color: #006699; font-weight: bold">def</span> <span style="color: #CC00FF">is_windows</span>
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span><span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 1 </span><span style="color: #006699; font-weight: bold">def</span> <span style="color: #CC00FF">is_windows</span>
 <span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 2 </span>  <span style="color: #336600">RbConfig</span><span style="color: #555555">::</span><span style="color: #336600">CONFIG</span><span style="color: #555555">[</span><span style="color: #CC3300">&#39;host_os&#39;</span><span style="color: #555555">]</span> <span style="color: #555555">=~</span> <span style="color: #33AAAA">/mswin|mingw|cygwin/</span>
 <span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 3 </span><span style="color: #006699; font-weight: bold">end</span>
 <span style="background-color: #f0f0f0; padding: 0 5px 0 5px"> 4 </span>
@@ -205,21 +205,21 @@
 <span style="background-color: #f0f0f0; padding: 0 5px 0 5px">17 </span>  <span style="color: #006699; font-weight: bold">end</span>
 <span style="background-color: #f0f0f0; padding: 0 5px 0 5px">18 </span><span style="color: #006699; font-weight: bold">end</span>
 </pre></div>
-</p>
+
 
 <p>I&rsquo;m not discussing the provisioning script <code>scripts/playbook-win.sh</code> in this blog post. It&rsquo;s based on the work of <a href="https://github.com/KSid/windows-vagrant-ansible">Kawsar Saiyeed</a> and <a href="https://github.com/geerlingguy/JJG-Ansible-Windows">Jeff Geerling</a> and my version can be found on my Github project <a href="https://github.com/bertvv/ansible-skeleton">ansible-skeleton</a>.</p>
 
-<h2 id="conclusion:c8f35458a74cb8ca2d70d8b99127632a">Conclusion</h2>
+<h2 id="conclusion">Conclusion</h2>
 
 <p>And that&rsquo;s about it! After setting the default base box name and download URL in the Vagrantfile, you don&rsquo;t need to touch the Vagrantfile anymore. Adding a VM is just a couple of lines of YAML. See the <a href="https://github.com/bertvv/ansible-skeleton/blob/master/vagrant_hosts.yml">source code for <code>vagrant_hosts.yml</code></a> for an overview of all supported settings.</p>
 
 <p>If you have suggestions for improvements, let me know! Pull requests on the <a href="https://github.com/bertvv/ansible-skeleton">project</a> are also more than welcome.</p>
 
-<h2 id="the-complete-vagrantfile:c8f35458a74cb8ca2d70d8b99127632a">The complete Vagrantfile</h2>
+<h2 id="the-complete-vagrantfile">The complete Vagrantfile</h2>
 
 <p>You can find the complete Vagrantfile below. The latest version is available in my <a href="https://github.com/bertvv/ansible-skeleton">Ansible skeleton</a> project on Github.</p>
 
-<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic"># -*- mode: ruby -*-</span>
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span></span><span style="color: #0099FF; font-style: italic"># -*- mode: ruby -*-</span>
 <span style="color: #0099FF; font-style: italic"># vi: ft=ruby :</span>
 
 <span style="color: #336666">require</span> <span style="color: #CC3300">&#39;rbconfig&#39;</span>
@@ -321,9 +321,7 @@ hosts <span style="color: #555555">=</span> <span style="color: #336600">YAML</s
   <span style="color: #006699; font-weight: bold">end</span>
   provision_ansible(config)
 <span style="color: #006699; font-weight: bold">end</span>
-</pre></div>
-</p>
-</div></article>
+</pre></div></div></article>
 					
 						<div class="share">
 	<div class="addthis_toolbox addthis_default_style ">
@@ -351,24 +349,23 @@ hosts <span style="color: #555555">=</span> <span style="color: #336600">YAML</s
 </div>
 					</section>
 					
-					
-
+					<div id="disqus_thread"></div>
 <script type="text/javascript">
-    
-    var disqus_shortname = 'notes-to-self-bertvv';
 
+(function() {
     
     
+    if (window.location.hostname == "localhost")
+        return;
 
-    
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-    
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    var disqus_shortname = '';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
 </script>
-
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 				    </div>
 				</div>
