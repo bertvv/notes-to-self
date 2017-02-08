@@ -28,6 +28,7 @@ pygmentsStyle = "manni"
     subscribe_rss = "/index.xml"
 
     disqus_short_name = "notes-to-self-bertvv"
+    DisqusShortname = "notes-to-self-bertvv"
 
     facebook_like = true
     twitter_tweet_button = true
