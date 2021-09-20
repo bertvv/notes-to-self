@@ -7,51 +7,91 @@
 set -o errexit # abort on nonzero exitstatus
 set -o nounset # abort on unbound variable
 
+#{{{ Variables
+# Debug info ('on' to enable)
+readonly debug='off'
+
+# Default Git commit message
+commit_msg="Publishing to gh-pages at $(date --utc --iso-8601=seconds)"
+#}}}
+
 #{{{ Functions
 
 usage() {
 cat << _EOF_
-Usage: ${0} TITLE
-  where TITLE is the title of the article to publish
+Usage: ${0} [COMMIT_MSG]
+       ${0} -h|--help
 
+OPTIONS:
+  -h, --help   Show this help message and exit
+
+COMMIT_MSG is a custom Git commit message. If not specified, a default message
+with a timestamp will be used.
 _EOF_
+}
+
+# Usage: log [ARG]...
+#
+# Prints all arguments on the standard output stream
+log() {
+  printf '\e[0;33m>>> %s\e[0m\n' "${*}"
+}
+
+# Usage: debug [ARG]...
+#
+# Prints all arguments on the standard output stream,
+# if debug output is enabled
+debug() {
+  [ "${debug}" != 'on' ] || printf '\e[0;36m### %s\e[0m\n' "${*}"
+}
+
+# Usage: error [ARG]...
+#
+# Prints all arguments on the standard error stream
+error() {
+  printf '\e[0;31m!!! %s\e[0m\n' "${*}" 1>&2
 }
 
 #}}}
 #{{{ Command line parsing
 
-if [ "$#" -eq "0" ]; then
-    echo "Expected an argument, got $#" >&2
+case $* in
+  -h|--help)
     usage
-    exit 2
-fi
+    exit
+    ;;
+  ?*)
+    commit_msg="$*"
+    ;;
+esac
 
 #}}}
 
 # Script proper
 
 # Ensure ‘hugo server’ is not running
-# Find and count processes with "hugo server". There should
-# be only one (the grep process itself)
-num_processes=$(ps -ef | grep "hugo server" | wc --lines)
+# Find and count processes with "hugo server".
+num_processes=$(pgrep --full "hugo server" | wc --lines)
 
-if [ "${num_processes}" -ne "1" ]; then
-  echo "Warning! Hugo server is running. Shut it down first!" >&2
-  exit 2
+if [ "${num_processes}" -gt "0" ]; then
+  error "Warning! Hugo server is running. Shut it down first!"
+  error "PID: $(pgrep --full "hugo server")"
+  exit 1
+fi
+
+# Ensure the main branch has no local changes
+if [ "$(git status -s)" ]; then
+  error 'Changes detected in working directory. Commit them before proceeding.'
+  exit 1
 fi
 
 # Generate the site
 hugo
 
-# Push source (branch master) to Git
-git add .
-git commit --message "$*"
-git push
-
 # Push  generated website (branch gh-pages) to Git
 pushd public > /dev/null
-git add .
-git commit --message "$*"
-git push
+git add --all
+log "Committing with message: ${commit_msg}"
+git commit --message "${commit_msg}"
+git push "${REPOSITORY:-origin}" gh-pages
 popd > /dev/null
-
