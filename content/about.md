@@ -4,7 +4,6 @@ title: "About"
 comments:       false
 showMeta:       false
 showActions:    false
-
 ---
 
 Hi! My name is Bert Van Vreckem and I'm a lecturer at [Ghent University of Applied Sciences (HOGENT)](https://hogent.be/). I mainly teach Linux system administration and introductory data science.
