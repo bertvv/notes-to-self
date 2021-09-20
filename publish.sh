@@ -13,6 +13,9 @@ readonly debug='off'
 
 # Default Git commit message
 commit_msg="Publishing to gh-pages at $(date --utc --iso-8601=seconds)"
+
+# Output directory for the generated webpage
+output_dir=public
 #}}}
 
 #{{{ Functions
@@ -67,7 +70,9 @@ esac
 
 #}}}
 
-# Script proper
+#{{{ Check preconditions
+
+log "Checking preconditions"
 
 # Ensure ‘hugo server’ is not running
 # Find and count processes with "hugo server".
@@ -85,13 +90,26 @@ if [ "$(git status -s)" ]; then
   exit 1
 fi
 
-# Generate the site
-hugo
+#}}}
 
-# Push  generated website (branch gh-pages) to Git
-pushd public > /dev/null
+log "Generating the site"
+hugo --destination "${output_dir}"
+
+log "Deleting old publication"
+rm -rf "${output_dir}"
+mkdir "${output_dir}"
+git worktree prune
+rm -rf ".git/worktrees/${output_dir}"
+
+log 'Fetching gh-pages branch'
+git fetch origin gh-pages
+
+log 'Checking out gh-pages branch'
+git worktree add -B gh-pages "${output_dir}" origin/gh-pages
+
+log "Committing updated site with message: ${commit_msg}"
+pushd "${output_dir}" > /dev/null
 git add --all
-log "Committing with message: ${commit_msg}"
 git commit --message "${commit_msg}"
 git push "${REPOSITORY:-origin}" gh-pages
 popd > /dev/null
