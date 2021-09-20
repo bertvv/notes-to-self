@@ -25,4 +25,3 @@ This site is powered by [Hugo](https://gohugo.io/), a static site generator, and
 The content of this blog is subject to the [Creative Commons Attribution License](https://creativecommons.org/licenses/by/4.0/). Please attribute properly and link back.
 
 ![CC-BY](https://licensebuttons.net/l/by/3.0/88x31.png)
-
