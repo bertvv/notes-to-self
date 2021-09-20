@@ -93,19 +93,7 @@ fi
 #}}}
 
 log "Generating the site"
-hugo --destination "${output_dir}"
-
-log "Deleting old publication"
-rm -rf "${output_dir}"
-mkdir "${output_dir}"
-git worktree prune
-rm -rf ".git/worktrees/${output_dir}"
-
-log 'Fetching gh-pages branch'
-git fetch origin gh-pages
-
-log 'Checking out gh-pages branch'
-git worktree add -B gh-pages "${output_dir}" origin/gh-pages
+hugo --minify --destination "${output_dir}"
 
 log "Committing updated site with message: ${commit_msg}"
 pushd "${output_dir}" > /dev/null
