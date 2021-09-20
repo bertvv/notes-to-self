@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+    <script type="application/ld+json">
+
+{  
+  "@context":"http://schema.org",
+  "@type":"Website",
+  "@id":"https:\/\/bertvv.github.io\/notes-to-self",
+  "author": {
+    "@type": "Person",
+    "name": "Bert Van Vreckem",
+    
+    "image": "https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2"
+    
+  },
+  "name":"Notes to self",
+  "description":"\u003cp\u003eWhen you execute the command \u003ccode\u003els -l\u003c\/code\u003e in UNIX, you get detailed information about files: permissions, file size, date of last modification, etc. A while ago, I got a question from one of my students who wondered what the second column meant. According to the documentation, it\u0026rsquo;s the \u0026ldquo;number of hard links,\u0026rdquo; but what does that actually mean? Let\u0026rsquo;s get to the bottom of this.\u003c\/p\u003e",
+  "url":"https:\/\/bertvv.github.io\/notes-to-self\/2015\/10\/18\/the-number-of-hard-links-in-ls-l\/",
+  "keywords":"[]"
+}
+
+</script>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.80.0 with theme Tranquilpeak 0.5.2-BETA">
+<meta name="author" content="Bert Van Vreckem">
+<meta name="keywords" content="">
+<meta name="description" content="When you execute the command ls -l in UNIX, you get detailed information about files: permissions, file size, date of last modification, etc. A while ago, I got a question from one of my students who wondered what the second column meant. According to the documentation, it&rsquo;s the &ldquo;number of hard links,&rdquo; but what does that actually mean? Let&rsquo;s get to the bottom of this.">
+
+
+<meta property="og:description" content="When you execute the command ls -l in UNIX, you get detailed information about files: permissions, file size, date of last modification, etc. A while ago, I got a question from one of my students who wondered what the second column meant. According to the documentation, it&rsquo;s the &ldquo;number of hard links,&rdquo; but what does that actually mean? Let&rsquo;s get to the bottom of this.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="The number of hard links in ‘ls -l’">
+<meta name="twitter:title" content="The number of hard links in ‘ls -l’">
+<meta property="og:url" content="https://bertvv.github.io/notes-to-self/2015/10/18/the-number-of-hard-links-in-ls-l/">
+<meta property="twitter:url" content="https://bertvv.github.io/notes-to-self/2015/10/18/the-number-of-hard-links-in-ls-l/">
+<meta property="og:site_name" content="Notes to self">
+<meta property="og:description" content="When you execute the command ls -l in UNIX, you get detailed information about files: permissions, file size, date of last modification, etc. A while ago, I got a question from one of my students who wondered what the second column meant. According to the documentation, it&rsquo;s the &ldquo;number of hard links,&rdquo; but what does that actually mean? Let&rsquo;s get to the bottom of this.">
+<meta name="twitter:description" content="When you execute the command ls -l in UNIX, you get detailed information about files: permissions, file size, date of last modification, etc. A while ago, I got a question from one of my students who wondered what the second column meant. According to the documentation, it&rsquo;s the &ldquo;number of hard links,&rdquo; but what does that actually mean? Let&rsquo;s get to the bottom of this.">
+<meta property="og:locale" content="en">
+
+  
+    <meta property="article:published_time" content="2015-10-18T09:46:19">
+  
+  
+    <meta property="article:modified_time" content="2015-10-18T09:46:19">
+  
+  
+  
+  
+
+
+<meta name="twitter:card" content="summary">
+
+  <meta name="twitter:site" content="@bertvanvreckem">
+
+
+  <meta name="twitter:creator" content="@bertvanvreckem">
+
+
+
+
+
+
+  <meta property="og:image" content="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=640">
+  <meta property="twitter:image" content="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=640">
+
+
+
+
+
+
+    <title>The number of hard links in ‘ls -l’</title>
+
+    <link rel="icon" href="https://bertvv.github.io/notes-to-self/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://bertvv.github.io/notes-to-self/2015/10/18/the-number-of-hard-links-in-ls-l/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    
+    
+    <link rel="stylesheet" href="https://bertvv.github.io/notes-to-self/css/style-c5yjx2losbmkttdif4mskx5f9pqjjquywurgngxfvceyyrtyatseix5hpd.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://bertvv.github.io/notes-to-self/" aria-label="">Notes to self</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://bertvv.github.io/notes-to-self/" aria-label="">
+    
+    
+    
+      
+        <img class="header-picture" src="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=90" alt="" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://bertvv.github.io/notes-to-self/#about" aria-label="">
+          <img class="sidebar-profile-picture" src="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=110" alt="" />
+        </a>
+        <h4 class="sidebar-profile-name">Bert Van Vreckem</h4>
+        
+          <h5 class="sidebar-profile-bio">Lecturer ICT at HOGENT</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/" title="Home">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-home" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Home</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/categories" title="Categories">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-bookmark" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Categories</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/tags" title="Tags">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-tags" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Tags</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/archives" title="Archives">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-archive" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Archives</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/about" title="About">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-question" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">About</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/bertvv" target="_blank" rel="noopener" title="GitHub">
+    
+      <i class="sidebar-button-icon fab fa-lg fa-github" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.linkedin.com/in/bertvanvreckem/" target="_blank" rel="noopener" title="LinkedIn">
+    
+      <i class="sidebar-button-icon fab fa-lg fa-linkedin" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">LinkedIn</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.youtube.com/user/bertvvrhogent" target="_blank" rel="noopener" title="Youtube">
+    
+      <i class="sidebar-button-icon fab fa-lg fa-youtube" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">Youtube</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/index.xml" title="RSS">
+    
+      <i class="sidebar-button-icon fas fa-lg fa-rss" aria-hidden="true"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" id="top">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title">
+      The number of hard links in ‘ls -l’
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time datetime="2015-10-18T09:46:19&#43;02:00">
+        
+   18, 2015
+
+      </time>
+    
+    
+  </div>
+
+</div>
+          
+          <div class="post-content markdown">
+            <div class="main-content-wrap">
+              <p>When you execute the command <code>ls -l</code> in UNIX, you get detailed information about files: permissions, file size, date of last modification, etc. A while ago, I got a question from one of my students who wondered what the second column meant. According to the documentation, it&rsquo;s the &ldquo;number of hard links,&rdquo; but what does that actually mean? Let&rsquo;s get to the bottom of this.</p>
+<p>One of my students, Tom, wrote:</p>
+<blockquote>
+<p>I created a directory <code>test2</code> containing a file, 3 scripts and another directory <code>test</code> containing the same file and scripts. I don&rsquo;t know whether this is relevant, but I mention it anyway. I created the directory <code>test2</code> by copying another directory and copying it within itself (I was playing with <code>cp</code>).</p>
+<p>To get back to the number of hard links: when I executed <code>ls -l</code>, I saw the number 3 next to directory <code>test2</code>. I looked into hard links and noticed that all hard links have the same inode. So I thought, let&rsquo;s find all hard links of <code>test2</code> with the <code>find / -inum ...</code> command. However, I only received 1 value: <code>/home/tom/test2</code> while I expected at least 2 or 3.</p>
+</blockquote>
+<p>So, Tom doubts whether the number in the second column is in fact the number of hard links. The documentation (<code>info ls</code>) at least confirms this:</p>
+<pre><code>'-l'
+'--format=long'
+'--format=verbose'
+     In addition to the name of each file, print the file type, file
+     mode bits, number of hard links, owner name, group name, size, and
+     timestamp (*note Formatting file timestamps::), normally the
+     modification time.  Print question marks for information that
+     cannot be determined.
+</code></pre><p>Let&rsquo;s get to the bottom of this&hellip;</p>
+<h2 id="hard-links-between-files">Hard links between files</h2>
+<p>The example below shows that for ordinary files, the second column really is the number of hard links:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ touch orig
+$ ls -li
+total <span style="color:#ae81ff">0</span>
+<span style="color:#ae81ff">1706858</span> -rw-rw-r--. <span style="color:#ae81ff">1</span> bert bert <span style="color:#ae81ff">0</span> Nov  <span style="color:#ae81ff">5</span> 21:55 orig
+$ ln orig link
+$ ls -li
+<span style="color:#ae81ff">1706858</span> -rw-rw-r--. <span style="color:#ae81ff">2</span> bert bert <span style="color:#ae81ff">0</span> Nov  <span style="color:#ae81ff">5</span> 21:55 link
+<span style="color:#ae81ff">1706858</span> -rw-rw-r--. <span style="color:#ae81ff">2</span> bert bert <span style="color:#ae81ff">0</span> Nov  <span style="color:#ae81ff">5</span> 21:55 orig
+$ find . -inum <span style="color:#ae81ff">1706858</span>
+./orig
+./link</code></pre></div>
+<p>When creating the file <code>orig</code>, the number of hard links was 1. I also added the option <code>-i</code> to show the <a href="https://en.wikipedia.org/wiki/Inode">inode number</a>. This number uniquely identifies a file. I then created a hard link from the original file. As you can see, both files now have the same inode number and the number of hard links is incremented. Searching on inode number finds both files.</p>
+<p>Copying with <code>cp</code>, as Tom did in his example, creates a <em>new</em> file with the same contents as the original. That means that the inode numbers are also different! Changes in one file will not be registered in the other one. The same goes for <em>symbolic links</em>, in fact:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ln -s orig symb
+$ ls -il
+total <span style="color:#ae81ff">0</span>
+<span style="color:#ae81ff">1706858</span> -rw-rw-r--. <span style="color:#ae81ff">2</span> bert bert <span style="color:#ae81ff">0</span> Nov  <span style="color:#ae81ff">5</span> 21:55 link
+<span style="color:#ae81ff">1706858</span> -rw-rw-r--. <span style="color:#ae81ff">2</span> bert bert <span style="color:#ae81ff">0</span> Nov  <span style="color:#ae81ff">5</span> 21:55 orig
+<span style="color:#ae81ff">1707044</span> lrwxrwxrwx. <span style="color:#ae81ff">1</span> bert bert <span style="color:#ae81ff">4</span> Nov  <span style="color:#ae81ff">5</span> 22:38 symb -&gt; orig</code></pre></div>
+<h2 id="directories">Directories</h2>
+<p>Now, hard links between directories don&rsquo;t exist, so the interpretation of the term &ldquo;number of hard links&rdquo; is a bit different than with ordinary files. In this case, the number represents how many other directories ‘link to’ it. Specifically, that means the parent directory and all directories immediately below. A new directory starts at &ldquo;2&rdquo;, i.e. a link from ‘itself’ and one from the parent directory. The number will increment when you create subdirectories, but not when you create new files or symbolic links.</p>
+<p>Take a look at the example below, and try it for yourself. Take your time, I&rsquo;ll wait&hellip;</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ls -l
+total <span style="color:#ae81ff">0</span>
+$ mkdir a b
+$ ls -l
+total <span style="color:#ae81ff">8</span>
+drwxrwxr-x. <span style="color:#ae81ff">2</span> bert bert <span style="color:#ae81ff">4096</span> Nov  <span style="color:#ae81ff">5</span> 21:26 a
+drwxrwxr-x. <span style="color:#ae81ff">2</span> bert bert <span style="color:#ae81ff">4096</span> Nov  <span style="color:#ae81ff">5</span> 21:26 b
+$ mkdir a/c
+$ ls -l
+total <span style="color:#ae81ff">8</span>
+drwxrwxr-x. <span style="color:#ae81ff">3</span> bert bert <span style="color:#ae81ff">4096</span> Nov  <span style="color:#ae81ff">5</span> 21:27 a
+drwxrwxr-x. <span style="color:#ae81ff">2</span> bert bert <span style="color:#ae81ff">4096</span> Nov  <span style="color:#ae81ff">5</span> 21:26 b
+$ mkdir a/d
+$ ls -l
+total <span style="color:#ae81ff">8</span>
+drwxrwxr-x. <span style="color:#ae81ff">4</span> bert bert <span style="color:#ae81ff">4096</span> Nov  <span style="color:#ae81ff">5</span> 21:27 a
+drwxrwxr-x. <span style="color:#ae81ff">2</span> bert bert <span style="color:#ae81ff">4096</span> Nov  <span style="color:#ae81ff">5</span> 21:26 b
+$ touch a/f
+$ ls -l
+total <span style="color:#ae81ff">8</span>
+drwxrwxr-x. <span style="color:#ae81ff">4</span> bert bert <span style="color:#ae81ff">4096</span> Nov  <span style="color:#ae81ff">5</span> 21:27 a
+drwxrwxr-x. <span style="color:#ae81ff">2</span> bert bert <span style="color:#ae81ff">4096</span> Nov  <span style="color:#ae81ff">5</span> 21:26 b
+$ ln -rs b a/e
+$ ls -l
+total <span style="color:#ae81ff">8</span>
+drwxrwxr-x. <span style="color:#ae81ff">4</span> bert bert <span style="color:#ae81ff">4096</span> Nov  <span style="color:#ae81ff">5</span> 21:48 a
+drwxrwxr-x. <span style="color:#ae81ff">2</span> bert bert <span style="color:#ae81ff">4096</span> Nov  <span style="color:#ae81ff">5</span> 21:26 b
+$ tree -F
+.
+|-- a/
+|   |-- c/
+|   |-- d/
+|   |-- e -&gt; ../b/
+|   <span style="color:#e6db74">`</span>-- f
+<span style="color:#e6db74">`</span>-- b/</code></pre></div>
+<p>Every time I created a new subdirectory, the number of hard links incremented, but not when creating a file or symbolic link, even to a directory!</p>
+<p>As mentioned earlier, creating hard links from directories doesn&rsquo;t work:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ln a c
+ln: ‘a’: hard link not allowed <span style="color:#66d9ef">for</span> directory</code></pre></div>
+<p>So when Tom was using find to search for a directory <code>test2</code> based on its inode number, it could necessarily only find it once.</p>
+<p>To finish off, let&rsquo;s look at a corner case, specifically the root directory (<code>/</code>) of the file system. On my laptop:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ls -l /
+total <span style="color:#ae81ff">64</span>
+lrwxrwxrwx.   <span style="color:#ae81ff">1</span> root root     <span style="color:#ae81ff">7</span> Sep <span style="color:#ae81ff">27</span> 16:37 bin -&gt; usr/bin
+dr-xr-xr-x.   <span style="color:#ae81ff">5</span> root root  <span style="color:#ae81ff">3072</span> Oct <span style="color:#ae81ff">29</span> 09:03 boot
+drwxr-xr-x.  <span style="color:#ae81ff">22</span> root root  <span style="color:#ae81ff">3700</span> Nov  <span style="color:#ae81ff">5</span> 18:33 dev
+drwxr-xr-x. <span style="color:#ae81ff">149</span> root root <span style="color:#ae81ff">12288</span> Nov  <span style="color:#ae81ff">5</span> 18:33 etc
+drwxr-xr-x.   <span style="color:#ae81ff">4</span> root root  <span style="color:#ae81ff">4096</span> Jul  <span style="color:#ae81ff">8</span> 10:56 home
+lrwxrwxrwx.   <span style="color:#ae81ff">1</span> root root     <span style="color:#ae81ff">7</span> Sep <span style="color:#ae81ff">27</span> 16:37 lib -&gt; usr/lib
+lrwxrwxrwx.   <span style="color:#ae81ff">1</span> root root     <span style="color:#ae81ff">9</span> Sep <span style="color:#ae81ff">27</span> 16:37 lib64 -&gt; usr/lib64
+drwx------.   <span style="color:#ae81ff">2</span> root root <span style="color:#ae81ff">16384</span> Jun <span style="color:#ae81ff">27</span> 19:09 lost+found
+drwxr-xr-x.   <span style="color:#ae81ff">2</span> root root  <span style="color:#ae81ff">4096</span> Jul  <span style="color:#ae81ff">8</span> 10:56 media
+drwxr-xr-x.   <span style="color:#ae81ff">3</span> root root  <span style="color:#ae81ff">4096</span> Jul  <span style="color:#ae81ff">8</span> 10:56 mnt
+drwxr-xr-x.   <span style="color:#ae81ff">4</span> root root  <span style="color:#ae81ff">4096</span> Sep <span style="color:#ae81ff">27</span> 22:05 opt
+dr-xr-xr-x. <span style="color:#ae81ff">263</span> root root     <span style="color:#ae81ff">0</span> Nov  <span style="color:#ae81ff">4</span> 10:28 proc
+dr-xr-x---.   <span style="color:#ae81ff">5</span> root root  <span style="color:#ae81ff">4096</span> Nov  <span style="color:#ae81ff">3</span> 02:32 root
+drwxr-xr-x.  <span style="color:#ae81ff">37</span> root root  <span style="color:#ae81ff">1120</span> Nov  <span style="color:#ae81ff">5</span> 21:46 run
+lrwxrwxrwx.   <span style="color:#ae81ff">1</span> root root     <span style="color:#ae81ff">8</span> Sep <span style="color:#ae81ff">27</span> 16:37 sbin -&gt; usr/sbin
+drwxr-xr-x.   <span style="color:#ae81ff">2</span> root root  <span style="color:#ae81ff">4096</span> Jul  <span style="color:#ae81ff">8</span> 10:56 srv
+dr-xr-xr-x.  <span style="color:#ae81ff">13</span> root root     <span style="color:#ae81ff">0</span> Nov  <span style="color:#ae81ff">4</span> 09:28 sys
+drwxrwxrwt.  <span style="color:#ae81ff">16</span> root root   <span style="color:#ae81ff">420</span> Nov  <span style="color:#ae81ff">5</span> 21:46 tmp
+drwxr-xr-x.  <span style="color:#ae81ff">13</span> root root  <span style="color:#ae81ff">4096</span> Sep <span style="color:#ae81ff">27</span> 16:37 usr
+drwxr-xr-x.  <span style="color:#ae81ff">21</span> root root  <span style="color:#ae81ff">4096</span> Sep <span style="color:#ae81ff">27</span> 16:39 var
+$ ls -ld /
+dr-xr-xr-x. <span style="color:#ae81ff">18</span> root root <span style="color:#ae81ff">4096</span> Nov  <span style="color:#ae81ff">4</span> 09:29 /</code></pre></div>
+<p>As you can see in the last line, the number of hard links of <code>/</code> is 18. When you count the number of subdirectories directly below <code>/</code> (<em>not</em> counting symbolic links like <code>/sbin -&gt; /usr/sbin</code>), you get 16. Adding the directory&rsquo;s &ldquo;own&rdquo; hard link, you would expect the final number to be 17 because <code>/</code> is at the top of the directory hierarchy, right? But let&rsquo;s try this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd ..; pwd
+/
+$ cd ..; pwd
+/
+$ cd ..; pwd
+/
+...</code></pre></div>
+<p>Turtles all the way up! So apparently, the root directory is its own parent directory! And consequently, the number 18 is right after all&hellip;</p>
+<p>Thank you, Tom, for the interesting question!</p>
+<p><em>(I wrote and published this post elsewhere at first, but I&rsquo;m consolidating everything that is worth preserving on this site.)</em></p>
+              
+
+
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+            
+            
+<div class="post-actions-wrap">
+  <nav >
+    <ul class="post-actions post-action-nav">
+      
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://bertvv.github.io/notes-to-self/2015/11/16/automating-mysql_secure_installation/" data-tooltip="Automating `mysql_secure_installation`" aria-label=": Automating `mysql_secure_installation`">
+          
+              <i class="fa fa-angle-left"></i>
+              <span class="hide-xs hide-sm text-small icon-ml"></span>
+            </a>
+        </li>
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://bertvv.github.io/notes-to-self/2015/10/08/installing-virtualbox-guest-additions-in-fedora-22/" data-tooltip="Installing VirtualBox Guest Additions in Fedora 22" aria-label=": Installing VirtualBox Guest Additions in Fedora 22">
+          
+              <span class="hide-xs hide-sm text-small icon-mr"></span>
+              <i class="fa fa-angle-right"></i>
+            </a>
+        </li>
+      
+    </ul>
+  </nav>
+<ul class="post-actions post-action-share" >
+  
+    <li class="post-action hide-lg hide-md hide-sm">
+      <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="">
+        <i class="fa fa-share-alt" aria-hidden="true"></i>
+      </a>
+    </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://bertvv.github.io/notes-to-self/2015/10/18/the-number-of-hard-links-in-ls-l/" title="" aria-label="">
+          <i class="fab fa-twitter" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.linkedin.com/sharing/share-offsite/?url=https://bertvv.github.io/notes-to-self/2015/10/18/the-number-of-hard-links-in-ls-l/" title="" aria-label="">
+          <i class="fab fa-linkedin" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.reddit.com/submit?url=https://bertvv.github.io/notes-to-self/2015/10/18/the-number-of-hard-links-in-ls-l/" title="" aria-label="">
+          <i class="fab fa-reddit" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+  
+  
+  <li class="post-action">
+    
+      <a class="post-action-btn btn btn--default" href="#top" aria-label="">
+      <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    
+    </a>
+  </li>
+</ul>
+</div>
+
+
+            
+  
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+    <script type="text/javascript">
+      var disqus_config = function() {
+        this.page.url = 'https:\/\/bertvv.github.io\/notes-to-self\/2015\/10\/18\/the-number-of-hard-links-in-ls-l\/';
+        
+          this.page.identifier = '\/2015\/10\/18\/the-number-of-hard-links-in-ls-l\/'
+        
+      };
+      (function() {
+        
+        
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+          document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+          return;
+        }
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        var disqus_shortname = '';
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+  
+
+
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 <a href="https://github.com/bertvv">Bert Van Vreckem</a> <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY</a>. 
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        
+<div class="post-actions-wrap">
+  <nav >
+    <ul class="post-actions post-action-nav">
+      
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://bertvv.github.io/notes-to-self/2015/11/16/automating-mysql_secure_installation/" data-tooltip="Automating `mysql_secure_installation`" aria-label=": Automating `mysql_secure_installation`">
+          
+              <i class="fa fa-angle-left"></i>
+              <span class="hide-xs hide-sm text-small icon-ml"></span>
+            </a>
+        </li>
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://bertvv.github.io/notes-to-self/2015/10/08/installing-virtualbox-guest-additions-in-fedora-22/" data-tooltip="Installing VirtualBox Guest Additions in Fedora 22" aria-label=": Installing VirtualBox Guest Additions in Fedora 22">
+          
+              <span class="hide-xs hide-sm text-small icon-mr"></span>
+              <i class="fa fa-angle-right"></i>
+            </a>
+        </li>
+      
+    </ul>
+  </nav>
+<ul class="post-actions post-action-share" >
+  
+    <li class="post-action hide-lg hide-md hide-sm">
+      <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="">
+        <i class="fa fa-share-alt" aria-hidden="true"></i>
+      </a>
+    </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://bertvv.github.io/notes-to-self/2015/10/18/the-number-of-hard-links-in-ls-l/" title="" aria-label="">
+          <i class="fab fa-twitter" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.linkedin.com/sharing/share-offsite/?url=https://bertvv.github.io/notes-to-self/2015/10/18/the-number-of-hard-links-in-ls-l/" title="" aria-label="">
+          <i class="fab fa-linkedin" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.reddit.com/submit?url=https://bertvv.github.io/notes-to-self/2015/10/18/the-number-of-hard-links-in-ls-l/" title="" aria-label="">
+          <i class="fab fa-reddit" aria-hidden="true"></i>
+        </a>
+      </li>
+    
+  
+  
+  <li class="post-action">
+    
+      <a class="post-action-btn btn btn--default" href="#top" aria-label="">
+      <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    
+    </a>
+  </li>
+</ul>
+</div>
+
+
+      </div>
+      
+<div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-times"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2Fbertvv.github.io%2Fnotes-to-self%2F2015%2F10%2F18%2Fthe-number-of-hard-links-in-ls-l%2F" aria-label="">
+          <i class="fab fa-twitter" aria-hidden="true"></i><span></span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fbertvv.github.io%2Fnotes-to-self%2F2015%2F10%2F18%2Fthe-number-of-hard-links-in-ls-l%2F" aria-label="">
+          <i class="fab fa-linkedin" aria-hidden="true"></i><span></span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.reddit.com/submit?url=https%3A%2F%2Fbertvv.github.io%2Fnotes-to-self%2F2015%2F10%2F18%2Fthe-number-of-hard-links-in-ls-l%2F" aria-label="">
+          <i class="fab fa-reddit" aria-hidden="true"></i><span></span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+
+
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-times"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=110" alt="" />
+    
+    <h4 id="about-card-name">Bert Van Vreckem</h4>
+    
+      <div id="about-card-bio">Lecturer ICT at HOGENT</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Lecturer ICT at HOGENT
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker-alt"></i>
+        <br/>
+        Ghent
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://bertvv.github.io/notes-to-self/img/field.jpg');"></div>
+    
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js" integrity="sha512-z+/WWfyD5tccCukM4VvONpEtLmbAm5LDu7eKiyMQJ9m7OfPEDL7gENyDRL3Yfe8XAuGsS2fS4xSMnl6d30kqGQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script src="https://bertvv.github.io/js/script-yqzy9wdlzix4lbbwdnzvwx3egsne77earqmn73v9uno8aupuph8wfguccut.min.js"></script>
+
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-gE8KAQyFIzV1C9+GZ8TKJHZS2s+n7EjNtC+IMRn1l5+WYJTHOODUM6JSjZhFhqXmc7bG8Av6XXpckA4tYhflnw==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/apache.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-EWROca+bote+7Oaaar1F6y74iZj1r1F9rm/ly7o+/FwJopbBaWtsFDmaKoZDd3QiGU2pGacBirHJNivmGLYrow==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/go.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-GDVzAn0wpx1yVtQsRWmFc6PhJiLBPdUic+h4GWgljBh904O3JU10fk9EKNpVyIoPqkFn54rgL2QBG4BmUTMpiQ==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/http.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-UgZlma8NzkrDb/NWgmLIcTrH7i/CSnLLDRFqCSNF5NGPpjKmzyM25qcoXGOup8+cDakKyaiTDd7N4dyH4YT+IA==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/less.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-lot9koe73sfXIrUvIPM/UEhuMciN56RPyBdOyZgfO53P2lkWyyXN7J+njcxIIBRV+nVDQeiWtiXg+bLAJZDTfg==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/nginx.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-Zd3e7XxHP00TD0Imr0PIfeM0fl0v95kMWuhyAS3Wn1UTSXTkz0OhtRgBAr4JlmADRgiXr4x7lpeUdqaGN8xIog==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/puppet.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-qtqDO052iXMSP+5d/aE/jMtL9vIIGvONgTJziC2K/ZIB1yEGa55WVxGE9/08rSQ62EoDifS9SWVGZ7ihSLhzMA==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/scss.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-1NmkjnEDnwwwcu28KoQF8vs3oaPFokQHbmbtwGhFfeDsQZtVFI8zW2aE9O8yMYdpdyKV/5blE4pSWw4Z/Sv97w==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/stylus.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-B2wSfruPjr8EJL6IIzQr1eAuDwrsfIfccNf/LCEdxELCgC/S/ZMt/Uvk80aD79m7IqOqW+Sw8nbkvha20yZpzg==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/swift.min.js"></script>
+  
+
+  
+    <script async crossorigin="anonymous" defer integrity="sha512-28oDiQZGKUVN6wQ7PSLPNipOcmkCALXKwOi7bnkyFf8QiMZQxG9EQoy/iiNx6Zxj2cG2SbVa4dXKigQhu7GiFw==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/yaml.min.js"></script>
+  
+
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+
+
+    
+  </body>
+</html>
+

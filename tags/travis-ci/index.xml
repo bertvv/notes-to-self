@@ -1,267 +1,28 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title>Travis Ci on Notes to self </title>
-      <generator uri="https://gohugo.io">Hugo</generator>
-    <link>https://bertvv.github.io/notes-to-self/tags/travis-ci/index.xml</link>
+    <title>travis-ci on Notes to self</title>
+    <link>https://bertvv.github.io/notes-to-self/tags/travis-ci/</link>
+    <description>Recent content in travis-ci on Notes to self</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <author>Bert Van Vreckem</author>
-    <copyright>© 2015 Bert Van Vreckem. Creative Commons Attribution 4.0. Please attribute properly and link back.</copyright>
-    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
-    
+    <lastBuildDate>Sun, 13 Dec 2015 16:00:32 +0100</lastBuildDate><atom:link href="https://bertvv.github.io/notes-to-self/tags/travis-ci/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Testing Ansible roles with Travis-CI, Part 2: Multi-platform tests</title>
-      <link>https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests</link>
-      <pubDate>Sun, 13 Dec 2015 16:00:32 CET</pubDate>
-      <author>Bert Van Vreckem</author>
-      <guid>https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests</guid>
-      <description>&lt;p&gt;In the &lt;a href=&#34;https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos&#34;&gt;previous post on testing Ansible roles with Travis-CI&lt;/a&gt;, I introduced a method to run playbooks on CentOS using Docker. In this post, we take this one step further and show how you can run multi-platform tests of Ansible roles.&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;p&gt;As a proof of concept, I&amp;rsquo;ll continue with the example of &lt;a href=&#34;https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos&#34;&gt;part one&lt;/a&gt;: Apache, the hello world of configuration management. My own &lt;a href=&#34;https://galaxy.ansible.com/detail#/role/3047&#34;&gt;Apache role&lt;/a&gt; was written only for EL/CentOS (for now), so it&amp;rsquo;s not suitable. Therefore I thought of giving &lt;a href=&#34;https://twitter.com/geerlingguy&#34;&gt;Jeff Geerling&lt;/a&gt;&amp;rsquo;s &lt;a href=&#34;https://galaxy.ansible.com/detail#/role/428&#34;&gt;Apache role&lt;/a&gt; a try. We&amp;rsquo;ll set up a test environment with two target platforms: Ubuntu and CentOS.&lt;/p&gt;
-
-&lt;h2 id=&#34;setting-up-the-docker-containers&#34;&gt;Setting up the Docker containers&lt;/h2&gt;
-
-&lt;p&gt;The test code is structured as follows (relative to the root of the Git project):&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;.
-├── tests
-│   ├── Dockerfile.centos
-│   ├── Dockerfile.ubuntu
-│   └── test.yml
-└── .travis.yml
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The Dockerfile for CentOS is the same as in &lt;a href=&#34;https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos&#34;&gt;part one&lt;/a&gt;, so I won&amp;rsquo;t repeat it here. The one for the Ubuntu container follows below. It is a bit simpler because we don&amp;rsquo;t have to install systemd.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;# Dockerfile.ubuntu
-FROM ubuntu:14.04
-# Install Ansible
-RUN apt-get install -y software-properties-common git
-RUN apt-add-repository -y ppa:ansible/ansible
-RUN apt-get update
-RUN apt-get install -y ansible
-# Install Ansible inventory file
-RUN echo &amp;quot;[local]\nlocalhost ansible_connection=local&amp;quot; &amp;gt; /etc/ansible/hosts
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;running-the-tests&#34;&gt;Running the tests&lt;/h2&gt;
-
-&lt;p&gt;This is the test playbook:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# test.yml&lt;/span&gt;
-&lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;---&lt;/span&gt;
-- hosts: all
-  vars:
-    apache_listen_port_ssl: 443
-    apache_create_vhosts: true
-    apache_vhosts_filename: &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;vhosts.conf&amp;quot;&lt;/span&gt;
-    apache_vhosts:
-      - servername: &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;example.com&amp;quot;&lt;/span&gt;
-        documentroot: &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;/var/www/vhosts/example_com&amp;quot;&lt;/span&gt;
-  roles:
-    - role_under_test
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;p&gt;It will be run on both the Ubuntu and the CentOS container. The &lt;code&gt;.travis.yml&lt;/code&gt; file becomes:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# .travis.yml&lt;/span&gt;
-&lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;---&lt;/span&gt;
-sudo: required
-env:
-  - &amp;gt;
-    &lt;span style=&#34;color: #336600&#34;&gt;container_id=$(mktemp)&lt;/span&gt;
-    &lt;span style=&#34;color: #336600&#34;&gt;distribution=centos&lt;/span&gt;
-    &lt;span style=&#34;color: #336600&#34;&gt;version=7&lt;/span&gt;
-    &lt;span style=&#34;color: #336600&#34;&gt;init=/usr/lib/systemd/systemd&lt;/span&gt;
-    &lt;span style=&#34;color: #336600&#34;&gt;run_opts=&amp;quot;--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro&amp;quot;&lt;/span&gt;
-  - &amp;gt;
-    &lt;span style=&#34;color: #336600&#34;&gt;container_id=$(mktemp)&lt;/span&gt;
-    &lt;span style=&#34;color: #336600&#34;&gt;distribution=ubuntu&lt;/span&gt;
-    &lt;span style=&#34;color: #336600&#34;&gt;version=14.04&lt;/span&gt;
-    &lt;span style=&#34;color: #336600&#34;&gt;init=/sbin/init&lt;/span&gt;
-    &lt;span style=&#34;color: #336600&#34;&gt;run_opts=&amp;quot;&amp;quot;&lt;/span&gt;
-
-services:
-  - docker
-
-before_install:
-  - sudo apt-get update
-  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Pull container&lt;/span&gt;
-  - sudo docker pull ${distribution}:${version}
-  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Customize container&lt;/span&gt;
-  - sudo docker build --rm=true --file=tests/Dockerfile.${distribution} --tag=${distribution}:ansible tests
-
-script:
-    &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Run container in detached state&lt;/span&gt;
-  - sudo docker run --detach --volume=&amp;quot;${PWD}&amp;quot;:/etc/ansible/roles/role_under_test:ro ${run_opts} ${distribution}:ansible &amp;quot;${init}&amp;quot; &amp;gt; &amp;quot;${container_id}&amp;quot;
-
-    # Syntax check
-  - sudo docker exec --tty &amp;quot;$(cat ${container_id})&amp;quot; env TERM=xterm ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml --syntax-check
-    # Test role
-  - sudo docker exec --tty &amp;quot;$(cat ${container_id})&amp;quot; env TERM=xterm ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml
-    # Idempotence test
-  - &amp;gt;
-    &lt;span style=&#34;color: #336600&#34;&gt;sudo docker exec &amp;quot;$(cat ${container_id})&amp;quot; ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml&lt;/span&gt;
-    &lt;span style=&#34;color: #336600&#34;&gt;| grep -q &amp;#39;changed=0.*failed=0&amp;#39;&lt;/span&gt;
-    &lt;span style=&#34;color: #336600&#34;&gt;&amp;amp;&amp;amp; (echo &amp;#39;Idempotence test: pass&amp;#39; &amp;amp;&amp;amp; exit 0)&lt;/span&gt;
-    &lt;span style=&#34;color: #336600&#34;&gt;|| (echo &amp;#39;Idempotence test: fail&amp;#39; &amp;amp;&amp;amp; exit 1)&lt;/span&gt;
-
-    &lt;span style=&#34;color: #336600&#34;&gt;# Clean up&lt;/span&gt;
-  - sudo docker stop &amp;quot;$(cat ${container_id})&amp;quot;
-
-notifications:
-  email: false
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;p&gt;With the &lt;code&gt;env:&lt;/code&gt; section, Travis-CI allows you to define different environments in which the tests should be run. We have defined two here, one for Ubuntu and one for CentOS. All the differences between the two cases are stored in environment variables that are available when the tests are run.&lt;/p&gt;
-
-&lt;p&gt;The &lt;code&gt;before_install:&lt;/code&gt; section pulls the base container image for the desired Linux distribution and version (&lt;code&gt;centos:7&lt;/code&gt; and &lt;code&gt;ubuntu:14.04&lt;/code&gt;) and a custom image is built using the appropriate Dockerfile.&lt;/p&gt;
-
-&lt;p&gt;In the &lt;code&gt;script:&lt;/code&gt; section, the container is started, and the current directory is mounted inside the container under &lt;code&gt;/etc/ansible/roles/role_under_test&lt;/code&gt;. Next, the test playbook is run with the &lt;code&gt;--syntax-check&lt;/code&gt; option. The command line options &lt;code&gt;--tty&lt;/code&gt; and &lt;code&gt;env TERM=xterm&lt;/code&gt; enable coloured output. Then, the test playbook is executed twice. The first time, the role is applied and Apache is installed with the configuration specified by the role variables. The second time is an idempotence test: applying the role a second time should not result in any changes. In the case a change &lt;em&gt;did&lt;/em&gt; happen or if a task failed, an appropriate error message is printed and the process will abort.&lt;/p&gt;
-
-&lt;p&gt;An example of the build output can be found &lt;a href=&#34;https://travis-ci.org/bertvv/ansible-role-apache/builds/96604650&#34;&gt;here&lt;/a&gt; (for as long as Travis keeps the build logs).&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://bertvv.github.io/notes-to-self/img/travis-build-status.png&#34; alt=&#34;Build status on the Travis-CI website. The output for the tests on CentOS and Ubuntu are shown separately (#9.1 and #9.2 respectively).&#34; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;future-work&#34;&gt;Future work&lt;/h2&gt;
-
-&lt;p&gt;There is still room for improvement, of course.&lt;/p&gt;
-
-&lt;p&gt;Tests for other platforms supported by the role can be added easily by creating a Dockerfile and adding a line to the &lt;code&gt;env:&lt;/code&gt; section of &lt;code&gt;.travis.yml&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;The containers with Ansible installed are built on-the-fly, but they are always the same. Consequently, they can be reused for most, if not all, other roles you might want to run tests on. If you publish the containers on &lt;a href=&#34;https://hub.docker.com/&#34;&gt;Docker Hub&lt;/a&gt; (with any other customizations you may want), you can pull them from there and skip the build step.&lt;/p&gt;
-
-&lt;p&gt;What also could be added is black box system/acceptance tests from the host system (i.e. the Travis-CI VM), e.g. trying to access the website that runs on the container with &lt;code&gt;curl&lt;/code&gt;, checking the TLS certificate, etc. This is left as an exercise to the upstream maintainer&amp;hellip; ;-)&lt;/p&gt;
-
-&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;The complete code for this test setup was &lt;a href=&#34;https://github.com/geerlingguy/ansible-role-apache/pull/60&#34;&gt;submitted upstream as a pull request&lt;/a&gt;. As you will see in the commit history, there were quite a few hiccups as I was still getting familiar with the tools, and I made a few mistakes that I&amp;rsquo;ll attribute to the fact that I continued working on this until rather late at night&amp;hellip; ;-)&lt;/p&gt;
-
-&lt;p&gt;Testing Ansible roles on Travis-CI becomes a very compelling proposition, given the flexibility Docker containers provide. Whether it is suitable in &lt;em&gt;all&lt;/em&gt; situations remains an open question. Most of my roles, for example, assume SELinux is running, but this is probably not available in a container set up within the Ubuntu VM provided by Travis-CI. If you know more about this, I would be interested to hear from you!&lt;/p&gt;
-
-&lt;p&gt;I finish this post with a shout-out to Valeriy Solovyov who (as far as I can tell) pioniered this method of testing Ansible roles. The code for his &lt;a href=&#34;https://github.com/weldpua2008/ansible-apache&#34;&gt;Apache role&lt;/a&gt;, and &lt;a href=&#34;https://stackoverflow.com/questions/32535195/how-to-run-tests-on-centos-7-with-travis-ci&#34;&gt;this discussion on Stack Overflow&lt;/a&gt; are the only sources I could find on this, however.&lt;/p&gt;</description>
+      <link>https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/</link>
+      <pubDate>Sun, 13 Dec 2015 16:00:32 +0100</pubDate>
+      
+      <guid>https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/</guid>
+      <description>&lt;p&gt;In the &lt;a href=&#34;https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos&#34;&gt;previous post on testing Ansible roles with Travis-CI&lt;/a&gt;, I introduced a method to run playbooks on CentOS using Docker. In this post, we take this one step further and show how you can run multi-platform tests of Ansible roles.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Testing Ansible roles with Travis-CI, Part 1: CentOS</title>
-      <link>https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos</link>
-      <pubDate>Fri, 11 Dec 2015 20:49:16 CET</pubDate>
-      <author>Bert Van Vreckem</author>
-      <guid>https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos</guid>
-      <description>&lt;p&gt;In this first post on testing Ansible roles with Travis-CI, we&amp;rsquo;ll discuss how you can apply a test playbook on CentOS. Out-of-the-box, Travis-CI doesn&amp;rsquo;t support CentOS, as its test environment is Ubuntu-based. However, Travis-CI allows you to set up a Docker container and this opens up all kinds of possibilities.&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;p&gt;I&amp;rsquo;ve known about &lt;a href=&#34;https://travis-ci.org/&#34;&gt;Travis-CI&lt;/a&gt; as a test platform for a while now, but haven&amp;rsquo;t tried it out until a few days ago. It is mainly used for running tests on applications, but it has seen use for infrastructure testing as well. For example, Jeff Geerling already &lt;a href=&#34;https://servercheck.in/blog/testing-ansible-roles-travis-ci-github&#34;&gt;wrote about testing Ansible roles&lt;/a&gt; using Travis-CI.&lt;/p&gt;
-
-&lt;p&gt;There&amp;rsquo;s a lot to like about Travis-CI: it&amp;rsquo;s free for open source projects and it integrates nicely with Github so that on every push and submitted pull request a test run is triggered. During a test run, a VM is booted and a script called &lt;code&gt;.travis.yml&lt;/code&gt; is executed. This contains the necessary steps to configure the system, install dependencies and run the actual test code. Jeff Geerling&amp;rsquo;s method of testing Ansible roles consists of installing Ansible and then running a test playbook locally that applies the role to the VM.&lt;/p&gt;
-
-&lt;p&gt;Now, the reason that I haven&amp;rsquo;t been working with Travis-CI before (apart from lack of time), is that the VM that&amp;rsquo;s being created is Ubuntu-based. I&amp;rsquo;m mostly working with CentOS, however, and all &lt;a href=&#34;https://galaxy.ansible.com/detail#/user/8834&#34;&gt;my Ansible roles&lt;/a&gt; only run on CentOS (at least for now). So as far as I knew, Travis-CI was not suitable for my needs.&lt;/p&gt;
-
-&lt;p&gt;Earlier this week, I ran into a &lt;a href=&#34;https://stackoverflow.com/questions/29453017/build-project-on-centos-using-travis&#34;&gt;question on StackOverflow&lt;/a&gt; on this very subject. One of the replies stated that it is possible to run CentOS on Travis-CI using Docker. Interesting&amp;hellip;&lt;/p&gt;
-
-&lt;p&gt;Docker is another technology I haven&amp;rsquo;d played with before, so two learning opportunities in one go! I&amp;rsquo;m not going to delve into getting started with Docker, &lt;a href=&#34;https://docs.docker.com/engine/userguide/basics/&#34;&gt;you can find that elsewhere&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&#34;setting-up-a-centos-docker-container&#34;&gt;Setting up a CentOS Docker container&lt;/h2&gt;
-
-&lt;p&gt;In this section, we&amp;rsquo;re going to set up a simple test for my own &lt;a href=&#34;https://galaxy.ansible.com/detail#/role/3047&#34;&gt;Apache role&lt;/a&gt;.
-The first step is to create a Docker container for CentOS with all dependencies installed. After a few attempts, I settled for the following Dockerfile:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;FROM centos:7
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Install systemd -- See https://hub.docker.com/_/centos/&lt;/span&gt;
-RUN yum -y swap -- remove fakesystemd -- install systemd systemd-libs
-RUN yum -y update; yum clean all; &lt;span style=&#34;color: #CC3300; font-weight: bold&#34;&gt;\&lt;/span&gt;
-&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #336666&#34;&gt;cd&lt;/span&gt; /lib/systemd/system/sysinit.target.wants/; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;for&lt;/span&gt; i in *; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;do&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt; &lt;span style=&#34;color: #003333&#34;&gt;$i&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; systemd-tmpfiles-setup.service &lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;||&lt;/span&gt; rm -f &lt;span style=&#34;color: #003333&#34;&gt;$i&lt;/span&gt;; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;done&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;; &lt;span style=&#34;color: #CC3300; font-weight: bold&#34;&gt;\&lt;/span&gt;
-rm -f /lib/systemd/system/multi-user.target.wants/*; &lt;span style=&#34;color: #CC3300; font-weight: bold&#34;&gt;\&lt;/span&gt;
-rm -f /etc/systemd/system/*.wants/*; &lt;span style=&#34;color: #CC3300; font-weight: bold&#34;&gt;\&lt;/span&gt;
-rm -f /lib/systemd/system/local-fs.target.wants/*; &lt;span style=&#34;color: #CC3300; font-weight: bold&#34;&gt;\&lt;/span&gt;
-rm -f /lib/systemd/system/sockets.target.wants/*udev*; &lt;span style=&#34;color: #CC3300; font-weight: bold&#34;&gt;\&lt;/span&gt;
-rm -f /lib/systemd/system/sockets.target.wants/*initctl*; &lt;span style=&#34;color: #CC3300; font-weight: bold&#34;&gt;\&lt;/span&gt;
-rm -f /lib/systemd/system/basic.target.wants/*; &lt;span style=&#34;color: #CC3300; font-weight: bold&#34;&gt;\&lt;/span&gt;
-rm -f /lib/systemd/system/anaconda.target.wants/*;
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Install Ansible&lt;/span&gt;
-RUN yum -y install epel-release
-RUN yum -y install git ansible sudo
-RUN yum clean all
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Disable requiretty&lt;/span&gt;
-RUN sed -i -e &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;s/^\(Defaults\s*requiretty\)/#--- \1/&amp;#39;&lt;/span&gt;  /etc/sudoers
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Install Ansible inventory file&lt;/span&gt;
-RUN &lt;span style=&#34;color: #336666&#34;&gt;echo&lt;/span&gt; -e &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;[local]\nlocalhost ansible_connection=local&amp;#39;&lt;/span&gt; &amp;gt; /etc/ansible/hosts
-VOLUME &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;/sys/fs/cgroup&amp;quot;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
-CMD &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;/usr/sbin/init&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;p&gt;This is based a.o. on the &lt;a href=&#34;https://hub.docker.com/_/centos/&#34;&gt;guidelines&lt;/a&gt; for the &lt;code&gt;centos:7&lt;/code&gt; image found on Docker Hub. By default, systemd is not available inside the container, so the code above installs it, albeit in a limited form. After that, Ansible is installed and a basic inventory file is generated.&lt;/p&gt;
-
-&lt;h2 id=&#34;running-the-ansible-test-on-travis-ci&#34;&gt;Running the Ansible test on Travis-CI&lt;/h2&gt;
-
-&lt;p&gt;The next step is to configure Travis-CI with a &lt;code&gt;.travis.yml&lt;/code&gt; file. In this stage, I ran into another problem w.r.t. systemd. After building the container, I succeeded in running &lt;code&gt;ansible-playbook&lt;/code&gt;, but the role failed when the service was started:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[...A number of succeeding tasks, a.o. installation of httpd...]
-
-TASK: [bertvv.httpd | Ensure Apache is always running] ************************
-failed: [localhost] =&amp;gt; {&amp;quot;failed&amp;quot;: true}
-msg: no service or tool found for: httpd
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Theres&amp;rsquo;s a &lt;a href=&#34;https://bugzilla.redhat.com/show_bug.cgi?id=1033604&#34;&gt;bug report&lt;/a&gt; relating to this issue. Dan Walsh &lt;a href=&#34;https://developerblog.redhat.com/2014/05/05/running-systemd-within-docker-container/&#34;&gt;navigates around this problem&lt;/a&gt; by enabling the service after installation and then running a new container that will start the service at boot time. For our purposes, this is not a feasible solution. Another caveat is that the container should run in privileged mode in order to make systemd work.&lt;/p&gt;
-
-&lt;p&gt;Finally, I got to the following &lt;code&gt;.travis.yml&lt;/code&gt; file:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;sudo: required
-
-services:
-  - docker
-
-before_install:
-  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Fetch base image and build new container&lt;/span&gt;
-  - sudo docker pull centos:7
-  - sudo docker build --rm=true --tag=travispoc .
-
-script:
-  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Run container in detached state&lt;/span&gt;
-  - sudo docker run --detach --privileged --volume=&amp;quot;${PWD}&amp;quot;:/etc/ansible/roles/role_under_test:ro --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro travispoc /usr/lib/systemd/systemd &amp;gt; /tmp/container_id
-  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Check syntax of ansible playbook&lt;/span&gt;
-  - sudo docker exec &amp;quot;$(cat /tmp/container_id)&amp;quot; ansible-playbook /etc/ansible/roles/role_under_test/test.yml --syntax-check
-  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Run ansible playbook&lt;/span&gt;
-  - sudo docker exec &amp;quot;$(cat /tmp/container_id)&amp;quot; ansible-playbook /etc/ansible/roles/role_under_test/test.yml
-  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Clean up&lt;/span&gt;
-  - sudo docker stop &amp;quot;$(cat /tmp/container_id)&amp;quot;
-
-notifications:
-  email: false
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;p&gt;See the result of the build process on the &lt;a href=&#34;https://travis-ci.org/bertvv/travispoc/builds/96155750&#34;&gt;Travis-CI status page&lt;/a&gt;. This configuration pulls down the base image &lt;code&gt;centos:7&lt;/code&gt; and builds the custom container with Ansible installed. The custom container is then run in privileged mode and detached. The current directory (= the project root of the Git project) is mounted inside the container under &lt;code&gt;/etc/ansible/roles/role_under_test/&lt;/code&gt;. The name of the directory is not important, actually, and giving it a generic one makes the code reusable over any role. The &lt;code&gt;docker run&lt;/code&gt; command yields an ID that is written to a temporary file. After that, the test playbook (see below) is executed, once with the &lt;code&gt;--syntax-check&lt;/code&gt; option, and once without (actually applying the role to the container).&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-Yaml&#34;&gt;# test.yml
----
-- hosts: all
-  roles:
-    - role_under_test
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The playbook is kept minimal here, but a &lt;code&gt;vars:&lt;/code&gt; section can be added to set role variables. The role is called &lt;code&gt;role_under_test&lt;/code&gt;, consistent with the directory mentioned above.&lt;/p&gt;
-
-&lt;h2 id=&#34;limitations&#34;&gt;Limitations&lt;/h2&gt;
-
-&lt;p&gt;In the end, a container is -intentionally- not a full VM, so it does have its limitations. As discussed before, systemd is not available out-of-the-box. Basic services that you expect to be present, like ssh and firewalld aren&amp;rsquo;t installed by default. Another big issue is SELinux. Since this is a kernel extension, I suspect it would interact with the host system. The host system in this case is Travis-CI&amp;rsquo;s Ubuntu box that runs the tests, and that certainly won&amp;rsquo;t have SELinux enabled. I haven&amp;rsquo;t looked into this, but I suspect that in this setting, SELinux will not work inside the container. Please let me know in the comments if I&amp;rsquo;m wrong! Anyway, my roles usually assume SELinux is running, so I suspect it won&amp;rsquo;t be possible to test these on Travis-CI&amp;hellip; In those cases, a solution based on full virtualization like KVM, VirtualBox, etc. is probably more suitable.&lt;/p&gt;
-
-&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;In this post, I discussed a proof of concept for testing Ansible roles on CentOS using Travis-CI. The code can be found on &lt;a href=&#34;https://github.com/bertvv/travispoc&#34;&gt;https://github.com/bertvv/travispoc&lt;/a&gt; and is tagged &lt;code&gt;centos&lt;/code&gt; (See the &lt;a href=&#34;https://github.com/bertvv/travispoc/tags&#34;&gt;tags page&lt;/a&gt;). Although there are some limitations (SELinux being a notable one), Travis-CI is usable as a testing platform in this setting.&lt;/p&gt;
-
-&lt;p&gt;There&amp;rsquo;s probably for improvement. I probably did things in a suboptimal way, because I&amp;rsquo;m still new to both Travis-CI and Docker, so suggestions are welcome! You can leave a comment below, create an issue on the Github project or send me a pull request.&lt;/p&gt;
-
-&lt;p&gt;In a next blog post, we&amp;rsquo;ll extend this solution for running tests on multiple platforms.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Edit:&lt;/strong&gt; There was a major flaw in the code of the original version of this post. It installed the role under test from Ansible Galaxy instead of running on the &lt;em&gt;current&lt;/em&gt; commit. The &lt;code&gt;Dockerfile&lt;/code&gt; and &lt;code&gt;.travis.yml&lt;/code&gt; were adapted to fix this.&lt;/p&gt;</description>
+      <link>https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos/</link>
+      <pubDate>Fri, 11 Dec 2015 20:49:16 +0100</pubDate>
+      
+      <guid>https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos/</guid>
+      <description>&lt;p&gt;In this first post on testing Ansible roles with Travis-CI, we&amp;rsquo;ll discuss how you can apply a test playbook on CentOS. Out-of-the-box, Travis-CI doesn&amp;rsquo;t support CentOS, as its test environment is Ubuntu-based. However, Travis-CI allows you to set up a Docker container and this opens up all kinds of possibilities.&lt;/p&gt;</description>
     </item>
     
   </channel>

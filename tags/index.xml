@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Notes to self</title>
+    <link>https://bertvv.github.io/notes-to-self/tags/</link>
+    <description>Recent content in Tags on Notes to self</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 13 Dec 2015 16:00:32 +0100</lastBuildDate><atom:link href="https://bertvv.github.io/notes-to-self/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ansible</title>
+      <link>https://bertvv.github.io/notes-to-self/tags/ansible/</link>
+      <pubDate>Sun, 13 Dec 2015 16:00:32 +0100</pubDate>
+      
+      <guid>https://bertvv.github.io/notes-to-self/tags/ansible/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>centos</title>
+      <link>https://bertvv.github.io/notes-to-self/tags/centos/</link>
+      <pubDate>Sun, 13 Dec 2015 16:00:32 +0100</pubDate>
+      
+      <guid>https://bertvv.github.io/notes-to-self/tags/centos/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>docker</title>
+      <link>https://bertvv.github.io/notes-to-self/tags/docker/</link>
+      <pubDate>Sun, 13 Dec 2015 16:00:32 +0100</pubDate>
+      
+      <guid>https://bertvv.github.io/notes-to-self/tags/docker/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linux</title>
+      <link>https://bertvv.github.io/notes-to-self/tags/linux/</link>
+      <pubDate>Sun, 13 Dec 2015 16:00:32 +0100</pubDate>
+      
+      <guid>https://bertvv.github.io/notes-to-self/tags/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>test-driven-infrastructure</title>
+      <link>https://bertvv.github.io/notes-to-self/tags/test-driven-infrastructure/</link>
+      <pubDate>Sun, 13 Dec 2015 16:00:32 +0100</pubDate>
+      
+      <guid>https://bertvv.github.io/notes-to-self/tags/test-driven-infrastructure/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>travis-ci</title>
+      <link>https://bertvv.github.io/notes-to-self/tags/travis-ci/</link>
+      <pubDate>Sun, 13 Dec 2015 16:00:32 +0100</pubDate>
+      
+      <guid>https://bertvv.github.io/notes-to-self/tags/travis-ci/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mariadb</title>
+      <link>https://bertvv.github.io/notes-to-self/tags/mariadb/</link>
+      <pubDate>Mon, 16 Nov 2015 16:07:42 +0100</pubDate>
+      
+      <guid>https://bertvv.github.io/notes-to-self/tags/mariadb/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mysql</title>
+      <link>https://bertvv.github.io/notes-to-self/tags/mysql/</link>
+      <pubDate>Mon, 16 Nov 2015 16:07:42 +0100</pubDate>
+      
+      <guid>https://bertvv.github.io/notes-to-self/tags/mysql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>fedora</title>
+      <link>https://bertvv.github.io/notes-to-self/tags/fedora/</link>
+      <pubDate>Thu, 08 Oct 2015 19:06:48 +0200</pubDate>
+      
+      <guid>https://bertvv.github.io/notes-to-self/tags/fedora/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>virtualbox</title>
+      <link>https://bertvv.github.io/notes-to-self/tags/virtualbox/</link>
+      <pubDate>Thu, 08 Oct 2015 19:06:48 +0200</pubDate>
+      
+      <guid>https://bertvv.github.io/notes-to-self/tags/virtualbox/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>windows</title>
+      <link>https://bertvv.github.io/notes-to-self/tags/windows/</link>
+      <pubDate>Thu, 08 Oct 2015 10:51:07 +0200</pubDate>
+      
+      <guid>https://bertvv.github.io/notes-to-self/tags/windows/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>vagrant</title>
+      <link>https://bertvv.github.io/notes-to-self/tags/vagrant/</link>
+      <pubDate>Mon, 05 Oct 2015 16:59:14 +0200</pubDate>
+      
+      <guid>https://bertvv.github.io/notes-to-self/tags/vagrant/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>networking</title>
+      <link>https://bertvv.github.io/notes-to-self/tags/networking/</link>
+      <pubDate>Tue, 29 Sep 2015 20:58:28 +0200</pubDate>
+      
+      <guid>https://bertvv.github.io/notes-to-self/tags/networking/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
