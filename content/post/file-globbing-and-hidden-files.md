@@ -5,9 +5,7 @@ tags:
   - linux
 categories:
   - "System administration"
-draft: "true"
-# thumbnailImage: //example.com/image.jpg
-# summary: "Use custom exerpt on the front page"
+
 ---
 
 A student asked me some time ago:
