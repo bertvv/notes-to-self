@@ -1,786 +1,480 @@
-<!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    
-    <script type="application/ld+json">
-
-{  
-  "@context":"http://schema.org",
-  "@type":"Website",
-  "@id":"https:\/\/bertvv.github.io\/notes-to-self",
-  "author": {
-    "@type": "Person",
-    "name": "Bert Van Vreckem",
-    
-    "image": "https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2"
-    
-  },
-  "name":"Notes to self",
-  "description":"\u003cp\u003eWriting Vagrantfiles is tedious, especially when you\u0026rsquo;re setting up a multi-VM environment. Typically, people will copy\/paste code blocks that define hosts, but that becomes unwieldy. However, a Vagrantfile is \u0026ldquo;just\u0026rdquo; Ruby, so can\u0026rsquo;t we simplify things a bit using the power of the language? Turns out, we can! Read below to find how you can reduce setting up a multi-VM Vagrant environment to writing a simple YAML file.\u003c\/p\u003e",
-  "url":"https:\/\/bertvv.github.io\/notes-to-self\/2015\/10\/05\/one-vagrantfile-to-rule-them-all\/",
-  "keywords":"[]"
-}
-
-</script>
-    <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="generator" content="Hugo 0.80.0 with theme Tranquilpeak 0.5.2-BETA">
-<meta name="author" content="Bert Van Vreckem">
-<meta name="keywords" content="">
-<meta name="description" content="Writing Vagrantfiles is tedious, especially when you&rsquo;re setting up a multi-VM environment. Typically, people will copy/paste code blocks that define hosts, but that becomes unwieldy. However, a Vagrantfile is &ldquo;just&rdquo; Ruby, so can&rsquo;t we simplify things a bit using the power of the language? Turns out, we can! Read below to find how you can reduce setting up a multi-VM Vagrant environment to writing a simple YAML file.">
-
-
+<!doctype html><html lang=en-us>
+<head>
+<script type=application/ld+json>{"@context":"http://schema.org","@type":"Website","@id":"https:\/\/bertvv.github.io\/notes-to-self","author":{"@type":"Person","name":"Bert Van Vreckem","image":"https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2"},"name":"Notes to self","description":"\u003cp\u003eWriting Vagrantfiles is tedious, especially when you\u0026rsquo;re setting up a multi-VM environment. Typically, people will copy\/paste code blocks that define hosts, but that becomes unwieldy. However, a Vagrantfile is \u0026ldquo;just\u0026rdquo; Ruby, so can\u0026rsquo;t we simplify things a bit using the power of the language? Turns out, we can! Read below to find how you can reduce setting up a multi-VM Vagrant environment to writing a simple YAML file.\u003c\/p\u003e","url":"https:\/\/bertvv.github.io\/notes-to-self\/2015\/10\/05\/one-vagrantfile-to-rule-them-all\/","keywords":"[]"}</script>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=generator content="Hugo 0.88.1 with theme Tranquilpeak 0.5.2-BETA">
+<meta name=author content="Bert Van Vreckem">
+<meta name=keywords content>
+<meta name=description content="Writing Vagrantfiles is tedious, especially when you&rsquo;re setting up a multi-VM environment. Typically, people will copy/paste code blocks that define hosts, but that becomes unwieldy. However, a Vagrantfile is &ldquo;just&rdquo; Ruby, so can&rsquo;t we simplify things a bit using the power of the language? Turns out, we can! Read below to find how you can reduce setting up a multi-VM Vagrant environment to writing a simple YAML file.">
 <meta property="og:description" content="Writing Vagrantfiles is tedious, especially when you&rsquo;re setting up a multi-VM environment. Typically, people will copy/paste code blocks that define hosts, but that becomes unwieldy. However, a Vagrantfile is &ldquo;just&rdquo; Ruby, so can&rsquo;t we simplify things a bit using the power of the language? Turns out, we can! Read below to find how you can reduce setting up a multi-VM Vagrant environment to writing a simple YAML file.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="One Vagrantfile to rule them all">
-<meta name="twitter:title" content="One Vagrantfile to rule them all">
+<meta name=twitter:title content="One Vagrantfile to rule them all">
 <meta property="og:url" content="https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/">
 <meta property="twitter:url" content="https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/">
 <meta property="og:site_name" content="Notes to self">
 <meta property="og:description" content="Writing Vagrantfiles is tedious, especially when you&rsquo;re setting up a multi-VM environment. Typically, people will copy/paste code blocks that define hosts, but that becomes unwieldy. However, a Vagrantfile is &ldquo;just&rdquo; Ruby, so can&rsquo;t we simplify things a bit using the power of the language? Turns out, we can! Read below to find how you can reduce setting up a multi-VM Vagrant environment to writing a simple YAML file.">
-<meta name="twitter:description" content="Writing Vagrantfiles is tedious, especially when you&rsquo;re setting up a multi-VM environment. Typically, people will copy/paste code blocks that define hosts, but that becomes unwieldy. However, a Vagrantfile is &ldquo;just&rdquo; Ruby, so can&rsquo;t we simplify things a bit using the power of the language? Turns out, we can! Read below to find how you can reduce setting up a multi-VM Vagrant environment to writing a simple YAML file.">
+<meta name=twitter:description content="Writing Vagrantfiles is tedious, especially when you&rsquo;re setting up a multi-VM environment. Typically, people will copy/paste code blocks that define hosts, but that becomes unwieldy. However, a Vagrantfile is &ldquo;just&rdquo; Ruby, so can&rsquo;t we simplify things a bit using the power of the language? Turns out, we can! Read below to find how you can reduce setting up a multi-VM Vagrant environment to writing a simple YAML file.">
 <meta property="og:locale" content="en">
-
-  
-    <meta property="article:published_time" content="2015-10-05T16:59:14">
-  
-  
-    <meta property="article:modified_time" content="2015-10-05T16:59:14">
-  
-  
-  
-    
-      <meta property="article:section" content="System administration">
-    
-  
-  
-    
-      <meta property="article:tag" content="vagrant">
-    
-  
-
-
-<meta name="twitter:card" content="summary">
-
-  <meta name="twitter:site" content="@bertvanvreckem">
-
-
-  <meta name="twitter:creator" content="@bertvanvreckem">
-
-
-
-
-
-
-  <meta property="og:image" content="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=640">
-  <meta property="twitter:image" content="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=640">
-
-
-
-
-
-
-    <title>One Vagrantfile to rule them all</title>
-
-    <link rel="icon" href="https://bertvv.github.io/notes-to-self/favicon.png">
-    
-
-    
-
-    <link rel="canonical" href="https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/">
-
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    
-    
-    
-    <link rel="stylesheet" href="https://bertvv.github.io/notes-to-self/css/style-c5yjx2losbmkttdif4mskx5f9pqjjquywurgngxfvceyyrtyatseix5hpd.min.css" />
-    
-    
-
-    
-      
-    
-    
-  </head>
-
-  <body>
-    <div id="blog">
-      <header id="header" data-behavior="4">
-  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-  <div class="header-title">
-    <a class="header-title-link" href="https://bertvv.github.io/notes-to-self/" aria-label="">Notes to self</a>
-  </div>
-  
-    
-      <a class="header-right-picture "
-         href="https://bertvv.github.io/notes-to-self/" aria-label="">
-    
-    
-    
-      
-        <img class="header-picture" src="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=90" alt="" />
-      
-    
-    </a>
-  
-</header>
-
-      <nav id="sidebar" data-behavior="4">
-  <div class="sidebar-container">
-    
-      <div class="sidebar-profile">
-        <a href="https://bertvv.github.io/notes-to-self/#about" aria-label="">
-          <img class="sidebar-profile-picture" src="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=110" alt="" />
-        </a>
-        <h4 class="sidebar-profile-name">Bert Van Vreckem</h4>
-        
-          <h5 class="sidebar-profile-bio">Lecturer ICT at HOGENT</h5>
-        
-      </div>
-    
-    <ul class="sidebar-buttons">
-      
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/" title="Home">
-    
-      <i class="sidebar-button-icon fas fa-lg fa-home" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">Home</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/categories" title="Categories">
-    
-      <i class="sidebar-button-icon fas fa-lg fa-bookmark" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">Categories</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/tags" title="Tags">
-    
-      <i class="sidebar-button-icon fas fa-lg fa-tags" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">Tags</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/archives" title="Archives">
-    
-      <i class="sidebar-button-icon fas fa-lg fa-archive" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">Archives</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/about" title="About">
-    
-      <i class="sidebar-button-icon fas fa-lg fa-question" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">About</span>
-    </a>
-  </li>
-
-
-    </ul>
-    <ul class="sidebar-buttons">
-      
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://github.com/bertvv" target="_blank" rel="noopener" title="GitHub">
-    
-      <i class="sidebar-button-icon fab fa-lg fa-github" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">GitHub</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://www.linkedin.com/in/bertvanvreckem/" target="_blank" rel="noopener" title="LinkedIn">
-    
-      <i class="sidebar-button-icon fab fa-lg fa-linkedin" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">LinkedIn</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://www.youtube.com/user/bertvvrhogent" target="_blank" rel="noopener" title="Youtube">
-    
-      <i class="sidebar-button-icon fab fa-lg fa-youtube" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">Youtube</span>
-    </a>
-  </li>
-
-
-    </ul>
-    <ul class="sidebar-buttons">
-      
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/index.xml" title="RSS">
-    
-      <i class="sidebar-button-icon fas fa-lg fa-rss" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">RSS</span>
-    </a>
-  </li>
-
-
-    </ul>
-  </div>
-</nav>
-
-      
-
-      <div id="main" data-behavior="4"
-        class="
-               hasCoverMetaIn
-               ">
-        <article class="post" id="top">
-          
-          
-            <div class="post-header main-content-wrap text-left">
-  
-    <h1 class="post-title">
-      One Vagrantfile to rule them all
-    </h1>
-  
-  
-  <div class="postShorten-meta post-meta">
-    
-      <time datetime="2015-10-05T16:59:14&#43;02:00">
-        
-   5, 2015
-
-      </time>
-    
-    
-  
-  
-    <span></span>
-    
-      <a class="category-link" href="https://bertvv.github.io/notes-to-self/categories/system-administration">System administration</a>
-    
-  
-
-  </div>
-
+<meta property="article:published_time" content="2015-10-05T16:59:14">
+<meta property="article:modified_time" content="2015-10-05T16:59:14">
+<meta property="article:section" content="System administration">
+<meta property="article:tag" content="vagrant">
+<meta name=twitter:card content="summary">
+<meta name=twitter:site content="@bertvanvreckem">
+<meta name=twitter:creator content="@bertvanvreckem">
+<meta property="og:image" content="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=640">
+<meta property="twitter:image" content="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=640">
+<title>One Vagrantfile to rule them all</title>
+<link rel=icon href=https://bertvv.github.io/notes-to-self/favicon.png>
+<link rel=canonical href=https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin=anonymous referrerpolicy=no-referrer>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw==" crossorigin=anonymous referrerpolicy=no-referrer>
+<link rel=stylesheet href=https://bertvv.github.io/notes-to-self/css/style-c5yjx2losbmkttdif4mskx5f9pqjjquywurgngxfvceyyrtyatseix5hpd.min.css>
+</head>
+<body>
+<div id=blog>
+<header id=header data-behavior=4>
+<i id=btn-open-sidebar class="fa fa-lg fa-bars"></i>
+<div class=header-title>
+<a class=header-title-link href=https://bertvv.github.io/notes-to-self/ aria-label>Notes to self</a>
 </div>
-          
-          <div class="post-content markdown">
-            <div class="main-content-wrap">
-              <p>Writing Vagrantfiles is tedious, especially when you&rsquo;re setting up a multi-VM environment. Typically, people will copy/paste code blocks that define hosts, but that becomes unwieldy. However, a Vagrantfile is &ldquo;just&rdquo; Ruby, so can&rsquo;t we simplify things a bit using the power of the language? Turns out, we can! Read below to find how you can reduce setting up a multi-VM Vagrant environment to writing a simple YAML file.</p>
-<h2 id="simplifying-multi-vm-setups">Simplifying multi-VM setups</h2>
-<p>A typical Vagrantfile has separate blocks of code for each host (see e.g. <a href="https://stackoverflow.com/questions/24072916/multi-vm-in-one-vagrantfile-could-i-set-different-memory-size-for-each-of-them">this StackOverflow discussion</a>). When the complexity of your environment grows, this becomes harder and harder to maintain. The <a href="https://docs.vagrantup.com/v2/vagrantfile/tips.html">Vagrant documentation</a> states that you can simplify by introducing loops in your Vagrantfile, but then you have the problem of how to manage differences in the properties of each VM. A nice solution to this is to define a Hash at the beginning of the Vagrantfile with the properties and apply them for each host (see e.g. <a href="https://gist.github.com/dlutzy/2469037">this example</a>).</p>
-<h2 id="a-universal-vagrantfile-sort-of">A universal Vagrantfile (sort of)</h2>
-<p>I developed a Vagrantfile (for the full source, see the end of this post or my Github project <a href="https://github.com/bertvv/ansible-skeleton">ansible-skeleton</a>) where the parts that have to be changed, i.e. properties of individual machines, are stored in a separate YAML file. The Vagrantfile will parse the YAML file and apply the settings to each specified VM. A simple example to get started:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># vagrant_hosts.yml</span>
-- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">box001</span>
-  <span style="color:#f92672">ip</span>: <span style="color:#ae81ff">192.168.56.10</span>
-- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">box002</span></code></pre></div>
+<a class=header-right-picture href=https://bertvv.github.io/notes-to-self/ aria-label>
+<img class=header-picture src="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=90" alt>
+</a>
+</header>
+<nav id=sidebar data-behavior=4>
+<div class=sidebar-container>
+<div class=sidebar-profile>
+<a href=https://bertvv.github.io/notes-to-self/#about aria-label>
+<img class=sidebar-profile-picture src="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=110" alt>
+</a>
+<h4 class=sidebar-profile-name>Bert Van Vreckem</h4>
+<h5 class=sidebar-profile-bio>Lecturer ICT at HOGENT</h5>
+</div>
+<ul class=sidebar-buttons>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://bertvv.github.io/notes-to-self/ title=Home>
+<i class="sidebar-button-icon fas fa-lg fa-home" aria-hidden=true></i>
+<span class=sidebar-button-desc>Home</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://bertvv.github.io/notes-to-self/categories title=Categories>
+<i class="sidebar-button-icon fas fa-lg fa-bookmark" aria-hidden=true></i>
+<span class=sidebar-button-desc>Categories</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://bertvv.github.io/notes-to-self/tags title=Tags>
+<i class="sidebar-button-icon fas fa-lg fa-tags" aria-hidden=true></i>
+<span class=sidebar-button-desc>Tags</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://bertvv.github.io/notes-to-self/archives title=Archives>
+<i class="sidebar-button-icon fas fa-lg fa-archive" aria-hidden=true></i>
+<span class=sidebar-button-desc>Archives</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://bertvv.github.io/notes-to-self/about title=About>
+<i class="sidebar-button-icon fas fa-lg fa-question" aria-hidden=true></i>
+<span class=sidebar-button-desc>About</span>
+</a>
+</li>
+</ul>
+<ul class=sidebar-buttons>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://github.com/bertvv target=_blank rel=noopener title=GitHub>
+<i class="sidebar-button-icon fab fa-lg fa-github" aria-hidden=true></i>
+<span class=sidebar-button-desc>GitHub</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://www.linkedin.com/in/bertvanvreckem/ target=_blank rel=noopener title=LinkedIn>
+<i class="sidebar-button-icon fab fa-lg fa-linkedin" aria-hidden=true></i>
+<span class=sidebar-button-desc>LinkedIn</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://www.youtube.com/user/bertvvrhogent target=_blank rel=noopener title=Youtube>
+<i class="sidebar-button-icon fab fa-lg fa-youtube" aria-hidden=true></i>
+<span class=sidebar-button-desc>Youtube</span>
+</a>
+</li>
+</ul>
+<ul class=sidebar-buttons>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://bertvv.github.io/notes-to-self/index.xml title=RSS>
+<i class="sidebar-button-icon fas fa-lg fa-rss" aria-hidden=true></i>
+<span class=sidebar-button-desc>RSS</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<div id=main data-behavior=4 class=hasCoverMetaIn>
+<article class=post id=top>
+<div class="post-header main-content-wrap text-left">
+<h1 class=post-title>
+One Vagrantfile to rule them all
+</h1>
+<div class="postShorten-meta post-meta">
+<time datetime=2015-10-05T16:59:14+02:00>
+5, 2015
+</time>
+<span></span>
+<a class=category-link href=https://bertvv.github.io/notes-to-self/categories/system-administration>System administration</a>
+</div>
+</div>
+<div class="post-content markdown">
+<div class=main-content-wrap>
+<p>Writing Vagrantfiles is tedious, especially when you&rsquo;re setting up a multi-VM environment. Typically, people will copy/paste code blocks that define hosts, but that becomes unwieldy. However, a Vagrantfile is &ldquo;just&rdquo; Ruby, so can&rsquo;t we simplify things a bit using the power of the language? Turns out, we can! Read below to find how you can reduce setting up a multi-VM Vagrant environment to writing a simple YAML file.</p>
+<h2 id=simplifying-multi-vm-setups>Simplifying multi-VM setups</h2>
+<p>A typical Vagrantfile has separate blocks of code for each host (see e.g. <a href=https://stackoverflow.com/questions/24072916/multi-vm-in-one-vagrantfile-could-i-set-different-memory-size-for-each-of-them>this StackOverflow discussion</a>). When the complexity of your environment grows, this becomes harder and harder to maintain. The <a href=https://docs.vagrantup.com/v2/vagrantfile/tips.html>Vagrant documentation</a> states that you can simplify by introducing loops in your Vagrantfile, but then you have the problem of how to manage differences in the properties of each VM. A nice solution to this is to define a Hash at the beginning of the Vagrantfile with the properties and apply them for each host (see e.g. <a href=https://gist.github.com/dlutzy/2469037>this example</a>).</p>
+<h2 id=a-universal-vagrantfile-sort-of>A universal Vagrantfile (sort of)</h2>
+<p>I developed a Vagrantfile (for the full source, see the end of this post or my Github project <a href=https://github.com/bertvv/ansible-skeleton>ansible-skeleton</a>) where the parts that have to be changed, i.e. properties of individual machines, are stored in a separate YAML file. The Vagrantfile will parse the YAML file and apply the settings to each specified VM. A simple example to get started:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#75715e># vagrant_hosts.yml</span>
+- <span style=color:#f92672>name</span>: <span style=color:#ae81ff>box001</span>
+  <span style=color:#f92672>ip</span>: <span style=color:#ae81ff>192.168.56.10</span>
+- <span style=color:#f92672>name</span>: <span style=color:#ae81ff>box002</span></code></pre></div>
 <p>This will create a Vagrant environment with two VMs, <code>box001</code> and <code>box002</code>. Each will get a private network interface. For <code>box001</code> a fixed IP address (192.168.56.10) is assigned, <code>box002</code> will get one via DHCP.</p>
 <p>The Vagrantfile will parse the YAML and convert it to a Ruby data structure, specifically a list of Hashes:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">hosts <span style="color:#f92672">=</span> <span style="color:#66d9ef">YAML</span><span style="color:#f92672">.</span>load_file(<span style="color:#e6db74">&#39;vagrant_hosts.yml&#39;</span>)</code></pre></div>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ruby data-lang=ruby>hosts <span style=color:#f92672>=</span> <span style=color:#66d9ef>YAML</span><span style=color:#f92672>.</span>load_file(<span style=color:#e6db74>&#39;vagrant_hosts.yml&#39;</span>)</code></pre></div>
 <p>This is the main loop of the script that iterates over the <code>hosts</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span>  hosts<span style="color:#f92672">.</span>each <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>host<span style="color:#f92672">|</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>    config<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>define host<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;name&#39;</span><span style="color:#f92672">]</span> <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>node<span style="color:#f92672">|</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span>      node<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>box <span style="color:#f92672">=</span> host<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;box&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">||=</span> <span style="color:#66d9ef">DEFAULT_BASE_BOX</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>      node<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>box_url <span style="color:#f92672">=</span> host<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;box_url&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">||=</span> <span style="color:#66d9ef">DEFAULT_BASE_BOX_URL</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>      node<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>hostname <span style="color:#f92672">=</span> host<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;name&#39;</span><span style="color:#f92672">]</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>      node<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>network <span style="color:#e6db74">:private_network</span>, network_options(host)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>      custom_synced_folders(node<span style="color:#f92672">.</span>vm, host)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>      node<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>provider <span style="color:#e6db74">:virtualbox</span> <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>vb<span style="color:#f92672">|</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>        vb<span style="color:#f92672">.</span>name <span style="color:#f92672">=</span> host<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;name&#39;</span><span style="color:#f92672">]</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>        vb<span style="color:#f92672">.</span>customize <span style="color:#f92672">[</span><span style="color:#e6db74">&#39;modifyvm&#39;</span>, <span style="color:#e6db74">:id</span>, <span style="color:#e6db74">&#39;--groups&#39;</span>, <span style="color:#66d9ef">PROJECT_NAME</span><span style="color:#f92672">]</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>      <span style="color:#66d9ef">end</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>    <span style="color:#66d9ef">end</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>  <span style="color:#66d9ef">end</span></code></pre></div>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ruby data-lang=ruby><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1</span>  hosts<span style=color:#f92672>.</span>each <span style=color:#66d9ef>do</span> <span style=color:#f92672>|</span>host<span style=color:#f92672>|</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2</span>    config<span style=color:#f92672>.</span>vm<span style=color:#f92672>.</span>define host<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;name&#39;</span><span style=color:#f92672>]</span> <span style=color:#66d9ef>do</span> <span style=color:#f92672>|</span>node<span style=color:#f92672>|</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3</span>      node<span style=color:#f92672>.</span>vm<span style=color:#f92672>.</span>box <span style=color:#f92672>=</span> host<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;box&#39;</span><span style=color:#f92672>]</span> <span style=color:#f92672>||=</span> <span style=color:#66d9ef>DEFAULT_BASE_BOX</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4</span>      node<span style=color:#f92672>.</span>vm<span style=color:#f92672>.</span>box_url <span style=color:#f92672>=</span> host<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;box_url&#39;</span><span style=color:#f92672>]</span> <span style=color:#f92672>||=</span> <span style=color:#66d9ef>DEFAULT_BASE_BOX_URL</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6</span>      node<span style=color:#f92672>.</span>vm<span style=color:#f92672>.</span>hostname <span style=color:#f92672>=</span> host<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;name&#39;</span><span style=color:#f92672>]</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7</span>      node<span style=color:#f92672>.</span>vm<span style=color:#f92672>.</span>network <span style=color:#e6db74>:private_network</span>, network_options(host)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8</span>      custom_synced_folders(node<span style=color:#f92672>.</span>vm, host)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10</span>      node<span style=color:#f92672>.</span>vm<span style=color:#f92672>.</span>provider <span style=color:#e6db74>:virtualbox</span> <span style=color:#66d9ef>do</span> <span style=color:#f92672>|</span>vb<span style=color:#f92672>|</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11</span>        vb<span style=color:#f92672>.</span>name <span style=color:#f92672>=</span> host<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;name&#39;</span><span style=color:#f92672>]</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12</span>        vb<span style=color:#f92672>.</span>customize <span style=color:#f92672>[</span><span style=color:#e6db74>&#39;modifyvm&#39;</span>, <span style=color:#e6db74>:id</span>, <span style=color:#e6db74>&#39;--groups&#39;</span>, <span style=color:#66d9ef>PROJECT_NAME</span><span style=color:#f92672>]</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13</span>      <span style=color:#66d9ef>end</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14</span>    <span style=color:#66d9ef>end</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15</span>  <span style=color:#66d9ef>end</span></code></pre></div>
 <p>In line 2, a new VM is defined with the name <code>host['name']</code>. In the example above, that is <code>box001</code> in the first iteration and <code>box002</code> in te next one.</p>
 <p>Then (line 3-4) the a base box is specified. If you don&rsquo;t explicitly define one in <code>vagrant_hosts.yml</code>, a default one will be assigned (specified at the beginning of the Vagrantfile). The same goes for the URL where to download the base box from if it isn&rsquo;t available yet on your machine.</p>
 <p>On line 7, a private network interface is added. The second argument, <code>network_options(host)</code> is a function call that reads out specific options for the network card, e.g. network mask, MAC address, etc. I&rsquo;m not going into this in detail, but the code can be found at the end of this post.</p>
-<p>It&rsquo;s possible to specify <a href="https://docs.vagrantup.com/v2/synced-folders/index.html">synced folders</a>. Line 8 calls the method that sets these up. An example of how these can be set up in <code>vagrant_hosts.yml</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">box002</span>
-  <span style="color:#f92672">ip</span>: <span style="color:#ae81ff">192.168.56.11</span>
-  <span style="color:#f92672">synced_folders</span>:
-    - <span style="color:#f92672">src</span>: <span style="color:#ae81ff">test</span>
-      <span style="color:#f92672">dest</span>: <span style="color:#ae81ff">/tmp/test</span>
-    - <span style="color:#f92672">src</span>: <span style="color:#ae81ff">www</span>
-      <span style="color:#f92672">dest</span>: <span style="color:#ae81ff">/var/www/html</span>
-      <span style="color:#f92672">options</span>:
-        <span style="color:#f92672">:create</span>: <span style="color:#66d9ef">true</span>
-        <span style="color:#f92672">:owner</span>: <span style="color:#ae81ff">root</span>
-        <span style="color:#f92672">:group</span>: <span style="color:#ae81ff">root</span>
-        <span style="color:#f92672">:mount_options</span>: [<span style="color:#e6db74">&#39;dmode=0755&#39;</span>, <span style="color:#e6db74">&#39;fmode=0644&#39;</span>]</code></pre></div>
+<p>It&rsquo;s possible to specify <a href=https://docs.vagrantup.com/v2/synced-folders/index.html>synced folders</a>. Line 8 calls the method that sets these up. An example of how these can be set up in <code>vagrant_hosts.yml</code>:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml>- <span style=color:#f92672>name</span>: <span style=color:#ae81ff>box002</span>
+  <span style=color:#f92672>ip</span>: <span style=color:#ae81ff>192.168.56.11</span>
+  <span style=color:#f92672>synced_folders</span>:
+    - <span style=color:#f92672>src</span>: <span style=color:#ae81ff>test</span>
+      <span style=color:#f92672>dest</span>: <span style=color:#ae81ff>/tmp/test</span>
+    - <span style=color:#f92672>src</span>: <span style=color:#ae81ff>www</span>
+      <span style=color:#f92672>dest</span>: <span style=color:#ae81ff>/var/www/html</span>
+      <span style=color:#f92672>options</span>:
+        <span style=color:#f92672>:create</span>: <span style=color:#66d9ef>true</span>
+        <span style=color:#f92672>:owner</span>: <span style=color:#ae81ff>root</span>
+        <span style=color:#f92672>:group</span>: <span style=color:#ae81ff>root</span>
+        <span style=color:#f92672>:mount_options</span>: [<span style=color:#e6db74>&#39;dmode=0755&#39;</span>, <span style=color:#e6db74>&#39;fmode=0644&#39;</span>]</code></pre></div>
 <p>This gives <code>box002</code> two synced folders. One is mounted under <code>/tmp/test</code>, the other under <code>/var/www/html</code>. The second synced folder has a few options, e.g that the owner and group should be <code>root</code> (instead of <code>vagrant</code>). The colons in front of the option names (<code>:create</code>, <code>:group</code>, etc.) are mandatory here.</p>
 <p>Finally, lines 10-13 apply a few VirtualBox-specific settings. The VM name in VirtualBox is set to the host name (<code>box002</code>) instead of the standard name assigned by Vagrant (e.g. <code>projectdir_box002_1443709007553_58669</code>). Also, the VMs will be grouped together in the VirtualBox GUI.</p>
-<h2 id="provisioning">Provisioning</h2>
-<p>Once the VM is configured and booted, Vagrant allows you to run a provisioning script that finalizes the configuration of the VM. I use Ansible for this, and let every host read the same master playbook (see the &ldquo;<a href="https://docs.ansible.com/ansible/playbooks_best_practices.html">Playbooks Best Practices</a>&rdquo; section of the <a href="https://docs.ansible.com/ansible/">Ansible Documentation</a>).</p>
-<p>However, most of my students are using Windows which is <a href="https://docs.ansible.com/ansible/intro_installation.html#control-machine-requirements">not supported by Ansible</a>. In this case, I work around this problem by installing Ansible on the VM and invoking it locally instead of from the host system. The Vagrantfile detects the host operating system and invokes the appropriate provisioning code:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">is_windows</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span>  <span style="color:#66d9ef">RbConfig</span><span style="color:#f92672">::</span><span style="color:#66d9ef">CONFIG</span><span style="color:#f92672">[</span><span style="color:#e6db74">&#39;host_os&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">=~</span> <span style="color:#e6db74">/mswin|mingw|cygwin/</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span style="color:#66d9ef">end</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">provision_ansible</span>(config)
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span>  <span style="color:#66d9ef">if</span> is_windows
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span>    <span style="color:#75715e"># Run shell script that installs and runs Ansible locallty (on Windows)</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span>    config<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>provision <span style="color:#e6db74">&#34;shell&#34;</span> <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>sh<span style="color:#f92672">|</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span>      sh<span style="color:#f92672">.</span>path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;scripts/playbook-win.sh&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span>    <span style="color:#66d9ef">end</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span>  <span style="color:#66d9ef">else</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span>    <span style="color:#75715e"># Run Ansible from host machine (on Mac/Linux).</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span>    config<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>provision <span style="color:#e6db74">&#34;ansible&#34;</span> <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>ansible<span style="color:#f92672">|</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span>      ansible<span style="color:#f92672">.</span>playbook <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ansible/site.yml&#34;</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span>      ansible<span style="color:#f92672">.</span>sudo <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span>    <span style="color:#66d9ef">end</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17</span>  <span style="color:#66d9ef">end</span>
-<span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18</span><span style="color:#66d9ef">end</span></code></pre></div>
-<p>I&rsquo;m not discussing the provisioning script <code>scripts/playbook-win.sh</code> in this blog post. It&rsquo;s based on the work of <a href="https://github.com/KSid/windows-vagrant-ansible">Kawsar Saiyeed</a> and <a href="https://github.com/geerlingguy/JJG-Ansible-Windows">Jeff Geerling</a> and my version can be found on my Github project <a href="https://github.com/bertvv/ansible-skeleton">ansible-skeleton</a>.</p>
-<h2 id="conclusion">Conclusion</h2>
-<p>And that&rsquo;s about it! After setting the default base box name and download URL in the Vagrantfile, you don&rsquo;t need to touch the Vagrantfile anymore. Adding a VM is just a couple of lines of YAML. See the <a href="https://github.com/bertvv/ansible-skeleton/blob/master/vagrant_hosts.yml">source code for <code>vagrant_hosts.yml</code></a> for an overview of all supported settings.</p>
-<p>If you have suggestions for improvements, let me know! Pull requests on the <a href="https://github.com/bertvv/ansible-skeleton">project</a> are also more than welcome.</p>
-<h2 id="the-complete-vagrantfile">The complete Vagrantfile</h2>
-<p>You can find the complete Vagrantfile below. The latest version is available in my <a href="https://github.com/bertvv/ansible-skeleton">Ansible skeleton</a> project on Github.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#75715e"># -*- mode: ruby -*-</span>
-<span style="color:#75715e"># vi: ft=ruby :</span>
+<h2 id=provisioning>Provisioning</h2>
+<p>Once the VM is configured and booted, Vagrant allows you to run a provisioning script that finalizes the configuration of the VM. I use Ansible for this, and let every host read the same master playbook (see the &ldquo;<a href=https://docs.ansible.com/ansible/playbooks_best_practices.html>Playbooks Best Practices</a>&rdquo; section of the <a href=https://docs.ansible.com/ansible/>Ansible Documentation</a>).</p>
+<p>However, most of my students are using Windows which is <a href=https://docs.ansible.com/ansible/intro_installation.html#control-machine-requirements>not supported by Ansible</a>. In this case, I work around this problem by installing Ansible on the VM and invoking it locally instead of from the host system. The Vagrantfile detects the host operating system and invokes the appropriate provisioning code:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ruby data-lang=ruby><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1</span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>is_windows</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2</span>  <span style=color:#66d9ef>RbConfig</span><span style=color:#f92672>::</span><span style=color:#66d9ef>CONFIG</span><span style=color:#f92672>[</span><span style=color:#e6db74>&#39;host_os&#39;</span><span style=color:#f92672>]</span> <span style=color:#f92672>=~</span> <span style=color:#e6db74>/mswin|mingw|cygwin/</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3</span><span style=color:#66d9ef>end</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5</span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>provision_ansible</span>(config)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6</span>  <span style=color:#66d9ef>if</span> is_windows
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7</span>    <span style=color:#75715e># Run shell script that installs and runs Ansible locallty (on Windows)</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8</span>    config<span style=color:#f92672>.</span>vm<span style=color:#f92672>.</span>provision <span style=color:#e6db74>&#34;shell&#34;</span> <span style=color:#66d9ef>do</span> <span style=color:#f92672>|</span>sh<span style=color:#f92672>|</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9</span>      sh<span style=color:#f92672>.</span>path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;scripts/playbook-win.sh&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10</span>    <span style=color:#66d9ef>end</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11</span>  <span style=color:#66d9ef>else</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12</span>    <span style=color:#75715e># Run Ansible from host machine (on Mac/Linux).</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13</span>    config<span style=color:#f92672>.</span>vm<span style=color:#f92672>.</span>provision <span style=color:#e6db74>&#34;ansible&#34;</span> <span style=color:#66d9ef>do</span> <span style=color:#f92672>|</span>ansible<span style=color:#f92672>|</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14</span>      ansible<span style=color:#f92672>.</span>playbook <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;ansible/site.yml&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15</span>      ansible<span style=color:#f92672>.</span>sudo <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16</span>    <span style=color:#66d9ef>end</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17</span>  <span style=color:#66d9ef>end</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18</span><span style=color:#66d9ef>end</span></code></pre></div>
+<p>I&rsquo;m not discussing the provisioning script <code>scripts/playbook-win.sh</code> in this blog post. It&rsquo;s based on the work of <a href=https://github.com/KSid/windows-vagrant-ansible>Kawsar Saiyeed</a> and <a href=https://github.com/geerlingguy/JJG-Ansible-Windows>Jeff Geerling</a> and my version can be found on my Github project <a href=https://github.com/bertvv/ansible-skeleton>ansible-skeleton</a>.</p>
+<h2 id=conclusion>Conclusion</h2>
+<p>And that&rsquo;s about it! After setting the default base box name and download URL in the Vagrantfile, you don&rsquo;t need to touch the Vagrantfile anymore. Adding a VM is just a couple of lines of YAML. See the <a href=https://github.com/bertvv/ansible-skeleton/blob/master/vagrant_hosts.yml>source code for <code>vagrant_hosts.yml</code></a> for an overview of all supported settings.</p>
+<p>If you have suggestions for improvements, let me know! Pull requests on the <a href=https://github.com/bertvv/ansible-skeleton>project</a> are also more than welcome.</p>
+<h2 id=the-complete-vagrantfile>The complete Vagrantfile</h2>
+<p>You can find the complete Vagrantfile below. The latest version is available in my <a href=https://github.com/bertvv/ansible-skeleton>Ansible skeleton</a> project on Github.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ruby data-lang=ruby><span style=color:#75715e># -*- mode: ruby -*-</span>
+<span style=color:#75715e># vi: ft=ruby :</span>
 
-require <span style="color:#e6db74">&#39;rbconfig&#39;</span>
-require <span style="color:#e6db74">&#39;yaml&#39;</span>
+require <span style=color:#e6db74>&#39;rbconfig&#39;</span>
+require <span style=color:#e6db74>&#39;yaml&#39;</span>
 
-<span style="color:#75715e"># Set your default base box here</span>
-<span style="color:#66d9ef">DEFAULT_BASE_BOX</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;centos71-nocm&#39;</span>
-<span style="color:#66d9ef">DEFAULT_BASE_BOX_URL</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;https://tinfbo2.hogent.be/pub/vm/centos71-nocm-1.0.16.box&#39;</span>
+<span style=color:#75715e># Set your default base box here</span>
+<span style=color:#66d9ef>DEFAULT_BASE_BOX</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;centos71-nocm&#39;</span>
+<span style=color:#66d9ef>DEFAULT_BASE_BOX_URL</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;https://tinfbo2.hogent.be/pub/vm/centos71-nocm-1.0.16.box&#39;</span>
 
-<span style="color:#75715e">#</span>
-<span style="color:#75715e"># No changes needed below this point</span>
-<span style="color:#75715e">#</span>
+<span style=color:#75715e>#</span>
+<span style=color:#75715e># No changes needed below this point</span>
+<span style=color:#75715e>#</span>
 
-<span style="color:#66d9ef">VAGRANTFILE_API_VERSION</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;2&#39;</span>
-<span style="color:#66d9ef">PROJECT_NAME</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;/&#39;</span> <span style="color:#f92672">+</span> <span style="color:#66d9ef">File</span><span style="color:#f92672">.</span>basename(<span style="color:#66d9ef">Dir</span><span style="color:#f92672">.</span>getwd)
+<span style=color:#66d9ef>VAGRANTFILE_API_VERSION</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;2&#39;</span>
+<span style=color:#66d9ef>PROJECT_NAME</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;/&#39;</span> <span style=color:#f92672>+</span> <span style=color:#66d9ef>File</span><span style=color:#f92672>.</span>basename(<span style=color:#66d9ef>Dir</span><span style=color:#f92672>.</span>getwd)
 
-hosts <span style="color:#f92672">=</span> <span style="color:#66d9ef">YAML</span><span style="color:#f92672">.</span>load_file(<span style="color:#e6db74">&#39;vagrant_hosts.yml&#39;</span>)
+hosts <span style=color:#f92672>=</span> <span style=color:#66d9ef>YAML</span><span style=color:#f92672>.</span>load_file(<span style=color:#e6db74>&#39;vagrant_hosts.yml&#39;</span>)
 
-<span style="color:#75715e"># {{{ Helper functions</span>
+<span style=color:#75715e># {{{ Helper functions</span>
 
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">is_windows</span>
-  <span style="color:#66d9ef">RbConfig</span><span style="color:#f92672">::</span><span style="color:#66d9ef">CONFIG</span><span style="color:#f92672">[</span><span style="color:#e6db74">&#39;host_os&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">=~</span> <span style="color:#e6db74">/mswin|mingw|cygwin/</span>
-<span style="color:#66d9ef">end</span>
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>is_windows</span>
+  <span style=color:#66d9ef>RbConfig</span><span style=color:#f92672>::</span><span style=color:#66d9ef>CONFIG</span><span style=color:#f92672>[</span><span style=color:#e6db74>&#39;host_os&#39;</span><span style=color:#f92672>]</span> <span style=color:#f92672>=~</span> <span style=color:#e6db74>/mswin|mingw|cygwin/</span>
+<span style=color:#66d9ef>end</span>
 
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">provision_ansible</span>(config)
-  <span style="color:#66d9ef">if</span> is_windows
-    <span style="color:#75715e"># Provisioning configuration for shell script.</span>
-    config<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>provision <span style="color:#e6db74">&#34;shell&#34;</span> <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>sh<span style="color:#f92672">|</span>
-      sh<span style="color:#f92672">.</span>path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;scripts/playbook-win.sh&#34;</span>
-    <span style="color:#66d9ef">end</span>
-  <span style="color:#66d9ef">else</span>
-    <span style="color:#75715e"># Provisioning configuration for Ansible (for Mac/Linux hosts).</span>
-    config<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>provision <span style="color:#e6db74">&#34;ansible&#34;</span> <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>ansible<span style="color:#f92672">|</span>
-      ansible<span style="color:#f92672">.</span>playbook <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ansible/site.yml&#34;</span>
-      ansible<span style="color:#f92672">.</span>sudo <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>
-    <span style="color:#66d9ef">end</span>
-  <span style="color:#66d9ef">end</span>
-<span style="color:#66d9ef">end</span>
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>provision_ansible</span>(config)
+  <span style=color:#66d9ef>if</span> is_windows
+    <span style=color:#75715e># Provisioning configuration for shell script.</span>
+    config<span style=color:#f92672>.</span>vm<span style=color:#f92672>.</span>provision <span style=color:#e6db74>&#34;shell&#34;</span> <span style=color:#66d9ef>do</span> <span style=color:#f92672>|</span>sh<span style=color:#f92672>|</span>
+      sh<span style=color:#f92672>.</span>path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;scripts/playbook-win.sh&#34;</span>
+    <span style=color:#66d9ef>end</span>
+  <span style=color:#66d9ef>else</span>
+    <span style=color:#75715e># Provisioning configuration for Ansible (for Mac/Linux hosts).</span>
+    config<span style=color:#f92672>.</span>vm<span style=color:#f92672>.</span>provision <span style=color:#e6db74>&#34;ansible&#34;</span> <span style=color:#66d9ef>do</span> <span style=color:#f92672>|</span>ansible<span style=color:#f92672>|</span>
+      ansible<span style=color:#f92672>.</span>playbook <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;ansible/site.yml&#34;</span>
+      ansible<span style=color:#f92672>.</span>sudo <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
+    <span style=color:#66d9ef>end</span>
+  <span style=color:#66d9ef>end</span>
+<span style=color:#66d9ef>end</span>
 
-<span style="color:#75715e"># Set options for the network interface configuration. All values are</span>
-<span style="color:#75715e"># optional, and can include:</span>
-<span style="color:#75715e"># - ip (default = DHCP)</span>
-<span style="color:#75715e"># - netmask (default value = 255.255.255.0</span>
-<span style="color:#75715e"># - mac</span>
-<span style="color:#75715e"># - auto_config (if false, Vagrant will not configure this network interface</span>
-<span style="color:#75715e"># - intnet (if true, an internal network adapter will be created instead of a</span>
-<span style="color:#75715e">#   host-only adapter)</span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">network_options</span>(host)
-  options <span style="color:#f92672">=</span> {}
+<span style=color:#75715e># Set options for the network interface configuration. All values are</span>
+<span style=color:#75715e># optional, and can include:</span>
+<span style=color:#75715e># - ip (default = DHCP)</span>
+<span style=color:#75715e># - netmask (default value = 255.255.255.0</span>
+<span style=color:#75715e># - mac</span>
+<span style=color:#75715e># - auto_config (if false, Vagrant will not configure this network interface</span>
+<span style=color:#75715e># - intnet (if true, an internal network adapter will be created instead of a</span>
+<span style=color:#75715e>#   host-only adapter)</span>
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>network_options</span>(host)
+  options <span style=color:#f92672>=</span> {}
 
-  <span style="color:#66d9ef">if</span> host<span style="color:#f92672">.</span>has_key?(<span style="color:#e6db74">&#39;ip&#39;</span>)
-    options<span style="color:#f92672">[</span><span style="color:#e6db74">:ip</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> host<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;ip&#39;</span><span style="color:#f92672">]</span>
-    options<span style="color:#f92672">[</span><span style="color:#e6db74">:netmask</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> host<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;netmask&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">||=</span> <span style="color:#e6db74">&#39;255.255.255.0&#39;</span>
-  <span style="color:#66d9ef">else</span>
-    options<span style="color:#f92672">[</span><span style="color:#e6db74">:type</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;dhcp&#39;</span>
-  <span style="color:#66d9ef">end</span>
+  <span style=color:#66d9ef>if</span> host<span style=color:#f92672>.</span>has_key?(<span style=color:#e6db74>&#39;ip&#39;</span>)
+    options<span style=color:#f92672>[</span><span style=color:#e6db74>:ip</span><span style=color:#f92672>]</span> <span style=color:#f92672>=</span> host<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;ip&#39;</span><span style=color:#f92672>]</span>
+    options<span style=color:#f92672>[</span><span style=color:#e6db74>:netmask</span><span style=color:#f92672>]</span> <span style=color:#f92672>=</span> host<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;netmask&#39;</span><span style=color:#f92672>]</span> <span style=color:#f92672>||=</span> <span style=color:#e6db74>&#39;255.255.255.0&#39;</span>
+  <span style=color:#66d9ef>else</span>
+    options<span style=color:#f92672>[</span><span style=color:#e6db74>:type</span><span style=color:#f92672>]</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;dhcp&#39;</span>
+  <span style=color:#66d9ef>end</span>
 
-  <span style="color:#66d9ef">if</span> host<span style="color:#f92672">.</span>has_key?(<span style="color:#e6db74">&#39;mac&#39;</span>)
-    options<span style="color:#f92672">[</span><span style="color:#e6db74">:mac</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> host<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;mac&#39;</span><span style="color:#f92672">].</span>gsub(<span style="color:#e6db74">/[-:]/</span>, <span style="color:#e6db74">&#39;&#39;</span>)
-  <span style="color:#66d9ef">end</span>
-  <span style="color:#66d9ef">if</span> host<span style="color:#f92672">.</span>has_key?(<span style="color:#e6db74">&#39;auto_config&#39;</span>)
-    options<span style="color:#f92672">[</span><span style="color:#e6db74">:auto_config</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> host<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;auto_config&#39;</span><span style="color:#f92672">]</span>
-  <span style="color:#66d9ef">end</span>
-  <span style="color:#66d9ef">if</span> host<span style="color:#f92672">.</span>has_key?(<span style="color:#e6db74">&#39;intnet&#39;</span>) <span style="color:#f92672">&amp;&amp;</span> host<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;intnet&#39;</span><span style="color:#f92672">]</span>
-    options<span style="color:#f92672">[</span><span style="color:#e6db74">:virtualbox__intnet</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>
-  <span style="color:#66d9ef">end</span>
+  <span style=color:#66d9ef>if</span> host<span style=color:#f92672>.</span>has_key?(<span style=color:#e6db74>&#39;mac&#39;</span>)
+    options<span style=color:#f92672>[</span><span style=color:#e6db74>:mac</span><span style=color:#f92672>]</span> <span style=color:#f92672>=</span> host<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;mac&#39;</span><span style=color:#f92672>].</span>gsub(<span style=color:#e6db74>/[-:]/</span>, <span style=color:#e6db74>&#39;&#39;</span>)
+  <span style=color:#66d9ef>end</span>
+  <span style=color:#66d9ef>if</span> host<span style=color:#f92672>.</span>has_key?(<span style=color:#e6db74>&#39;auto_config&#39;</span>)
+    options<span style=color:#f92672>[</span><span style=color:#e6db74>:auto_config</span><span style=color:#f92672>]</span> <span style=color:#f92672>=</span> host<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;auto_config&#39;</span><span style=color:#f92672>]</span>
+  <span style=color:#66d9ef>end</span>
+  <span style=color:#66d9ef>if</span> host<span style=color:#f92672>.</span>has_key?(<span style=color:#e6db74>&#39;intnet&#39;</span>) <span style=color:#f92672>&amp;&amp;</span> host<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;intnet&#39;</span><span style=color:#f92672>]</span>
+    options<span style=color:#f92672>[</span><span style=color:#e6db74>:virtualbox__intnet</span><span style=color:#f92672>]</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
+  <span style=color:#66d9ef>end</span>
 
   options
-<span style="color:#66d9ef">end</span>
+<span style=color:#66d9ef>end</span>
 
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">custom_synced_folders</span>(vm, host)
-  <span style="color:#66d9ef">if</span> host<span style="color:#f92672">.</span>has_key?(<span style="color:#e6db74">&#39;synced_folders&#39;</span>)
-    folders <span style="color:#f92672">=</span> host<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;synced_folders&#39;</span><span style="color:#f92672">]</span>
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>custom_synced_folders</span>(vm, host)
+  <span style=color:#66d9ef>if</span> host<span style=color:#f92672>.</span>has_key?(<span style=color:#e6db74>&#39;synced_folders&#39;</span>)
+    folders <span style=color:#f92672>=</span> host<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;synced_folders&#39;</span><span style=color:#f92672>]</span>
 
-    folders<span style="color:#f92672">.</span>each <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>folder<span style="color:#f92672">|</span>
-      vm<span style="color:#f92672">.</span>synced_folder folder<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;src&#39;</span><span style="color:#f92672">]</span>, folder<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;dest&#39;</span><span style="color:#f92672">]</span>, folder<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;options&#39;</span><span style="color:#f92672">]</span>
-    <span style="color:#66d9ef">end</span>
-  <span style="color:#66d9ef">end</span>
-<span style="color:#66d9ef">end</span>
+    folders<span style=color:#f92672>.</span>each <span style=color:#66d9ef>do</span> <span style=color:#f92672>|</span>folder<span style=color:#f92672>|</span>
+      vm<span style=color:#f92672>.</span>synced_folder folder<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;src&#39;</span><span style=color:#f92672>]</span>, folder<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;dest&#39;</span><span style=color:#f92672>]</span>, folder<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;options&#39;</span><span style=color:#f92672>]</span>
+    <span style=color:#66d9ef>end</span>
+  <span style=color:#66d9ef>end</span>
+<span style=color:#66d9ef>end</span>
 
-<span style="color:#75715e"># }}}</span>
+<span style=color:#75715e># }}}</span>
 
-<span style="color:#66d9ef">Vagrant</span><span style="color:#f92672">.</span>configure(<span style="color:#66d9ef">VAGRANTFILE_API_VERSION</span>) <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>config<span style="color:#f92672">|</span>
+<span style=color:#66d9ef>Vagrant</span><span style=color:#f92672>.</span>configure(<span style=color:#66d9ef>VAGRANTFILE_API_VERSION</span>) <span style=color:#66d9ef>do</span> <span style=color:#f92672>|</span>config<span style=color:#f92672>|</span>
 
-  hosts<span style="color:#f92672">.</span>each <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>host<span style="color:#f92672">|</span>
-    config<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>define host<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;name&#39;</span><span style="color:#f92672">]</span> <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>node<span style="color:#f92672">|</span>
-      node<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>box <span style="color:#f92672">=</span> host<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;box&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">||=</span> <span style="color:#66d9ef">DEFAULT_BASE_BOX</span>
-      node<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>box_url <span style="color:#f92672">=</span> host<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;box_url&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">||=</span> <span style="color:#66d9ef">DEFAULT_BASE_BOX_URL</span>
+  hosts<span style=color:#f92672>.</span>each <span style=color:#66d9ef>do</span> <span style=color:#f92672>|</span>host<span style=color:#f92672>|</span>
+    config<span style=color:#f92672>.</span>vm<span style=color:#f92672>.</span>define host<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;name&#39;</span><span style=color:#f92672>]</span> <span style=color:#66d9ef>do</span> <span style=color:#f92672>|</span>node<span style=color:#f92672>|</span>
+      node<span style=color:#f92672>.</span>vm<span style=color:#f92672>.</span>box <span style=color:#f92672>=</span> host<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;box&#39;</span><span style=color:#f92672>]</span> <span style=color:#f92672>||=</span> <span style=color:#66d9ef>DEFAULT_BASE_BOX</span>
+      node<span style=color:#f92672>.</span>vm<span style=color:#f92672>.</span>box_url <span style=color:#f92672>=</span> host<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;box_url&#39;</span><span style=color:#f92672>]</span> <span style=color:#f92672>||=</span> <span style=color:#66d9ef>DEFAULT_BASE_BOX_URL</span>
 
-      node<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>hostname <span style="color:#f92672">=</span> host<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;name&#39;</span><span style="color:#f92672">]</span>
-      node<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>network <span style="color:#e6db74">:private_network</span>, network_options(host)
-      custom_synced_folders(node<span style="color:#f92672">.</span>vm, host)
+      node<span style=color:#f92672>.</span>vm<span style=color:#f92672>.</span>hostname <span style=color:#f92672>=</span> host<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;name&#39;</span><span style=color:#f92672>]</span>
+      node<span style=color:#f92672>.</span>vm<span style=color:#f92672>.</span>network <span style=color:#e6db74>:private_network</span>, network_options(host)
+      custom_synced_folders(node<span style=color:#f92672>.</span>vm, host)
 
-      node<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>provider <span style="color:#e6db74">:virtualbox</span> <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>vb<span style="color:#f92672">|</span>
-        vb<span style="color:#f92672">.</span>name <span style="color:#f92672">=</span> host<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;name&#39;</span><span style="color:#f92672">]</span>
-        vb<span style="color:#f92672">.</span>customize <span style="color:#f92672">[</span><span style="color:#e6db74">&#39;modifyvm&#39;</span>, <span style="color:#e6db74">:id</span>, <span style="color:#e6db74">&#39;--groups&#39;</span>, <span style="color:#66d9ef">PROJECT_NAME</span><span style="color:#f92672">]</span>
-      <span style="color:#66d9ef">end</span>
-    <span style="color:#66d9ef">end</span>
-  <span style="color:#66d9ef">end</span>
+      node<span style=color:#f92672>.</span>vm<span style=color:#f92672>.</span>provider <span style=color:#e6db74>:virtualbox</span> <span style=color:#66d9ef>do</span> <span style=color:#f92672>|</span>vb<span style=color:#f92672>|</span>
+        vb<span style=color:#f92672>.</span>name <span style=color:#f92672>=</span> host<span style=color:#f92672>[</span><span style=color:#e6db74>&#39;name&#39;</span><span style=color:#f92672>]</span>
+        vb<span style=color:#f92672>.</span>customize <span style=color:#f92672>[</span><span style=color:#e6db74>&#39;modifyvm&#39;</span>, <span style=color:#e6db74>:id</span>, <span style=color:#e6db74>&#39;--groups&#39;</span>, <span style=color:#66d9ef>PROJECT_NAME</span><span style=color:#f92672>]</span>
+      <span style=color:#66d9ef>end</span>
+    <span style=color:#66d9ef>end</span>
+  <span style=color:#66d9ef>end</span>
   provision_ansible(config)
-<span style="color:#66d9ef">end</span></code></pre></div>
-              
-
-
-            </div>
-          </div>
-          <div id="post-footer" class="post-footer main-content-wrap">
-            
-              
-                
-                
-                  <div class="post-footer-tags">
-                    <span class="text-color-light text-small"></span><br/>
-                    
-  <a class="tag tag--primary tag--small" href="https://bertvv.github.io/notes-to-self/tags/vagrant/">vagrant</a>
-
-                  </div>
-                
-              
-            
-            
-<div class="post-actions-wrap">
-  <nav >
-    <ul class="post-actions post-action-nav">
-      
-        <li class="post-action">
-          
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://bertvv.github.io/notes-to-self/2015/10/08/easily-switch-between-hyper-v-and-virtualbox/" data-tooltip="Easily switch between Hyper-V and VirtualBox" aria-label=": Easily switch between Hyper-V and VirtualBox">
-          
-              <i class="fa fa-angle-left"></i>
-              <span class="hide-xs hide-sm text-small icon-ml"></span>
-            </a>
-        </li>
-        <li class="post-action">
-          
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://bertvv.github.io/notes-to-self/2015/09/29/virtualbox-networking-an-overview/" data-tooltip="VirtualBox Networking: an overview" aria-label=": VirtualBox Networking: an overview">
-          
-              <span class="hide-xs hide-sm text-small icon-mr"></span>
-              <i class="fa fa-angle-right"></i>
-            </a>
-        </li>
-      
-    </ul>
-  </nav>
-<ul class="post-actions post-action-share" >
-  
-    <li class="post-action hide-lg hide-md hide-sm">
-      <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="">
-        <i class="fa fa-share-alt" aria-hidden="true"></i>
-      </a>
-    </li>
-    
-      <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/" title="" aria-label="">
-          <i class="fab fa-twitter" aria-hidden="true"></i>
-        </a>
-      </li>
-    
-      <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://www.linkedin.com/sharing/share-offsite/?url=https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/" title="" aria-label="">
-          <i class="fab fa-linkedin" aria-hidden="true"></i>
-        </a>
-      </li>
-    
-      <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://www.reddit.com/submit?url=https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/" title="" aria-label="">
-          <i class="fab fa-reddit" aria-hidden="true"></i>
-        </a>
-      </li>
-    
-  
-  
-  <li class="post-action">
-    
-      <a class="post-action-btn btn btn--default" href="#top" aria-label="">
-      <i class="fa fa-arrow-up" aria-hidden="true"></i>
-    
-    </a>
-  </li>
+<span style=color:#66d9ef>end</span></code></pre></div>
+</div>
+</div>
+<div id=post-footer class="post-footer main-content-wrap">
+<div class=post-footer-tags>
+<span class="text-color-light text-small"></span><br>
+<a class="tag tag--primary tag--small" href=https://bertvv.github.io/notes-to-self/tags/vagrant/>vagrant</a>
+</div>
+<div class=post-actions-wrap>
+<nav>
+<ul class="post-actions post-action-nav">
+<li class=post-action>
+<a class="post-action-btn btn btn--default tooltip--top" href=https://bertvv.github.io/notes-to-self/2015/10/08/easily-switch-between-hyper-v-and-virtualbox/ data-tooltip="Easily switch between Hyper-V and VirtualBox" aria-label=": Easily switch between Hyper-V and VirtualBox">
+<i class="fa fa-angle-left"></i>
+<span class="hide-xs hide-sm text-small icon-ml"></span>
+</a>
+</li>
+<li class=post-action>
+<a class="post-action-btn btn btn--default tooltip--top" href=https://bertvv.github.io/notes-to-self/2015/09/29/virtualbox-networking-an-overview/ data-tooltip="VirtualBox Networking: an overview" aria-label=": VirtualBox Networking: an overview">
+<span class="hide-xs hide-sm text-small icon-mr"></span>
+<i class="fa fa-angle-right"></i>
+</a>
+</li>
+</ul>
+</nav>
+<ul class="post-actions post-action-share">
+<li class="post-action hide-lg hide-md hide-sm">
+<a class="post-action-btn btn btn--default btn-open-shareoptions" href=#btn-open-shareoptions aria-label>
+<i class="fa fa-share-alt" aria-hidden=true></i>
+</a>
+</li>
+<li class="post-action hide-xs">
+<a class="post-action-btn btn btn--default" target=new href="https://twitter.com/intent/tweet?text=https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/" title aria-label>
+<i class="fab fa-twitter" aria-hidden=true></i>
+</a>
+</li>
+<li class="post-action hide-xs">
+<a class="post-action-btn btn btn--default" target=new href="https://www.linkedin.com/sharing/share-offsite/?url=https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/" title aria-label>
+<i class="fab fa-linkedin" aria-hidden=true></i>
+</a>
+</li>
+<li class="post-action hide-xs">
+<a class="post-action-btn btn btn--default" target=new href="https://www.reddit.com/submit?url=https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/" title aria-label>
+<i class="fab fa-reddit" aria-hidden=true></i>
+</a>
+</li>
+<li class=post-action>
+<a class="post-action-btn btn btn--default" href=#top aria-label>
+<i class="fa fa-arrow-up" aria-hidden=true></i>
+</a>
+</li>
 </ul>
 </div>
-
-
-            
-  
-    <div id="disqus_thread">
-      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
-    </div>
-    <script type="text/javascript">
-      var disqus_config = function() {
-        this.page.url = 'https:\/\/bertvv.github.io\/notes-to-self\/2015\/10\/05\/one-vagrantfile-to-rule-them-all\/';
-        
-          this.page.identifier = '\/2015\/10\/05\/one-vagrantfile-to-rule-them-all\/'
-        
-      };
-      (function() {
-        
-        
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-          document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-          return;
-        }
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        var disqus_shortname = '';
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-      })();
-    </script>
-  
-
-
-          </div>
-        </article>
-        <footer id="footer" class="main-content-wrap">
-  <span class="copyrights">
-    &copy; 2021 <a href="https://github.com/bertvv">Bert Van Vreckem</a> <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY</a>. 
-  </span>
+<div id=disqus_thread>
+<noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+</div>
+<script type=text/javascript>var disqus_config=function(){this.page.url='https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/',this.page.identifier='/2015/10/05/one-vagrantfile-to-rule-them-all/'};(function(){var a,b;if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}a=document.createElement('script'),a.type='text/javascript',a.async=!0,b='',a.src='//'+b+'.disqus.com/embed.js',(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(a)})()</script>
+</div>
+</article>
+<footer id=footer class=main-content-wrap>
+<span class=copyrights>
+&copy; 2021 <a href=https://github.com/bertvv>Bert Van Vreckem</a> <a href=https://creativecommons.org/licenses/by/4.0/>CC-BY</a>.
+</span>
 </footer>
-
-      </div>
-      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
-        
-<div class="post-actions-wrap">
-  <nav >
-    <ul class="post-actions post-action-nav">
-      
-        <li class="post-action">
-          
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://bertvv.github.io/notes-to-self/2015/10/08/easily-switch-between-hyper-v-and-virtualbox/" data-tooltip="Easily switch between Hyper-V and VirtualBox" aria-label=": Easily switch between Hyper-V and VirtualBox">
-          
-              <i class="fa fa-angle-left"></i>
-              <span class="hide-xs hide-sm text-small icon-ml"></span>
-            </a>
-        </li>
-        <li class="post-action">
-          
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://bertvv.github.io/notes-to-self/2015/09/29/virtualbox-networking-an-overview/" data-tooltip="VirtualBox Networking: an overview" aria-label=": VirtualBox Networking: an overview">
-          
-              <span class="hide-xs hide-sm text-small icon-mr"></span>
-              <i class="fa fa-angle-right"></i>
-            </a>
-        </li>
-      
-    </ul>
-  </nav>
-<ul class="post-actions post-action-share" >
-  
-    <li class="post-action hide-lg hide-md hide-sm">
-      <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="">
-        <i class="fa fa-share-alt" aria-hidden="true"></i>
-      </a>
-    </li>
-    
-      <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/" title="" aria-label="">
-          <i class="fab fa-twitter" aria-hidden="true"></i>
-        </a>
-      </li>
-    
-      <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://www.linkedin.com/sharing/share-offsite/?url=https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/" title="" aria-label="">
-          <i class="fab fa-linkedin" aria-hidden="true"></i>
-        </a>
-      </li>
-    
-      <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://www.reddit.com/submit?url=https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/" title="" aria-label="">
-          <i class="fab fa-reddit" aria-hidden="true"></i>
-        </a>
-      </li>
-    
-  
-  
-  <li class="post-action">
-    
-      <a class="post-action-btn btn btn--default" href="#top" aria-label="">
-      <i class="fa fa-arrow-up" aria-hidden="true"></i>
-    
-    </a>
-  </li>
+</div>
+<div id=bottom-bar class=post-bottom-bar data-behavior=4>
+<div class=post-actions-wrap>
+<nav>
+<ul class="post-actions post-action-nav">
+<li class=post-action>
+<a class="post-action-btn btn btn--default tooltip--top" href=https://bertvv.github.io/notes-to-self/2015/10/08/easily-switch-between-hyper-v-and-virtualbox/ data-tooltip="Easily switch between Hyper-V and VirtualBox" aria-label=": Easily switch between Hyper-V and VirtualBox">
+<i class="fa fa-angle-left"></i>
+<span class="hide-xs hide-sm text-small icon-ml"></span>
+</a>
+</li>
+<li class=post-action>
+<a class="post-action-btn btn btn--default tooltip--top" href=https://bertvv.github.io/notes-to-self/2015/09/29/virtualbox-networking-an-overview/ data-tooltip="VirtualBox Networking: an overview" aria-label=": VirtualBox Networking: an overview">
+<span class="hide-xs hide-sm text-small icon-mr"></span>
+<i class="fa fa-angle-right"></i>
+</a>
+</li>
+</ul>
+</nav>
+<ul class="post-actions post-action-share">
+<li class="post-action hide-lg hide-md hide-sm">
+<a class="post-action-btn btn btn--default btn-open-shareoptions" href=#btn-open-shareoptions aria-label>
+<i class="fa fa-share-alt" aria-hidden=true></i>
+</a>
+</li>
+<li class="post-action hide-xs">
+<a class="post-action-btn btn btn--default" target=new href="https://twitter.com/intent/tweet?text=https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/" title aria-label>
+<i class="fab fa-twitter" aria-hidden=true></i>
+</a>
+</li>
+<li class="post-action hide-xs">
+<a class="post-action-btn btn btn--default" target=new href="https://www.linkedin.com/sharing/share-offsite/?url=https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/" title aria-label>
+<i class="fab fa-linkedin" aria-hidden=true></i>
+</a>
+</li>
+<li class="post-action hide-xs">
+<a class="post-action-btn btn btn--default" target=new href="https://www.reddit.com/submit?url=https://bertvv.github.io/notes-to-self/2015/10/05/one-vagrantfile-to-rule-them-all/" title aria-label>
+<i class="fab fa-reddit" aria-hidden=true></i>
+</a>
+</li>
+<li class=post-action>
+<a class="post-action-btn btn btn--default" href=#top aria-label>
+<i class="fa fa-arrow-up" aria-hidden=true></i>
+</a>
+</li>
 </ul>
 </div>
-
-
-      </div>
-      
-<div id="share-options-bar" class="share-options-bar" data-behavior="4">
-  <i id="btn-close-shareoptions" class="fa fa-times"></i>
-  <ul class="share-options">
-    
-      <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2Fbertvv.github.io%2Fnotes-to-self%2F2015%2F10%2F05%2Fone-vagrantfile-to-rule-them-all%2F" aria-label="">
-          <i class="fab fa-twitter" aria-hidden="true"></i><span></span>
-        </a>
-      </li>
-    
-      <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fbertvv.github.io%2Fnotes-to-self%2F2015%2F10%2F05%2Fone-vagrantfile-to-rule-them-all%2F" aria-label="">
-          <i class="fab fa-linkedin" aria-hidden="true"></i><span></span>
-        </a>
-      </li>
-    
-      <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://www.reddit.com/submit?url=https%3A%2F%2Fbertvv.github.io%2Fnotes-to-self%2F2015%2F10%2F05%2Fone-vagrantfile-to-rule-them-all%2F" aria-label="">
-          <i class="fab fa-reddit" aria-hidden="true"></i><span></span>
-        </a>
-      </li>
-    
-  </ul>
 </div>
-<div id="share-options-mask" class="share-options-mask"></div>
-
-
-    </div>
-    
-    <div id="about">
-  <div id="about-card">
-    <div id="about-btn-close">
-      <i class="fa fa-times"></i>
-    </div>
-    
-      <img id="about-card-picture" src="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=110" alt="" />
-    
-    <h4 id="about-card-name">Bert Van Vreckem</h4>
-    
-      <div id="about-card-bio">Lecturer ICT at HOGENT</div>
-    
-    
-      <div id="about-card-job">
-        <i class="fa fa-briefcase"></i>
-        <br/>
-        Lecturer ICT at HOGENT
-      </div>
-    
-    
-      <div id="about-card-location">
-        <i class="fa fa-map-marker-alt"></i>
-        <br/>
-        Ghent
-      </div>
-    
-  </div>
+<div id=share-options-bar class=share-options-bar data-behavior=4>
+<i id=btn-close-shareoptions class="fa fa-times"></i>
+<ul class=share-options>
+<li class=share-option>
+<a class=share-option-btn target=new href="https://twitter.com/intent/tweet?text=https%3A%2F%2Fbertvv.github.io%2Fnotes-to-self%2F2015%2F10%2F05%2Fone-vagrantfile-to-rule-them-all%2F" aria-label>
+<i class="fab fa-twitter" aria-hidden=true></i><span></span>
+</a>
+</li>
+<li class=share-option>
+<a class=share-option-btn target=new href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fbertvv.github.io%2Fnotes-to-self%2F2015%2F10%2F05%2Fone-vagrantfile-to-rule-them-all%2F" aria-label>
+<i class="fab fa-linkedin" aria-hidden=true></i><span></span>
+</a>
+</li>
+<li class=share-option>
+<a class=share-option-btn target=new href="https://www.reddit.com/submit?url=https%3A%2F%2Fbertvv.github.io%2Fnotes-to-self%2F2015%2F10%2F05%2Fone-vagrantfile-to-rule-them-all%2F" aria-label>
+<i class="fab fa-reddit" aria-hidden=true></i><span></span>
+</a>
+</li>
+</ul>
 </div>
-
-    
-
-    
-  
-    
-      <div id="cover" style="background-image:url('https://bertvv.github.io/notes-to-self/img/field.jpg');"></div>
-    
-  
-
-
-    
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js" integrity="sha512-z+/WWfyD5tccCukM4VvONpEtLmbAm5LDu7eKiyMQJ9m7OfPEDL7gENyDRL3Yfe8XAuGsS2fS4xSMnl6d30kqGQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-
-<script src="https://bertvv.github.io/js/script-yqzy9wdlzix4lbbwdnzvwx3egsne77earqmn73v9uno8aupuph8wfguccut.min.js"></script>
-
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-gE8KAQyFIzV1C9+GZ8TKJHZS2s+n7EjNtC+IMRn1l5+WYJTHOODUM6JSjZhFhqXmc7bG8Av6XXpckA4tYhflnw==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/apache.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-EWROca+bote+7Oaaar1F6y74iZj1r1F9rm/ly7o+/FwJopbBaWtsFDmaKoZDd3QiGU2pGacBirHJNivmGLYrow==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/go.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-GDVzAn0wpx1yVtQsRWmFc6PhJiLBPdUic+h4GWgljBh904O3JU10fk9EKNpVyIoPqkFn54rgL2QBG4BmUTMpiQ==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/http.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-UgZlma8NzkrDb/NWgmLIcTrH7i/CSnLLDRFqCSNF5NGPpjKmzyM25qcoXGOup8+cDakKyaiTDd7N4dyH4YT+IA==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/less.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-lot9koe73sfXIrUvIPM/UEhuMciN56RPyBdOyZgfO53P2lkWyyXN7J+njcxIIBRV+nVDQeiWtiXg+bLAJZDTfg==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/nginx.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-Zd3e7XxHP00TD0Imr0PIfeM0fl0v95kMWuhyAS3Wn1UTSXTkz0OhtRgBAr4JlmADRgiXr4x7lpeUdqaGN8xIog==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/puppet.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-qtqDO052iXMSP+5d/aE/jMtL9vIIGvONgTJziC2K/ZIB1yEGa55WVxGE9/08rSQ62EoDifS9SWVGZ7ihSLhzMA==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/scss.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-1NmkjnEDnwwwcu28KoQF8vs3oaPFokQHbmbtwGhFfeDsQZtVFI8zW2aE9O8yMYdpdyKV/5blE4pSWw4Z/Sv97w==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/stylus.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-B2wSfruPjr8EJL6IIzQr1eAuDwrsfIfccNf/LCEdxELCgC/S/ZMt/Uvk80aD79m7IqOqW+Sw8nbkvha20yZpzg==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/swift.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-28oDiQZGKUVN6wQ7PSLPNipOcmkCALXKwOi7bnkyFf8QiMZQxG9EQoy/iiNx6Zxj2cG2SbVa4dXKigQhu7GiFw==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/yaml.min.js"></script>
-  
-
-
-<script>
-$(document).ready(function() {
-  hljs.configure({ classPrefix: '', useBR: false });
-  $('pre.code-highlight > code, pre > code').each(function(i, block) {
-    if (!$(this).hasClass('codeblock')) {
-      $(this).addClass('codeblock');
-    }
-    hljs.highlightBlock(block);
-  });
-});
-</script>
-
-
-
-
-    
-  </body>
+<div id=share-options-mask class=share-options-mask></div>
+</div>
+<div id=about>
+<div id=about-card>
+<div id=about-btn-close>
+<i class="fa fa-times"></i>
+</div>
+<img id=about-card-picture src="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=110" alt>
+<h4 id=about-card-name>Bert Van Vreckem</h4>
+<div id=about-card-bio>Lecturer ICT at HOGENT</div>
+<div id=about-card-job>
+<i class="fa fa-briefcase"></i>
+<br>
+Lecturer ICT at HOGENT
+</div>
+<div id=about-card-location>
+<i class="fa fa-map-marker-alt"></i>
+<br>
+Ghent
+</div>
+</div>
+</div>
+<div id=cover style=background-image:url(https://bertvv.github.io/notes-to-self/img/field.jpg)></div>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin=anonymous referrerpolicy=no-referrer></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js integrity="sha512-z+/WWfyD5tccCukM4VvONpEtLmbAm5LDu7eKiyMQJ9m7OfPEDL7gENyDRL3Yfe8XAuGsS2fS4xSMnl6d30kqGQ==" crossorigin=anonymous referrerpolicy=no-referrer></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA==" crossorigin=anonymous referrerpolicy=no-referrer></script>
+<script src=https://bertvv.github.io/js/script-yqzy9wdlzix4lbbwdnzvwx3egsne77earqmn73v9uno8aupuph8wfguccut.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-gE8KAQyFIzV1C9+GZ8TKJHZS2s+n7EjNtC+IMRn1l5+WYJTHOODUM6JSjZhFhqXmc7bG8Av6XXpckA4tYhflnw==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/apache.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-EWROca+bote+7Oaaar1F6y74iZj1r1F9rm/ly7o+/FwJopbBaWtsFDmaKoZDd3QiGU2pGacBirHJNivmGLYrow==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/go.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-GDVzAn0wpx1yVtQsRWmFc6PhJiLBPdUic+h4GWgljBh904O3JU10fk9EKNpVyIoPqkFn54rgL2QBG4BmUTMpiQ==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/http.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-UgZlma8NzkrDb/NWgmLIcTrH7i/CSnLLDRFqCSNF5NGPpjKmzyM25qcoXGOup8+cDakKyaiTDd7N4dyH4YT+IA==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/less.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-lot9koe73sfXIrUvIPM/UEhuMciN56RPyBdOyZgfO53P2lkWyyXN7J+njcxIIBRV+nVDQeiWtiXg+bLAJZDTfg==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/nginx.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-Zd3e7XxHP00TD0Imr0PIfeM0fl0v95kMWuhyAS3Wn1UTSXTkz0OhtRgBAr4JlmADRgiXr4x7lpeUdqaGN8xIog==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/puppet.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-qtqDO052iXMSP+5d/aE/jMtL9vIIGvONgTJziC2K/ZIB1yEGa55WVxGE9/08rSQ62EoDifS9SWVGZ7ihSLhzMA==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/scss.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-1NmkjnEDnwwwcu28KoQF8vs3oaPFokQHbmbtwGhFfeDsQZtVFI8zW2aE9O8yMYdpdyKV/5blE4pSWw4Z/Sv97w==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/stylus.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-B2wSfruPjr8EJL6IIzQr1eAuDwrsfIfccNf/LCEdxELCgC/S/ZMt/Uvk80aD79m7IqOqW+Sw8nbkvha20yZpzg==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/swift.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-28oDiQZGKUVN6wQ7PSLPNipOcmkCALXKwOi7bnkyFf8QiMZQxG9EQoy/iiNx6Zxj2cG2SbVa4dXKigQhu7GiFw==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/yaml.min.js></script>
+<script>$(document).ready(function(){hljs.configure({classPrefix:'',useBR:!1}),$('pre.code-highlight > code, pre > code').each(function(b,a){$(this).hasClass('codeblock')||$(this).addClass('codeblock'),hljs.highlightBlock(a)})})</script>
+</body>
 </html>
-

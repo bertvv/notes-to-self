@@ -1,312 +1,154 @@
-<!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    
-    <script type="application/ld+json">
-
-{  
-  "@context":"http://schema.org",
-  "@type":"Website",
-  "@id":"https:\/\/bertvv.github.io\/notes-to-self",
-  "author": {
-    "@type": "Person",
-    "name": "Bert Van Vreckem",
-    
-    "image": "https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2"
-    
-  },
-  "name":"Notes to self",
-  "description":"\u003cp\u003eIn the \u003ca href=\u0022https:\/\/bertvv.github.io\/notes-to-self\/2015\/12\/11\/testing-ansible-roles-with-travis-ci-part-1-centos\u0022\u003eprevious post on testing Ansible roles with Travis-CI\u003c\/a\u003e, I introduced a method to run playbooks on CentOS using Docker. In this post, we take this one step further and show how you can run multi-platform tests of Ansible roles.\u003c\/p\u003e",
-  "url":"https:\/\/bertvv.github.io\/notes-to-self\/2015\/12\/13\/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests\/",
-  "keywords":"[]"
-}
-
-</script>
-    <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="generator" content="Hugo 0.80.0 with theme Tranquilpeak 0.5.2-BETA">
-<meta name="author" content="Bert Van Vreckem">
-<meta name="keywords" content="">
-<meta name="description" content="In the previous post on testing Ansible roles with Travis-CI, I introduced a method to run playbooks on CentOS using Docker. In this post, we take this one step further and show how you can run multi-platform tests of Ansible roles.">
-
-
+<!doctype html><html lang=en-us>
+<head>
+<script type=application/ld+json>{"@context":"http://schema.org","@type":"Website","@id":"https:\/\/bertvv.github.io\/notes-to-self","author":{"@type":"Person","name":"Bert Van Vreckem","image":"https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2"},"name":"Notes to self","description":"\u003cp\u003eIn the \u003ca href=\u0022https:\/\/bertvv.github.io\/notes-to-self\/2015\/12\/11\/testing-ansible-roles-with-travis-ci-part-1-centos\u0022\u003eprevious post on testing Ansible roles with Travis-CI\u003c\/a\u003e, I introduced a method to run playbooks on CentOS using Docker. In this post, we take this one step further and show how you can run multi-platform tests of Ansible roles.\u003c\/p\u003e","url":"https:\/\/bertvv.github.io\/notes-to-self\/2015\/12\/13\/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests\/","keywords":"[]"}</script>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=generator content="Hugo 0.88.1 with theme Tranquilpeak 0.5.2-BETA">
+<meta name=author content="Bert Van Vreckem">
+<meta name=keywords content>
+<meta name=description content="In the previous post on testing Ansible roles with Travis-CI, I introduced a method to run playbooks on CentOS using Docker. In this post, we take this one step further and show how you can run multi-platform tests of Ansible roles.">
 <meta property="og:description" content="In the previous post on testing Ansible roles with Travis-CI, I introduced a method to run playbooks on CentOS using Docker. In this post, we take this one step further and show how you can run multi-platform tests of Ansible roles.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Testing Ansible roles with Travis-CI, Part 2: Multi-platform tests">
-<meta name="twitter:title" content="Testing Ansible roles with Travis-CI, Part 2: Multi-platform tests">
+<meta name=twitter:title content="Testing Ansible roles with Travis-CI, Part 2: Multi-platform tests">
 <meta property="og:url" content="https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/">
 <meta property="twitter:url" content="https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/">
 <meta property="og:site_name" content="Notes to self">
 <meta property="og:description" content="In the previous post on testing Ansible roles with Travis-CI, I introduced a method to run playbooks on CentOS using Docker. In this post, we take this one step further and show how you can run multi-platform tests of Ansible roles.">
-<meta name="twitter:description" content="In the previous post on testing Ansible roles with Travis-CI, I introduced a method to run playbooks on CentOS using Docker. In this post, we take this one step further and show how you can run multi-platform tests of Ansible roles.">
+<meta name=twitter:description content="In the previous post on testing Ansible roles with Travis-CI, I introduced a method to run playbooks on CentOS using Docker. In this post, we take this one step further and show how you can run multi-platform tests of Ansible roles.">
 <meta property="og:locale" content="en">
-
-  
-    <meta property="article:published_time" content="2015-12-13T16:00:32">
-  
-  
-    <meta property="article:modified_time" content="2015-12-13T16:00:32">
-  
-  
-  
-    
-      <meta property="article:section" content="Configuration Management">
-    
-  
-  
-    
-      <meta property="article:tag" content="linux">
-    
-      <meta property="article:tag" content="ansible">
-    
-      <meta property="article:tag" content="travis-ci">
-    
-      <meta property="article:tag" content="centos">
-    
-      <meta property="article:tag" content="docker">
-    
-      <meta property="article:tag" content="test-driven-infrastructure">
-    
-  
-
-
-<meta name="twitter:card" content="summary">
-
-  <meta name="twitter:site" content="@bertvanvreckem">
-
-
-  <meta name="twitter:creator" content="@bertvanvreckem">
-
-
-
-
-
-
-  <meta property="og:image" content="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=640">
-  <meta property="twitter:image" content="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=640">
-
-
-
-
-
-
-    <title>Testing Ansible roles with Travis-CI, Part 2: Multi-platform tests</title>
-
-    <link rel="icon" href="https://bertvv.github.io/notes-to-self/favicon.png">
-    
-
-    
-
-    <link rel="canonical" href="https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/">
-
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    
-    
-    
-    <link rel="stylesheet" href="https://bertvv.github.io/notes-to-self/css/style-c5yjx2losbmkttdif4mskx5f9pqjjquywurgngxfvceyyrtyatseix5hpd.min.css" />
-    
-    
-
-    
-      
-    
-    
-  </head>
-
-  <body>
-    <div id="blog">
-      <header id="header" data-behavior="4">
-  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-  <div class="header-title">
-    <a class="header-title-link" href="https://bertvv.github.io/notes-to-self/" aria-label="">Notes to self</a>
-  </div>
-  
-    
-      <a class="header-right-picture "
-         href="https://bertvv.github.io/notes-to-self/" aria-label="">
-    
-    
-    
-      
-        <img class="header-picture" src="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=90" alt="" />
-      
-    
-    </a>
-  
-</header>
-
-      <nav id="sidebar" data-behavior="4">
-  <div class="sidebar-container">
-    
-      <div class="sidebar-profile">
-        <a href="https://bertvv.github.io/notes-to-self/#about" aria-label="">
-          <img class="sidebar-profile-picture" src="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=110" alt="" />
-        </a>
-        <h4 class="sidebar-profile-name">Bert Van Vreckem</h4>
-        
-          <h5 class="sidebar-profile-bio">Lecturer ICT at HOGENT</h5>
-        
-      </div>
-    
-    <ul class="sidebar-buttons">
-      
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/" title="Home">
-    
-      <i class="sidebar-button-icon fas fa-lg fa-home" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">Home</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/categories" title="Categories">
-    
-      <i class="sidebar-button-icon fas fa-lg fa-bookmark" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">Categories</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/tags" title="Tags">
-    
-      <i class="sidebar-button-icon fas fa-lg fa-tags" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">Tags</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/archives" title="Archives">
-    
-      <i class="sidebar-button-icon fas fa-lg fa-archive" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">Archives</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/about" title="About">
-    
-      <i class="sidebar-button-icon fas fa-lg fa-question" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">About</span>
-    </a>
-  </li>
-
-
-    </ul>
-    <ul class="sidebar-buttons">
-      
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://github.com/bertvv" target="_blank" rel="noopener" title="GitHub">
-    
-      <i class="sidebar-button-icon fab fa-lg fa-github" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">GitHub</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://www.linkedin.com/in/bertvanvreckem/" target="_blank" rel="noopener" title="LinkedIn">
-    
-      <i class="sidebar-button-icon fab fa-lg fa-linkedin" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">LinkedIn</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://www.youtube.com/user/bertvvrhogent" target="_blank" rel="noopener" title="Youtube">
-    
-      <i class="sidebar-button-icon fab fa-lg fa-youtube" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">Youtube</span>
-    </a>
-  </li>
-
-
-    </ul>
-    <ul class="sidebar-buttons">
-      
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://bertvv.github.io/notes-to-self/index.xml" title="RSS">
-    
-      <i class="sidebar-button-icon fas fa-lg fa-rss" aria-hidden="true"></i>
-      
-      <span class="sidebar-button-desc">RSS</span>
-    </a>
-  </li>
-
-
-    </ul>
-  </div>
-</nav>
-
-      
-
-      <div id="main" data-behavior="4"
-        class="
-               hasCoverMetaIn
-               ">
-        <article class="post" id="top">
-          
-          
-            <div class="post-header main-content-wrap text-left">
-  
-    <h1 class="post-title">
-      Testing Ansible roles with Travis-CI, Part 2: Multi-platform tests
-    </h1>
-  
-  
-  <div class="postShorten-meta post-meta">
-    
-      <time datetime="2015-12-13T16:00:32&#43;01:00">
-        
-   13, 2015
-
-      </time>
-    
-    
-  
-  
-    <span></span>
-    
-      <a class="category-link" href="https://bertvv.github.io/notes-to-self/categories/configuration-management">Configuration Management</a>
-    
-  
-
-  </div>
-
+<meta property="article:published_time" content="2015-12-13T16:00:32">
+<meta property="article:modified_time" content="2015-12-13T16:00:32">
+<meta property="article:section" content="Configuration Management">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="ansible">
+<meta property="article:tag" content="travis-ci">
+<meta property="article:tag" content="centos">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="test-driven-infrastructure">
+<meta name=twitter:card content="summary">
+<meta name=twitter:site content="@bertvanvreckem">
+<meta name=twitter:creator content="@bertvanvreckem">
+<meta property="og:image" content="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=640">
+<meta property="twitter:image" content="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=640">
+<title>Testing Ansible roles with Travis-CI, Part 2: Multi-platform tests</title>
+<link rel=icon href=https://bertvv.github.io/notes-to-self/favicon.png>
+<link rel=canonical href=https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin=anonymous referrerpolicy=no-referrer>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css integrity="sha512-H9jrZiiopUdsLpg94A333EfumgUBpO9MdbxStdeITo+KEIMaNfHNvwyjjDJb+ERPaRS6DpyRlKbvPUasNItRyw==" crossorigin=anonymous referrerpolicy=no-referrer>
+<link rel=stylesheet href=https://bertvv.github.io/notes-to-self/css/style-c5yjx2losbmkttdif4mskx5f9pqjjquywurgngxfvceyyrtyatseix5hpd.min.css>
+</head>
+<body>
+<div id=blog>
+<header id=header data-behavior=4>
+<i id=btn-open-sidebar class="fa fa-lg fa-bars"></i>
+<div class=header-title>
+<a class=header-title-link href=https://bertvv.github.io/notes-to-self/ aria-label>Notes to self</a>
 </div>
-          
-          <div class="post-content markdown">
-            <div class="main-content-wrap">
-              <p>In the <a href="https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos">previous post on testing Ansible roles with Travis-CI</a>, I introduced a method to run playbooks on CentOS using Docker. In this post, we take this one step further and show how you can run multi-platform tests of Ansible roles.</p>
-<p>As a proof of concept, I&rsquo;ll continue with the example of <a href="https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos">part one</a>: Apache, the hello world of configuration management. My own <a href="https://galaxy.ansible.com/detail#/role/3047">Apache role</a> was written only for EL/CentOS (for now), so it&rsquo;s not suitable. Therefore I thought of giving <a href="https://twitter.com/geerlingguy">Jeff Geerling</a>&rsquo;s <a href="https://galaxy.ansible.com/detail#/role/428">Apache role</a> a try. We&rsquo;ll set up a test environment with two target platforms: Ubuntu and CentOS.</p>
-<h2 id="setting-up-the-docker-containers">Setting up the Docker containers</h2>
+<a class=header-right-picture href=https://bertvv.github.io/notes-to-self/ aria-label>
+<img class=header-picture src="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=90" alt>
+</a>
+</header>
+<nav id=sidebar data-behavior=4>
+<div class=sidebar-container>
+<div class=sidebar-profile>
+<a href=https://bertvv.github.io/notes-to-self/#about aria-label>
+<img class=sidebar-profile-picture src="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=110" alt>
+</a>
+<h4 class=sidebar-profile-name>Bert Van Vreckem</h4>
+<h5 class=sidebar-profile-bio>Lecturer ICT at HOGENT</h5>
+</div>
+<ul class=sidebar-buttons>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://bertvv.github.io/notes-to-self/ title=Home>
+<i class="sidebar-button-icon fas fa-lg fa-home" aria-hidden=true></i>
+<span class=sidebar-button-desc>Home</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://bertvv.github.io/notes-to-self/categories title=Categories>
+<i class="sidebar-button-icon fas fa-lg fa-bookmark" aria-hidden=true></i>
+<span class=sidebar-button-desc>Categories</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://bertvv.github.io/notes-to-self/tags title=Tags>
+<i class="sidebar-button-icon fas fa-lg fa-tags" aria-hidden=true></i>
+<span class=sidebar-button-desc>Tags</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://bertvv.github.io/notes-to-self/archives title=Archives>
+<i class="sidebar-button-icon fas fa-lg fa-archive" aria-hidden=true></i>
+<span class=sidebar-button-desc>Archives</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://bertvv.github.io/notes-to-self/about title=About>
+<i class="sidebar-button-icon fas fa-lg fa-question" aria-hidden=true></i>
+<span class=sidebar-button-desc>About</span>
+</a>
+</li>
+</ul>
+<ul class=sidebar-buttons>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://github.com/bertvv target=_blank rel=noopener title=GitHub>
+<i class="sidebar-button-icon fab fa-lg fa-github" aria-hidden=true></i>
+<span class=sidebar-button-desc>GitHub</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://www.linkedin.com/in/bertvanvreckem/ target=_blank rel=noopener title=LinkedIn>
+<i class="sidebar-button-icon fab fa-lg fa-linkedin" aria-hidden=true></i>
+<span class=sidebar-button-desc>LinkedIn</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://www.youtube.com/user/bertvvrhogent target=_blank rel=noopener title=Youtube>
+<i class="sidebar-button-icon fab fa-lg fa-youtube" aria-hidden=true></i>
+<span class=sidebar-button-desc>Youtube</span>
+</a>
+</li>
+</ul>
+<ul class=sidebar-buttons>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://bertvv.github.io/notes-to-self/index.xml title=RSS>
+<i class="sidebar-button-icon fas fa-lg fa-rss" aria-hidden=true></i>
+<span class=sidebar-button-desc>RSS</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<div id=main data-behavior=4 class=hasCoverMetaIn>
+<article class=post id=top>
+<div class="post-header main-content-wrap text-left">
+<h1 class=post-title>
+Testing Ansible roles with Travis-CI, Part 2: Multi-platform tests
+</h1>
+<div class="postShorten-meta post-meta">
+<time datetime=2015-12-13T16:00:32+01:00>
+13, 2015
+</time>
+<span></span>
+<a class=category-link href=https://bertvv.github.io/notes-to-self/categories/configuration-management>Configuration Management</a>
+</div>
+</div>
+<div class="post-content markdown">
+<div class=main-content-wrap>
+<p>In the <a href=https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos>previous post on testing Ansible roles with Travis-CI</a>, I introduced a method to run playbooks on CentOS using Docker. In this post, we take this one step further and show how you can run multi-platform tests of Ansible roles.</p>
+<p>As a proof of concept, I&rsquo;ll continue with the example of <a href=https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos>part one</a>: Apache, the hello world of configuration management. My own <a href=https://galaxy.ansible.com/detail#/role/3047>Apache role</a> was written only for EL/CentOS (for now), so it&rsquo;s not suitable. Therefore I thought of giving <a href=https://twitter.com/geerlingguy>Jeff Geerling</a>&rsquo;s <a href=https://galaxy.ansible.com/detail#/role/428>Apache role</a> a try. We&rsquo;ll set up a test environment with two target platforms: Ubuntu and CentOS.</p>
+<h2 id=setting-up-the-docker-containers>Setting up the Docker containers</h2>
 <p>The test code is structured as follows (relative to the root of the Git project):</p>
-<pre><code>.
+<pre tabindex=0><code>.
 ├── tests
 │   ├── Dockerfile.centos
 │   ├── Dockerfile.ubuntu
 │   └── test.yml
 └── .travis.yml
-</code></pre><p>The Dockerfile for CentOS is the same as in <a href="https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos">part one</a>, so I won&rsquo;t repeat it here. The one for the Ubuntu container follows below. It is a bit simpler because we don&rsquo;t have to install systemd.</p>
-<pre><code># Dockerfile.ubuntu
+</code></pre><p>The Dockerfile for CentOS is the same as in <a href=https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos>part one</a>, so I won&rsquo;t repeat it here. The one for the Ubuntu container follows below. It is a bit simpler because we don&rsquo;t have to install systemd.</p>
+<pre tabindex=0><code># Dockerfile.ubuntu
 FROM ubuntu:14.04
 # Install Ansible
 RUN apt-get install -y software-properties-common git
@@ -315,413 +157,255 @@ RUN apt-get update
 RUN apt-get install -y ansible
 # Install Ansible inventory file
 RUN echo &quot;[local]\nlocalhost ansible_connection=local&quot; &gt; /etc/ansible/hosts
-</code></pre><h2 id="running-the-tests">Running the tests</h2>
+</code></pre><h2 id=running-the-tests>Running the tests</h2>
 <p>This is the test playbook:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Yaml" data-lang="Yaml"><span style="color:#75715e"># test.yml</span>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Yaml data-lang=Yaml><span style=color:#75715e># test.yml</span>
 ---
-- <span style="color:#f92672">hosts</span>: <span style="color:#ae81ff">all</span>
-  <span style="color:#f92672">vars</span>:
-    <span style="color:#f92672">apache_listen_port_ssl</span>: <span style="color:#ae81ff">443</span>
-    <span style="color:#f92672">apache_create_vhosts</span>: <span style="color:#66d9ef">true</span>
-    <span style="color:#f92672">apache_vhosts_filename</span>: <span style="color:#e6db74">&#34;vhosts.conf&#34;</span>
-    <span style="color:#f92672">apache_vhosts</span>:
-      - <span style="color:#f92672">servername</span>: <span style="color:#e6db74">&#34;example.com&#34;</span>
-        <span style="color:#f92672">documentroot</span>: <span style="color:#e6db74">&#34;/var/www/vhosts/example_com&#34;</span>
-  <span style="color:#f92672">roles</span>:
-    - <span style="color:#ae81ff">role_under_test</span></code></pre></div>
+- <span style=color:#f92672>hosts</span>: <span style=color:#ae81ff>all</span>
+  <span style=color:#f92672>vars</span>:
+    <span style=color:#f92672>apache_listen_port_ssl</span>: <span style=color:#ae81ff>443</span>
+    <span style=color:#f92672>apache_create_vhosts</span>: <span style=color:#66d9ef>true</span>
+    <span style=color:#f92672>apache_vhosts_filename</span>: <span style=color:#e6db74>&#34;vhosts.conf&#34;</span>
+    <span style=color:#f92672>apache_vhosts</span>:
+      - <span style=color:#f92672>servername</span>: <span style=color:#e6db74>&#34;example.com&#34;</span>
+        <span style=color:#f92672>documentroot</span>: <span style=color:#e6db74>&#34;/var/www/vhosts/example_com&#34;</span>
+  <span style=color:#f92672>roles</span>:
+    - <span style=color:#ae81ff>role_under_test</span></code></pre></div>
 <p>It will be run on both the Ubuntu and the CentOS container. The <code>.travis.yml</code> file becomes:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Yaml" data-lang="Yaml"><span style="color:#75715e"># .travis.yml</span>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Yaml data-lang=Yaml><span style=color:#75715e># .travis.yml</span>
 ---
-<span style="color:#f92672">sudo</span>: <span style="color:#ae81ff">required</span>
-<span style="color:#f92672">env</span>:
-  - &gt;<span style="color:#e6db74">
-</span><span style="color:#e6db74">    container_id=$(mktemp)
-</span><span style="color:#e6db74">    distribution=centos
-</span><span style="color:#e6db74">    version=7
-</span><span style="color:#e6db74">    init=/usr/lib/systemd/systemd
-</span><span style="color:#e6db74">    run_opts=&#34;--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro&#34;</span>    
-  - &gt;<span style="color:#e6db74">
-</span><span style="color:#e6db74">    container_id=$(mktemp)
-</span><span style="color:#e6db74">    distribution=ubuntu
-</span><span style="color:#e6db74">    version=14.04
-</span><span style="color:#e6db74">    init=/sbin/init
-</span><span style="color:#e6db74">    run_opts=&#34;&#34;</span>    
+<span style=color:#f92672>sudo</span>: <span style=color:#ae81ff>required</span>
+<span style=color:#f92672>env</span>:
+  - &gt;<span style=color:#e6db74>
+</span><span style=color:#e6db74>    container_id=$(mktemp)
+</span><span style=color:#e6db74>    distribution=centos
+</span><span style=color:#e6db74>    version=7
+</span><span style=color:#e6db74>    init=/usr/lib/systemd/systemd
+</span><span style=color:#e6db74>    run_opts=&#34;--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro&#34;</span>    
+  - &gt;<span style=color:#e6db74>
+</span><span style=color:#e6db74>    container_id=$(mktemp)
+</span><span style=color:#e6db74>    distribution=ubuntu
+</span><span style=color:#e6db74>    version=14.04
+</span><span style=color:#e6db74>    init=/sbin/init
+</span><span style=color:#e6db74>    run_opts=&#34;&#34;</span>    
 
-<span style="color:#f92672">services</span>:
-  - <span style="color:#ae81ff">docker</span>
+<span style=color:#f92672>services</span>:
+  - <span style=color:#ae81ff>docker</span>
 
-<span style="color:#f92672">before_install</span>:
-  - <span style="color:#ae81ff">sudo apt-get update</span>
-  <span style="color:#75715e"># Pull container</span>
-  - <span style="color:#ae81ff">sudo docker pull ${distribution}:${version}</span>
-  <span style="color:#75715e"># Customize container</span>
-  - <span style="color:#ae81ff">sudo docker build --rm=true --file=tests/Dockerfile.${distribution} --tag=${distribution}:ansible tests</span>
+<span style=color:#f92672>before_install</span>:
+  - <span style=color:#ae81ff>sudo apt-get update</span>
+  <span style=color:#75715e># Pull container</span>
+  - <span style=color:#ae81ff>sudo docker pull ${distribution}:${version}</span>
+  <span style=color:#75715e># Customize container</span>
+  - <span style=color:#ae81ff>sudo docker build --rm=true --file=tests/Dockerfile.${distribution} --tag=${distribution}:ansible tests</span>
 
-<span style="color:#f92672">script</span>:
-    <span style="color:#75715e"># Run container in detached state</span>
-  - <span style="color:#ae81ff">sudo docker run --detach --volume=&#34;${PWD}&#34;:/etc/ansible/roles/role_under_test:ro ${run_opts} ${distribution}:ansible &#34;${init}&#34; &gt; &#34;${container_id}&#34;</span>
+<span style=color:#f92672>script</span>:
+    <span style=color:#75715e># Run container in detached state</span>
+  - <span style=color:#ae81ff>sudo docker run --detach --volume=&#34;${PWD}&#34;:/etc/ansible/roles/role_under_test:ro ${run_opts} ${distribution}:ansible &#34;${init}&#34; &gt; &#34;${container_id}&#34;</span>
 
-    <span style="color:#75715e"># Syntax check</span>
-  - <span style="color:#ae81ff">sudo docker exec --tty &#34;$(cat ${container_id})&#34; env TERM=xterm ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml --syntax-check</span>
-    <span style="color:#75715e"># Test role</span>
-  - <span style="color:#ae81ff">sudo docker exec --tty &#34;$(cat ${container_id})&#34; env TERM=xterm ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml</span>
-    <span style="color:#75715e"># Idempotence test</span>
-  - &gt;<span style="color:#e6db74">
-</span><span style="color:#e6db74">    sudo docker exec &#34;$(cat ${container_id})&#34; ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml
-</span><span style="color:#e6db74">    | grep -q &#39;changed=0.*failed=0&#39;
-</span><span style="color:#e6db74">    &amp;&amp; (echo &#39;Idempotence test: pass&#39; &amp;&amp; exit 0)
-</span><span style="color:#e6db74">    || (echo &#39;Idempotence test: fail&#39; &amp;&amp; exit 1)
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">    # Clean up</span>    
-  - <span style="color:#ae81ff">sudo docker stop &#34;$(cat ${container_id})&#34;</span>
+    <span style=color:#75715e># Syntax check</span>
+  - <span style=color:#ae81ff>sudo docker exec --tty &#34;$(cat ${container_id})&#34; env TERM=xterm ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml --syntax-check</span>
+    <span style=color:#75715e># Test role</span>
+  - <span style=color:#ae81ff>sudo docker exec --tty &#34;$(cat ${container_id})&#34; env TERM=xterm ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml</span>
+    <span style=color:#75715e># Idempotence test</span>
+  - &gt;<span style=color:#e6db74>
+</span><span style=color:#e6db74>    sudo docker exec &#34;$(cat ${container_id})&#34; ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml
+</span><span style=color:#e6db74>    | grep -q &#39;changed=0.*failed=0&#39;
+</span><span style=color:#e6db74>    &amp;&amp; (echo &#39;Idempotence test: pass&#39; &amp;&amp; exit 0)
+</span><span style=color:#e6db74>    || (echo &#39;Idempotence test: fail&#39; &amp;&amp; exit 1)
+</span><span style=color:#e6db74>
+</span><span style=color:#e6db74>    # Clean up</span>    
+  - <span style=color:#ae81ff>sudo docker stop &#34;$(cat ${container_id})&#34;</span>
 
-<span style="color:#f92672">notifications</span>:
-  <span style="color:#f92672">email</span>: <span style="color:#66d9ef">false</span></code></pre></div>
+<span style=color:#f92672>notifications</span>:
+  <span style=color:#f92672>email</span>: <span style=color:#66d9ef>false</span></code></pre></div>
 <p>With the <code>env:</code> section, Travis-CI allows you to define different environments in which the tests should be run. We have defined two here, one for Ubuntu and one for CentOS. All the differences between the two cases are stored in environment variables that are available when the tests are run.</p>
 <p>The <code>before_install:</code> section pulls the base container image for the desired Linux distribution and version (<code>centos:7</code> and <code>ubuntu:14.04</code>) and a custom image is built using the appropriate Dockerfile.</p>
 <p>In the <code>script:</code> section, the container is started, and the current directory is mounted inside the container under <code>/etc/ansible/roles/role_under_test</code>. Next, the test playbook is run with the <code>--syntax-check</code> option. The command line options <code>--tty</code> and <code>env TERM=xterm</code> enable coloured output. Then, the test playbook is executed twice. The first time, the role is applied and Apache is installed with the configuration specified by the role variables. The second time is an idempotence test: applying the role a second time should not result in any changes. In the case a change <em>did</em> happen or if a task failed, an appropriate error message is printed and the process will abort.</p>
-<p>An example of the build output can be found <a href="https://travis-ci.org/bertvv/ansible-role-apache/builds/96604650">here</a> (for as long as Travis keeps the build logs).</p>
-<p><img src="https://bertvv.github.io/notes-to-self/img/travis-build-status.png" alt="Build status on the Travis-CI website. The output for the tests on CentOS and Ubuntu are shown separately (#9.1 and #9.2 respectively)."></p>
-<h2 id="future-work">Future work</h2>
+<p>An example of the build output can be found <a href=https://travis-ci.org/bertvv/ansible-role-apache/builds/96604650>here</a> (for as long as Travis keeps the build logs).</p>
+<p><img src=https://bertvv.github.io/notes-to-self/img/travis-build-status.png alt="Build status on the Travis-CI website. The output for the tests on CentOS and Ubuntu are shown separately (#9.1 and #9.2 respectively)."></p>
+<h2 id=future-work>Future work</h2>
 <p>There is still room for improvement, of course.</p>
 <p>Tests for other platforms supported by the role can be added easily by creating a Dockerfile and adding a line to the <code>env:</code> section of <code>.travis.yml</code>.</p>
-<p>The containers with Ansible installed are built on-the-fly, but they are always the same. Consequently, they can be reused for most, if not all, other roles you might want to run tests on. If you publish the containers on <a href="https://hub.docker.com/">Docker Hub</a> (with any other customizations you may want), you can pull them from there and skip the build step.</p>
-<p>What also could be added is black box system/acceptance tests from the host system (i.e. the Travis-CI VM), e.g. trying to access the website that runs on the container with <code>curl</code>, checking the TLS certificate, etc. This is left as an exercise to the upstream maintainer&hellip; ;-)</p>
-<h2 id="conclusion">Conclusion</h2>
-<p>The complete code for this test setup was <a href="https://github.com/geerlingguy/ansible-role-apache/pull/60">submitted upstream as a pull request</a>. As you will see in the commit history, there were quite a few hiccups as I was still getting familiar with the tools, and I made a few mistakes that I&rsquo;ll attribute to the fact that I continued working on this until rather late at night&hellip; ;-)</p>
+<p>The containers with Ansible installed are built on-the-fly, but they are always the same. Consequently, they can be reused for most, if not all, other roles you might want to run tests on. If you publish the containers on <a href=https://hub.docker.com/>Docker Hub</a> (with any other customizations you may want), you can pull them from there and skip the build step.</p>
+<p>What also could be added is black box system/acceptance tests from the host system (i.e. the Travis-CI VM), e.g. trying to access the website that runs on the container with <code>curl</code>, checking the TLS certificate, etc. This is left as an exercise to the upstream maintainer&mldr; ;-)</p>
+<h2 id=conclusion>Conclusion</h2>
+<p>The complete code for this test setup was <a href=https://github.com/geerlingguy/ansible-role-apache/pull/60>submitted upstream as a pull request</a>. As you will see in the commit history, there were quite a few hiccups as I was still getting familiar with the tools, and I made a few mistakes that I&rsquo;ll attribute to the fact that I continued working on this until rather late at night&mldr; ;-)</p>
 <p>Testing Ansible roles on Travis-CI becomes a very compelling proposition, given the flexibility Docker containers provide. Whether it is suitable in <em>all</em> situations remains an open question. Most of my roles, for example, assume SELinux is running, but this is probably not available in a container set up within the Ubuntu VM provided by Travis-CI. If you know more about this, I would be interested to hear from you!</p>
-<p>I finish this post with a shout-out to Valeriy Solovyov who (as far as I can tell) pioniered this method of testing Ansible roles. The code for his <a href="https://github.com/weldpua2008/ansible-apache">Apache role</a>, and <a href="https://stackoverflow.com/questions/32535195/how-to-run-tests-on-centos-7-with-travis-ci">this discussion on Stack Overflow</a> are the only sources I could find on this, however.</p>
-              
-
-
-            </div>
-          </div>
-          <div id="post-footer" class="post-footer main-content-wrap">
-            
-              
-                
-                
-                  <div class="post-footer-tags">
-                    <span class="text-color-light text-small"></span><br/>
-                    
-  <a class="tag tag--primary tag--small" href="https://bertvv.github.io/notes-to-self/tags/linux/">linux</a>
-
-  <a class="tag tag--primary tag--small" href="https://bertvv.github.io/notes-to-self/tags/ansible/">ansible</a>
-
-  <a class="tag tag--primary tag--small" href="https://bertvv.github.io/notes-to-self/tags/travis-ci/">travis-ci</a>
-
-  <a class="tag tag--primary tag--small" href="https://bertvv.github.io/notes-to-self/tags/centos/">centos</a>
-
-  <a class="tag tag--primary tag--small" href="https://bertvv.github.io/notes-to-self/tags/docker/">docker</a>
-
-  <a class="tag tag--primary tag--small" href="https://bertvv.github.io/notes-to-self/tags/test-driven-infrastructure/">test-driven-infrastructure</a>
-
-                  </div>
-                
-              
-            
-            
-<div class="post-actions-wrap">
-  <nav >
-    <ul class="post-actions post-action-nav">
-      
-        <li class="post-action">
-          
-            <a class="post-action-btn btn btn--disabled">
-          
-              <i class="fa fa-angle-left"></i>
-              <span class="hide-xs hide-sm text-small icon-ml"></span>
-            </a>
-        </li>
-        <li class="post-action">
-          
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos/" data-tooltip="Testing Ansible roles with Travis-CI, Part 1: CentOS" aria-label=": Testing Ansible roles with Travis-CI, Part 1: CentOS">
-          
-              <span class="hide-xs hide-sm text-small icon-mr"></span>
-              <i class="fa fa-angle-right"></i>
-            </a>
-        </li>
-      
-    </ul>
-  </nav>
-<ul class="post-actions post-action-share" >
-  
-    <li class="post-action hide-lg hide-md hide-sm">
-      <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="">
-        <i class="fa fa-share-alt" aria-hidden="true"></i>
-      </a>
-    </li>
-    
-      <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/" title="" aria-label="">
-          <i class="fab fa-twitter" aria-hidden="true"></i>
-        </a>
-      </li>
-    
-      <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://www.linkedin.com/sharing/share-offsite/?url=https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/" title="" aria-label="">
-          <i class="fab fa-linkedin" aria-hidden="true"></i>
-        </a>
-      </li>
-    
-      <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://www.reddit.com/submit?url=https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/" title="" aria-label="">
-          <i class="fab fa-reddit" aria-hidden="true"></i>
-        </a>
-      </li>
-    
-  
-  
-  <li class="post-action">
-    
-      <a class="post-action-btn btn btn--default" href="#top" aria-label="">
-      <i class="fa fa-arrow-up" aria-hidden="true"></i>
-    
-    </a>
-  </li>
+<p>I finish this post with a shout-out to Valeriy Solovyov who (as far as I can tell) pioniered this method of testing Ansible roles. The code for his <a href=https://github.com/weldpua2008/ansible-apache>Apache role</a>, and <a href=https://stackoverflow.com/questions/32535195/how-to-run-tests-on-centos-7-with-travis-ci>this discussion on Stack Overflow</a> are the only sources I could find on this, however.</p>
+</div>
+</div>
+<div id=post-footer class="post-footer main-content-wrap">
+<div class=post-footer-tags>
+<span class="text-color-light text-small"></span><br>
+<a class="tag tag--primary tag--small" href=https://bertvv.github.io/notes-to-self/tags/linux/>linux</a>
+<a class="tag tag--primary tag--small" href=https://bertvv.github.io/notes-to-self/tags/ansible/>ansible</a>
+<a class="tag tag--primary tag--small" href=https://bertvv.github.io/notes-to-self/tags/travis-ci/>travis-ci</a>
+<a class="tag tag--primary tag--small" href=https://bertvv.github.io/notes-to-self/tags/centos/>centos</a>
+<a class="tag tag--primary tag--small" href=https://bertvv.github.io/notes-to-self/tags/docker/>docker</a>
+<a class="tag tag--primary tag--small" href=https://bertvv.github.io/notes-to-self/tags/test-driven-infrastructure/>test-driven-infrastructure</a>
+</div>
+<div class=post-actions-wrap>
+<nav>
+<ul class="post-actions post-action-nav">
+<li class=post-action>
+<a class="post-action-btn btn btn--disabled">
+<i class="fa fa-angle-left"></i>
+<span class="hide-xs hide-sm text-small icon-ml"></span>
+</a>
+</li>
+<li class=post-action>
+<a class="post-action-btn btn btn--default tooltip--top" href=https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos/ data-tooltip="Testing Ansible roles with Travis-CI, Part 1: CentOS" aria-label=": Testing Ansible roles with Travis-CI, Part 1: CentOS">
+<span class="hide-xs hide-sm text-small icon-mr"></span>
+<i class="fa fa-angle-right"></i>
+</a>
+</li>
+</ul>
+</nav>
+<ul class="post-actions post-action-share">
+<li class="post-action hide-lg hide-md hide-sm">
+<a class="post-action-btn btn btn--default btn-open-shareoptions" href=#btn-open-shareoptions aria-label>
+<i class="fa fa-share-alt" aria-hidden=true></i>
+</a>
+</li>
+<li class="post-action hide-xs">
+<a class="post-action-btn btn btn--default" target=new href="https://twitter.com/intent/tweet?text=https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/" title aria-label>
+<i class="fab fa-twitter" aria-hidden=true></i>
+</a>
+</li>
+<li class="post-action hide-xs">
+<a class="post-action-btn btn btn--default" target=new href="https://www.linkedin.com/sharing/share-offsite/?url=https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/" title aria-label>
+<i class="fab fa-linkedin" aria-hidden=true></i>
+</a>
+</li>
+<li class="post-action hide-xs">
+<a class="post-action-btn btn btn--default" target=new href="https://www.reddit.com/submit?url=https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/" title aria-label>
+<i class="fab fa-reddit" aria-hidden=true></i>
+</a>
+</li>
+<li class=post-action>
+<a class="post-action-btn btn btn--default" href=#top aria-label>
+<i class="fa fa-arrow-up" aria-hidden=true></i>
+</a>
+</li>
 </ul>
 </div>
-
-
-            
-  
-    <div id="disqus_thread">
-      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
-    </div>
-    <script type="text/javascript">
-      var disqus_config = function() {
-        this.page.url = 'https:\/\/bertvv.github.io\/notes-to-self\/2015\/12\/13\/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests\/';
-        
-          this.page.identifier = '\/2015\/12\/13\/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests\/'
-        
-      };
-      (function() {
-        
-        
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-          document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-          return;
-        }
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        var disqus_shortname = '';
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-      })();
-    </script>
-  
-
-
-          </div>
-        </article>
-        <footer id="footer" class="main-content-wrap">
-  <span class="copyrights">
-    &copy; 2021 <a href="https://github.com/bertvv">Bert Van Vreckem</a> <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY</a>. 
-  </span>
+<div id=disqus_thread>
+<noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+</div>
+<script type=text/javascript>var disqus_config=function(){this.page.url='https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/',this.page.identifier='/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/'};(function(){var a,b;if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}a=document.createElement('script'),a.type='text/javascript',a.async=!0,b='',a.src='//'+b+'.disqus.com/embed.js',(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(a)})()</script>
+</div>
+</article>
+<footer id=footer class=main-content-wrap>
+<span class=copyrights>
+&copy; 2021 <a href=https://github.com/bertvv>Bert Van Vreckem</a> <a href=https://creativecommons.org/licenses/by/4.0/>CC-BY</a>.
+</span>
 </footer>
-
-      </div>
-      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
-        
-<div class="post-actions-wrap">
-  <nav >
-    <ul class="post-actions post-action-nav">
-      
-        <li class="post-action">
-          
-            <a class="post-action-btn btn btn--disabled">
-          
-              <i class="fa fa-angle-left"></i>
-              <span class="hide-xs hide-sm text-small icon-ml"></span>
-            </a>
-        </li>
-        <li class="post-action">
-          
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos/" data-tooltip="Testing Ansible roles with Travis-CI, Part 1: CentOS" aria-label=": Testing Ansible roles with Travis-CI, Part 1: CentOS">
-          
-              <span class="hide-xs hide-sm text-small icon-mr"></span>
-              <i class="fa fa-angle-right"></i>
-            </a>
-        </li>
-      
-    </ul>
-  </nav>
-<ul class="post-actions post-action-share" >
-  
-    <li class="post-action hide-lg hide-md hide-sm">
-      <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="">
-        <i class="fa fa-share-alt" aria-hidden="true"></i>
-      </a>
-    </li>
-    
-      <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/" title="" aria-label="">
-          <i class="fab fa-twitter" aria-hidden="true"></i>
-        </a>
-      </li>
-    
-      <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://www.linkedin.com/sharing/share-offsite/?url=https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/" title="" aria-label="">
-          <i class="fab fa-linkedin" aria-hidden="true"></i>
-        </a>
-      </li>
-    
-      <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://www.reddit.com/submit?url=https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/" title="" aria-label="">
-          <i class="fab fa-reddit" aria-hidden="true"></i>
-        </a>
-      </li>
-    
-  
-  
-  <li class="post-action">
-    
-      <a class="post-action-btn btn btn--default" href="#top" aria-label="">
-      <i class="fa fa-arrow-up" aria-hidden="true"></i>
-    
-    </a>
-  </li>
+</div>
+<div id=bottom-bar class=post-bottom-bar data-behavior=4>
+<div class=post-actions-wrap>
+<nav>
+<ul class="post-actions post-action-nav">
+<li class=post-action>
+<a class="post-action-btn btn btn--disabled">
+<i class="fa fa-angle-left"></i>
+<span class="hide-xs hide-sm text-small icon-ml"></span>
+</a>
+</li>
+<li class=post-action>
+<a class="post-action-btn btn btn--default tooltip--top" href=https://bertvv.github.io/notes-to-self/2015/12/11/testing-ansible-roles-with-travis-ci-part-1-centos/ data-tooltip="Testing Ansible roles with Travis-CI, Part 1: CentOS" aria-label=": Testing Ansible roles with Travis-CI, Part 1: CentOS">
+<span class="hide-xs hide-sm text-small icon-mr"></span>
+<i class="fa fa-angle-right"></i>
+</a>
+</li>
+</ul>
+</nav>
+<ul class="post-actions post-action-share">
+<li class="post-action hide-lg hide-md hide-sm">
+<a class="post-action-btn btn btn--default btn-open-shareoptions" href=#btn-open-shareoptions aria-label>
+<i class="fa fa-share-alt" aria-hidden=true></i>
+</a>
+</li>
+<li class="post-action hide-xs">
+<a class="post-action-btn btn btn--default" target=new href="https://twitter.com/intent/tweet?text=https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/" title aria-label>
+<i class="fab fa-twitter" aria-hidden=true></i>
+</a>
+</li>
+<li class="post-action hide-xs">
+<a class="post-action-btn btn btn--default" target=new href="https://www.linkedin.com/sharing/share-offsite/?url=https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/" title aria-label>
+<i class="fab fa-linkedin" aria-hidden=true></i>
+</a>
+</li>
+<li class="post-action hide-xs">
+<a class="post-action-btn btn btn--default" target=new href="https://www.reddit.com/submit?url=https://bertvv.github.io/notes-to-self/2015/12/13/testing-ansible-roles-with-travis-ci-part-2-multi-platform-tests/" title aria-label>
+<i class="fab fa-reddit" aria-hidden=true></i>
+</a>
+</li>
+<li class=post-action>
+<a class="post-action-btn btn btn--default" href=#top aria-label>
+<i class="fa fa-arrow-up" aria-hidden=true></i>
+</a>
+</li>
 </ul>
 </div>
-
-
-      </div>
-      
-<div id="share-options-bar" class="share-options-bar" data-behavior="4">
-  <i id="btn-close-shareoptions" class="fa fa-times"></i>
-  <ul class="share-options">
-    
-      <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2Fbertvv.github.io%2Fnotes-to-self%2F2015%2F12%2F13%2Ftesting-ansible-roles-with-travis-ci-part-2-multi-platform-tests%2F" aria-label="">
-          <i class="fab fa-twitter" aria-hidden="true"></i><span></span>
-        </a>
-      </li>
-    
-      <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fbertvv.github.io%2Fnotes-to-self%2F2015%2F12%2F13%2Ftesting-ansible-roles-with-travis-ci-part-2-multi-platform-tests%2F" aria-label="">
-          <i class="fab fa-linkedin" aria-hidden="true"></i><span></span>
-        </a>
-      </li>
-    
-      <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://www.reddit.com/submit?url=https%3A%2F%2Fbertvv.github.io%2Fnotes-to-self%2F2015%2F12%2F13%2Ftesting-ansible-roles-with-travis-ci-part-2-multi-platform-tests%2F" aria-label="">
-          <i class="fab fa-reddit" aria-hidden="true"></i><span></span>
-        </a>
-      </li>
-    
-  </ul>
 </div>
-<div id="share-options-mask" class="share-options-mask"></div>
-
-
-    </div>
-    
-    <div id="about">
-  <div id="about-card">
-    <div id="about-btn-close">
-      <i class="fa fa-times"></i>
-    </div>
-    
-      <img id="about-card-picture" src="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=110" alt="" />
-    
-    <h4 id="about-card-name">Bert Van Vreckem</h4>
-    
-      <div id="about-card-bio">Lecturer ICT at HOGENT</div>
-    
-    
-      <div id="about-card-job">
-        <i class="fa fa-briefcase"></i>
-        <br/>
-        Lecturer ICT at HOGENT
-      </div>
-    
-    
-      <div id="about-card-location">
-        <i class="fa fa-map-marker-alt"></i>
-        <br/>
-        Ghent
-      </div>
-    
-  </div>
+<div id=share-options-bar class=share-options-bar data-behavior=4>
+<i id=btn-close-shareoptions class="fa fa-times"></i>
+<ul class=share-options>
+<li class=share-option>
+<a class=share-option-btn target=new href="https://twitter.com/intent/tweet?text=https%3A%2F%2Fbertvv.github.io%2Fnotes-to-self%2F2015%2F12%2F13%2Ftesting-ansible-roles-with-travis-ci-part-2-multi-platform-tests%2F" aria-label>
+<i class="fab fa-twitter" aria-hidden=true></i><span></span>
+</a>
+</li>
+<li class=share-option>
+<a class=share-option-btn target=new href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fbertvv.github.io%2Fnotes-to-self%2F2015%2F12%2F13%2Ftesting-ansible-roles-with-travis-ci-part-2-multi-platform-tests%2F" aria-label>
+<i class="fab fa-linkedin" aria-hidden=true></i><span></span>
+</a>
+</li>
+<li class=share-option>
+<a class=share-option-btn target=new href="https://www.reddit.com/submit?url=https%3A%2F%2Fbertvv.github.io%2Fnotes-to-self%2F2015%2F12%2F13%2Ftesting-ansible-roles-with-travis-ci-part-2-multi-platform-tests%2F" aria-label>
+<i class="fab fa-reddit" aria-hidden=true></i><span></span>
+</a>
+</li>
+</ul>
 </div>
-
-    
-
-    
-  
-    
-      <div id="cover" style="background-image:url('https://bertvv.github.io/notes-to-self/img/field.jpg');"></div>
-    
-  
-
-
-    
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js" integrity="sha512-z+/WWfyD5tccCukM4VvONpEtLmbAm5LDu7eKiyMQJ9m7OfPEDL7gENyDRL3Yfe8XAuGsS2fS4xSMnl6d30kqGQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-
-<script src="https://bertvv.github.io/js/script-yqzy9wdlzix4lbbwdnzvwx3egsne77earqmn73v9uno8aupuph8wfguccut.min.js"></script>
-
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-gE8KAQyFIzV1C9+GZ8TKJHZS2s+n7EjNtC+IMRn1l5+WYJTHOODUM6JSjZhFhqXmc7bG8Av6XXpckA4tYhflnw==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/apache.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-EWROca+bote+7Oaaar1F6y74iZj1r1F9rm/ly7o+/FwJopbBaWtsFDmaKoZDd3QiGU2pGacBirHJNivmGLYrow==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/go.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-GDVzAn0wpx1yVtQsRWmFc6PhJiLBPdUic+h4GWgljBh904O3JU10fk9EKNpVyIoPqkFn54rgL2QBG4BmUTMpiQ==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/http.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-UgZlma8NzkrDb/NWgmLIcTrH7i/CSnLLDRFqCSNF5NGPpjKmzyM25qcoXGOup8+cDakKyaiTDd7N4dyH4YT+IA==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/less.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-lot9koe73sfXIrUvIPM/UEhuMciN56RPyBdOyZgfO53P2lkWyyXN7J+njcxIIBRV+nVDQeiWtiXg+bLAJZDTfg==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/nginx.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-Zd3e7XxHP00TD0Imr0PIfeM0fl0v95kMWuhyAS3Wn1UTSXTkz0OhtRgBAr4JlmADRgiXr4x7lpeUdqaGN8xIog==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/puppet.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-qtqDO052iXMSP+5d/aE/jMtL9vIIGvONgTJziC2K/ZIB1yEGa55WVxGE9/08rSQ62EoDifS9SWVGZ7ihSLhzMA==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/scss.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-1NmkjnEDnwwwcu28KoQF8vs3oaPFokQHbmbtwGhFfeDsQZtVFI8zW2aE9O8yMYdpdyKV/5blE4pSWw4Z/Sv97w==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/stylus.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-B2wSfruPjr8EJL6IIzQr1eAuDwrsfIfccNf/LCEdxELCgC/S/ZMt/Uvk80aD79m7IqOqW+Sw8nbkvha20yZpzg==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/swift.min.js"></script>
-  
-
-  
-    <script async crossorigin="anonymous" defer integrity="sha512-28oDiQZGKUVN6wQ7PSLPNipOcmkCALXKwOi7bnkyFf8QiMZQxG9EQoy/iiNx6Zxj2cG2SbVa4dXKigQhu7GiFw==" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/yaml.min.js"></script>
-  
-
-
-<script>
-$(document).ready(function() {
-  hljs.configure({ classPrefix: '', useBR: false });
-  $('pre.code-highlight > code, pre > code').each(function(i, block) {
-    if (!$(this).hasClass('codeblock')) {
-      $(this).addClass('codeblock');
-    }
-    hljs.highlightBlock(block);
-  });
-});
-</script>
-
-
-
-
-    
-  </body>
+<div id=share-options-mask class=share-options-mask></div>
+</div>
+<div id=about>
+<div id=about-card>
+<div id=about-btn-close>
+<i class="fa fa-times"></i>
+</div>
+<img id=about-card-picture src="https://www.gravatar.com/avatar/3972e44f80f0a49eaa277e5a56fa93d2?s=110" alt>
+<h4 id=about-card-name>Bert Van Vreckem</h4>
+<div id=about-card-bio>Lecturer ICT at HOGENT</div>
+<div id=about-card-job>
+<i class="fa fa-briefcase"></i>
+<br>
+Lecturer ICT at HOGENT
+</div>
+<div id=about-card-location>
+<i class="fa fa-map-marker-alt"></i>
+<br>
+Ghent
+</div>
+</div>
+</div>
+<div id=cover style=background-image:url(https://bertvv.github.io/notes-to-self/img/field.jpg)></div>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin=anonymous referrerpolicy=no-referrer></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js integrity="sha512-z+/WWfyD5tccCukM4VvONpEtLmbAm5LDu7eKiyMQJ9m7OfPEDL7gENyDRL3Yfe8XAuGsS2fS4xSMnl6d30kqGQ==" crossorigin=anonymous referrerpolicy=no-referrer></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js integrity="sha512-uURl+ZXMBrF4AwGaWmEetzrd+J5/8NRkWAvJx5sbPSSuOb0bZLqf+tOzniObO00BjHa/dD7gub9oCGMLPQHtQA==" crossorigin=anonymous referrerpolicy=no-referrer></script>
+<script src=https://bertvv.github.io/js/script-yqzy9wdlzix4lbbwdnzvwx3egsne77earqmn73v9uno8aupuph8wfguccut.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-gE8KAQyFIzV1C9+GZ8TKJHZS2s+n7EjNtC+IMRn1l5+WYJTHOODUM6JSjZhFhqXmc7bG8Av6XXpckA4tYhflnw==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/apache.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-EWROca+bote+7Oaaar1F6y74iZj1r1F9rm/ly7o+/FwJopbBaWtsFDmaKoZDd3QiGU2pGacBirHJNivmGLYrow==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/go.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-GDVzAn0wpx1yVtQsRWmFc6PhJiLBPdUic+h4GWgljBh904O3JU10fk9EKNpVyIoPqkFn54rgL2QBG4BmUTMpiQ==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/http.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-UgZlma8NzkrDb/NWgmLIcTrH7i/CSnLLDRFqCSNF5NGPpjKmzyM25qcoXGOup8+cDakKyaiTDd7N4dyH4YT+IA==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/less.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-lot9koe73sfXIrUvIPM/UEhuMciN56RPyBdOyZgfO53P2lkWyyXN7J+njcxIIBRV+nVDQeiWtiXg+bLAJZDTfg==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/nginx.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-Zd3e7XxHP00TD0Imr0PIfeM0fl0v95kMWuhyAS3Wn1UTSXTkz0OhtRgBAr4JlmADRgiXr4x7lpeUdqaGN8xIog==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/puppet.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-qtqDO052iXMSP+5d/aE/jMtL9vIIGvONgTJziC2K/ZIB1yEGa55WVxGE9/08rSQ62EoDifS9SWVGZ7ihSLhzMA==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/scss.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-1NmkjnEDnwwwcu28KoQF8vs3oaPFokQHbmbtwGhFfeDsQZtVFI8zW2aE9O8yMYdpdyKV/5blE4pSWw4Z/Sv97w==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/stylus.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-B2wSfruPjr8EJL6IIzQr1eAuDwrsfIfccNf/LCEdxELCgC/S/ZMt/Uvk80aD79m7IqOqW+Sw8nbkvha20yZpzg==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/swift.min.js></script>
+<script async crossorigin=anonymous defer integrity="sha512-28oDiQZGKUVN6wQ7PSLPNipOcmkCALXKwOi7bnkyFf8QiMZQxG9EQoy/iiNx6Zxj2cG2SbVa4dXKigQhu7GiFw==" src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/languages/yaml.min.js></script>
+<script>$(document).ready(function(){hljs.configure({classPrefix:'',useBR:!1}),$('pre.code-highlight > code, pre > code').each(function(b,a){$(this).hasClass('codeblock')||$(this).addClass('codeblock'),hljs.highlightBlock(a)})})</script>
+</body>
 </html>
-
