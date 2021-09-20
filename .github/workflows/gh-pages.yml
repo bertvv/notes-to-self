@@ -1,14 +1,12 @@
 # Workflow to publish Hugo site to Github Pages
 # Source: https://gohugo.io/hosting-and-deployment/hosting-on-github/
 ---
-name: github pages
+name: gh-pages
 
 on:
   push:
     branches:
       - main  # Set a branch to deploy
-  pull_request:
-
 jobs:
   deploy:
     runs-on: ubuntu-20.04
