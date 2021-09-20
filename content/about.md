@@ -1,24 +1,26 @@
-+++
-date = "2015-09-29T21:37:49+02:00"
-draft = false
-title = "About"
+---
+date: 2021-09-20T22:30:55+02:00
+title: "About"
+comments:       false
+showMeta:       false
+showActions:    false
 
-+++
+---
 
-Hi! My name is Bert Van Vreckem and I teach Linux system administration at [University College Ghent](https://fbo.hogent.be/faculteit/english/).
+Hi! My name is Bert Van Vreckem and I'm a lecturer at [Ghent University of Applied Sciences (HOGENT)](https://hogent.be/). I mainly teach Linux system administration and introductory data science.
 
-In this blog, I write about stuff that I learn, about solutions for problems that I encounter, answer great questions from my students (or from you!), etc. Topics include basic system administration (especially everything related to RHEL/CentOS 7 and systemd), shell scripting, configuration management with Ansible, etc.
-
+In this blog, I write about stuff that I learn, about solutions for problems that I encounter, answer great questions from my students (or from you!), etc. Topics include basic Linux system administration, shell scripting, configuration management with Ansible, etc.
 
 I can offer workshops and talks (in Dutch or English) about the subjects below. Contact me if you're interested.
 
 - Ansible
-- Git
+- Git and Github
+- LaTeX
 - Linux system administration
 - Vagrant
 - Vim
 
-This site is powered by [Hugo](https://gohugo.io/), a static site generator, and hosted by [Github Pages](https://pages.github.com/). The theme is [greyshade](https://shashankmehta.in/archive/2012/greyshade.html) by Shashank Mehta.
+This site is powered by [Hugo](https://gohugo.io/), a static site generator, and hosted by [Github Pages](https://pages.github.com/). The theme is [tranquilpeak](https://github.com/kakawait/hugo-tranquilpeak-theme/) by Thibaud Lepretre.
 
 The content of this blog is subject to the [Creative Commons Attribution License](https://creativecommons.org/licenses/by/4.0/). Please attribute properly and link back.
 
