@@ -14,34 +14,22 @@ The other directories are the Hugo "source code" of the site.
 
 Useful commands
 
-### Workflow
+### Workflow - New post
 
-**New post**
-
-```ShellSession
+```console
 $ hugo new post/some-title.md
 $ hugo server --buildDrafts --watch  # In a separate console
 $ vi content/post/some-title.md
 $ hugo undraft content/post/some-title.md
 ```
 
-**Publish on Github Pages**
+### Read more link
 
-Run script `./publish.sh`, which does the following:
-
-- Test whether `hugo server` is running (it should not!)
-- Generate the site with command `hugo`
-- Push changes in `gh-pages` to Github
-
-### Tricks
-
-**Read more link**
-
-```
+```html
 <!--more-->
 ```
 
-**Source code**
+### Source code
 
 ```
 {{< highlight LANGUAGE>}}
@@ -50,3 +38,13 @@ source code
 ```
 
 For a list of supported languages, see <http://pygments.org/languages/>
+
+## Publishing
+
+Each push to Github on the main branch triggers a Github Action, which rebuilds the site and publishes it on Github Pages.
+
+To publish manually, without first pushing the main branch to Github, run the script `./publish.sh`, which does the following:
+
+- Test whether `hugo server` is running (it should not!)
+- Generate the site with command `hugo`
+- Push changes in `gh-pages` to Github
